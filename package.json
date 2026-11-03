@@ -1,0 +1,14 @@
+{
+  "name": "rtu-pasig-portal",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Browser-local RTU Pasig Academic Services Portal prototype",
+  "scripts": {
+    "test": "node portal-phase-d-smoke.js && node portal-phase-e-smoke.js && node portal-phase-f-smoke.js && node portal-phase-g-smoke.js && node portal-phase-h-smoke.js && node portal-phase-i-smoke.js",
+    "test:browser": "node portal-phase-d-browser-smoke.js && node portal-phase-e-browser-smoke.js && node portal-phase-f-browser-smoke.js && node portal-phase-g-browser-smoke.js && node portal-phase-h-browser-smoke.js && node portal-phase-i-browser-smoke.js",
+    "test:all": "npm test && npm run test:browser"
+  },
+  "devDependencies": {
+    "playwright": "^1.64.1"
+  }
+}

@@ -1,0 +1,64 @@
+# Environment files and local configuration
+.env
+.env.*
+*.env
+*.env.*
+*.local
+.direnv/
+
+# Credentials, tokens, and private keys
+.secrets/
+secrets/
+credentials/
+credentials.*
+secrets.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+id_rsa*
+id_ed25519*
+.npmrc
+.netrc
+
+# Dependencies and generated output
+node_modules/
+bower_components/
+vendor/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+dist/
+build/
+coverage/
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+
+# Logs and local data
+*.log
+*.sqlite
+*.sqlite3
+*.db
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite-journal
+tmp/
+temp/
+
+# Browser test output
+playwright-report/
+test-results/
+
+# Editor and operating-system files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+Desktop.ini
