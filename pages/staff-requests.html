@@ -1,0 +1,159 @@
+<body>
+<section class="dashboard-view staff-view staff-request-management" data-view="staff-requests" aria-labelledby="staff-requests-title" hidden>
+  <header class="staff-page-heading">
+    <h2 id="staff-requests-title" tabindex="-1" class="visually-hidden">Request Management</h2>
+    <span class="staff-count-pill"><strong id="staff-requests-visible-count">0</strong> shown</span>
+  </header>
+
+  <section class="staff-request-summary-grid" aria-label="Request summary">
+    <article class="staff-request-summary-card staff-request-summary-total">
+      <span class="staff-request-summary-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-document"/></svg></span>
+      <div><p>Total Requests</p><strong id="staff-requests-total">0</strong><small>All browser-local submissions</small></div>
+    </article>
+    <article class="staff-request-summary-card staff-request-summary-pending">
+      <span class="staff-request-summary-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-clock"/></svg></span>
+      <div><p>Pending Review</p><strong id="staff-requests-pending">0</strong><small>Awaiting staff action</small></div>
+    </article>
+    <article class="staff-request-summary-card staff-request-summary-processing">
+      <span class="staff-request-summary-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-grades"/></svg></span>
+      <div><p>In Processing</p><strong id="staff-requests-processing">0</strong><small>Documents being prepared</small></div>
+    </article>
+    <article class="staff-request-summary-card staff-request-summary-completed">
+      <span class="staff-request-summary-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-check"/></svg></span>
+      <div><p>Completed</p><strong id="staff-requests-completed">0</strong><small>Released documents</small></div>
+    </article>
+  </section>
+
+  <p class="demo-note staff-request-demo-note">Browser-local demo: request decisions are saved only in this browser. Do not use this workflow for official student records.</p>
+
+  <section class="content-card staff-panel staff-request-panel" aria-labelledby="staff-request-list-title">
+    <header class="staff-panel-heading">
+      <div><h3 id="staff-request-list-title">Student requests</h3><p>Search, filter, and process submitted document requests.</p></div>
+    </header>
+
+    <div class="staff-request-toolbar">
+      <label class="staff-search staff-request-search" for="staff-requests-search">
+        <svg class="portal-icon" aria-hidden="true"><use href="#icon-search"/></svg>
+        <span class="visually-hidden">Search requests by ID, student name, or student number</span>
+        <input id="staff-requests-search" type="search" placeholder="Search ID, student name, or number…" autocomplete="off">
+      </label>
+      <label class="staff-request-filter" for="staff-requests-status">
+        <span>Status</span>
+        <select id="staff-requests-status"><option value="all">All statuses</option></select>
+      </label>
+      <label class="staff-request-filter" for="staff-requests-document">
+        <span>Document</span>
+        <select id="staff-requests-document"><option value="all">All document types</option></select>
+      </label>
+      <label class="staff-request-filter" for="staff-requests-sort">
+        <span>Sort</span>
+        <select id="staff-requests-sort">
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="student">Student name A–Z</option>
+        </select>
+      </label>
+      <button class="secondary-button staff-request-reset" id="staff-requests-reset" type="button">Reset filters</button>
+    </div>
+
+    <p class="staff-request-feedback" id="staff-requests-feedback" role="status" aria-live="polite"></p>
+
+    <div class="staff-table-wrap staff-request-table-wrap" id="staff-requests-table-wrap">
+      <table class="staff-table staff-request-management-table">
+        <caption class="visually-hidden">Student document requests</caption>
+        <thead>
+          <tr>
+            <th scope="col">Request ID</th>
+            <th scope="col">Student Name</th>
+            <th scope="col">Student Number</th>
+            <th scope="col">Document Type</th>
+            <th scope="col">Date Submitted</th>
+            <th scope="col">Appointment Date</th>
+            <th scope="col">Status</th>
+            <th scope="col"><span class="visually-hidden">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody id="staff-requests-rows"></tbody>
+      </table>
+    </div>
+
+    <div class="staff-request-empty" id="staff-requests-empty" hidden>
+      <svg class="portal-icon" aria-hidden="true"><use href="#icon-inbox"/></svg>
+      <h3 id="staff-requests-empty-title">No requests yet</h3>
+      <p id="staff-requests-empty-text">Student submissions from the portal will appear here.</p>
+    </div>
+
+    <div class="staff-request-pagination" id="staff-requests-pagination">
+      <p id="staff-requests-result-count">0 requests</p>
+      <div>
+        <button class="secondary-button" id="staff-requests-prev" type="button">Previous</button>
+        <span id="staff-requests-page-label">Page 1 of 1</span>
+        <button class="secondary-button" id="staff-requests-next" type="button">Next</button>
+      </div>
+    </div>
+  </section>
+
+  <dialog class="portal-dialog staff-request-details-dialog" id="staff-request-details-dialog" aria-labelledby="staff-request-details-title">
+    <div class="modal-header">
+      <div><span class="dialog-eyebrow">REQUEST RECORD</span><h2 class="modal-title" id="staff-request-details-title" tabindex="-1">Request details</h2></div>
+      <button class="dialog-close" type="button" data-staff-request-close aria-label="Close request details">&times;</button>
+    </div>
+    <div class="modal-body staff-request-details-body">
+      <div class="staff-request-detail-banner">
+        <div><strong id="staff-request-details-document">Document request</strong><p id="staff-request-details-purpose">Purpose not provided</p></div>
+        <span id="staff-request-details-status"></span>
+      </div>
+      <dl class="staff-dialog-grid staff-request-detail-grid">
+        <div><dt>Student name</dt><dd id="staff-request-details-student">—</dd></div>
+        <div><dt>Student number</dt><dd id="staff-request-details-number">—</dd></div>
+        <div><dt>Program and year</dt><dd id="staff-request-details-program">—</dd></div>
+        <div><dt>Date submitted</dt><dd id="staff-request-details-submitted">—</dd></div>
+        <div><dt>Appointment</dt><dd id="staff-request-details-appointment">—</dd></div>
+        <div><dt>Last updated</dt><dd id="staff-request-details-updated">—</dd></div>
+        <div><dt>Assigned staff</dt><dd id="staff-request-details-staff">—</dd></div>
+        <div><dt>Review date</dt><dd id="staff-request-details-review">—</dd></div>
+      </dl>
+      <section class="staff-request-detail-section" aria-labelledby="staff-request-extra-title">
+        <h3 id="staff-request-extra-title">Request information</h3>
+        <dl class="staff-dialog-grid staff-request-extra-grid" id="staff-request-details-extra"></dl>
+      </section>
+      <section class="staff-request-detail-section" aria-labelledby="staff-request-processing-title">
+        <h3 id="staff-request-processing-title">Processing information</h3>
+        <div class="staff-request-detail-messages" id="staff-request-details-messages"></div>
+      </section>
+      <section class="staff-request-detail-section" aria-labelledby="staff-request-history-title">
+        <h3 id="staff-request-history-title">Status history</h3>
+        <ol class="staff-request-history" id="staff-request-details-history"></ol>
+      </section>
+      <div class="staff-request-detail-actions" id="staff-request-details-actions"></div>
+    </div>
+    <div class="modal-footer"><button class="secondary-button" type="button" data-staff-request-close>Close</button></div>
+  </dialog>
+
+  <dialog class="portal-dialog staff-request-action-dialog" id="staff-request-action-dialog" aria-labelledby="staff-request-action-title">
+    <div class="modal-header">
+      <div><span class="dialog-eyebrow">CONFIRM ACTION</span><h2 class="modal-title" id="staff-request-action-title">Update request</h2></div>
+      <button class="dialog-close" type="button" data-staff-request-close aria-label="Close action dialog">&times;</button>
+    </div>
+    <form id="staff-request-action-form" novalidate>
+      <div class="modal-body">
+        <p id="staff-request-action-description"></p>
+        <div class="staff-request-action-field">
+          <label class="form-label" for="staff-request-action-reason" id="staff-request-action-reason-label">Staff remarks</label>
+          <textarea class="form-control dialog-input" id="staff-request-action-reason" name="reason" rows="3" maxlength="500"></textarea>
+        </div>
+        <label class="staff-request-release-check" id="staff-request-action-release-field" for="staff-request-action-release" hidden>
+          <input id="staff-request-action-release" type="checkbox">
+          <span>I verified the student identity or authorized collection details before releasing this document.</span>
+        </label>
+        <p class="dialog-status" id="staff-request-action-status" role="status" aria-live="polite"></p>
+        <p class="demo-note">This action updates the browser-local demo record and the student's My Request view.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="secondary-button" type="button" data-staff-request-close>Keep current status</button>
+        <button class="primary-button" type="submit" id="staff-request-action-submit">Confirm action</button>
+      </div>
+    </form>
+  </dialog>
+</section>
+</body>

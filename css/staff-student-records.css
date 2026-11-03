@@ -1,0 +1,34 @@
+.student-records-workspace { min-width: 0; }
+.student-records-workspace > .staff-stat-grid { margin-bottom: 1.25rem; }
+.student-record-filters { display: grid; grid-template-columns: 2fr repeat(3, minmax(0, 1fr)); gap: 1rem; align-items: end; margin-bottom: 1.25rem; }
+.student-record-filters label { display: grid; gap: .4rem; color: inherit; font-size: .85rem; font-weight: 600; }
+.student-record-filters input, .student-record-filters select { min-width: 0; width: 100%; padding: .7rem; border: 1px solid #cbdcf1; border-radius: .5rem; background: #f6f9ff; color: #193453; font: inherit; }
+.student-directory-table { min-width: 1000px; }
+.student-record-detail { margin-top: 1.25rem; }
+.student-record-detail h4 { font-size: 1rem; color: #153d8b; margin: .5rem 0 .8rem; }
+.student-record-detail section { margin: 1.25rem 0; }
+.student-record-review { background: #eef5ff; border-left: 4px solid #d8a820; border-radius: .5rem; padding: 1rem; }
+.student-record-review p { font-size: .88rem; margin: .4rem 0; }
+.student-record-actions { display: flex; flex-wrap: wrap; gap: .65rem; }
+.student-record-tabs { display: flex; flex-wrap: wrap; gap: .4rem; padding-bottom: .8rem; border-bottom: 1px solid #d5e1f3; }
+.student-record-tabs button { padding: .75rem; border-radius: .5rem; border: 1px solid #cfddf0; background: #f1f6ff; color: #173c7e; font: inherit; font-size: .82rem; font-weight: 600; }
+.student-record-tabs [aria-selected="true"] { background: #153d8b; color: #fff; box-shadow: inset 0 -3px #e6b638; }
+.student-record-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.student-record-grid dt { font-size: .8rem; color: #62748b; }
+.student-record-grid dd { margin: .3rem 0 0; overflow-wrap: anywhere; white-space: pre-wrap; }
+.student-record-grid small { display: block; color: #64748b; font-size: .72rem; margin-top: .25rem; }
+.student-record-history-table { min-width: 850px; }
+.student-record-timeline { list-style: none; padding-left: 1rem; border-left: 3px solid #cfdef4; }
+.student-record-timeline li { margin: 0 0 1rem; overflow-wrap: anywhere; }
+.student-record-timeline small, .student-record-timeline time { display: block; color: #62748b; font-size: .8rem; }
+.student-record-history-events { padding-left: 1.2rem; font-size: .8rem; }
+.student-records-workspace button:disabled { opacity: .5; cursor: not-allowed; }
+html[data-theme="dark"] .student-record-review { background: #1b304c; }
+html[data-theme="dark"] .student-record-filters input, html[data-theme="dark"] .student-record-filters select, html[data-theme="dark"] .student-record-tabs button { background: #203650; color: #e5eefc; border-color: #415675; }
+html[data-theme="dark"] .student-record-tabs [aria-selected="true"] { background: #164b95; color: white; }
+html[data-theme="dark"] .student-record-tabs { border-color: #344863; }
+html[data-theme="dark"] .student-record-detail h4 { color: #b5d0ff; }
+html[data-theme="dark"] .student-record-grid dt, html[data-theme="dark"] .student-record-grid small, html[data-theme="dark"] .student-record-timeline time, html[data-theme="dark"] .student-record-timeline small { color: #afbed3; }
+@media (max-width: 1100px) { .student-record-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .student-record-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .student-record-tabs button { flex: 1 1 45%; } }
+@media (max-width: 500px) { .student-record-filters, .student-record-grid { grid-template-columns: minmax(0, 1fr); } .student-record-tabs button { flex-basis: 100%; } }

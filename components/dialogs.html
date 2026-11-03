@@ -1,0 +1,133 @@
+<body>
+<dialog class="portal-dialog grade-slip-confirmation" id="grade-slip-confirmation" aria-labelledby="grade-slip-confirmation-title" aria-describedby="grade-slip-confirmation-schedule">
+  <h2 id="grade-slip-confirmation-title">Are you sure you want to proceed with your selected pick-up schedule?</h2>
+  <p id="grade-slip-confirmation-schedule"></p>
+  <div class="grade-slip-confirmation-actions"><button class="grade-slip-confirm-yes" id="grade-slip-confirm-yes" type="button">YES</button><button class="grade-slip-confirm-no" id="grade-slip-confirm-no" type="button" autofocus>NO</button></div>
+</dialog>
+
+<dialog class="portal-dialog grade-slip-confirmation" id="id-printing-confirmation" aria-labelledby="id-printing-confirmation-title" aria-describedby="id-printing-confirmation-schedule">
+  <h2 id="id-printing-confirmation-title">Are you sure you want to proceed with your selected pick-up schedule?</h2>
+  <p id="id-printing-confirmation-schedule"></p>
+  <div class="grade-slip-confirmation-actions"><button class="grade-slip-confirm-yes" id="id-printing-confirm-yes" type="button">YES</button><button class="grade-slip-confirm-no" id="id-printing-confirm-no" type="button" autofocus>NO</button></div>
+</dialog>
+
+<dialog class="portal-dialog grade-slip-confirmation" id="registration-confirmation" aria-labelledby="registration-confirmation-title" aria-describedby="registration-confirmation-schedule">
+  <h2 id="registration-confirmation-title">Are you sure you want to proceed with your selected pick-up schedule?</h2>
+  <p id="registration-confirmation-schedule"></p>
+  <div class="grade-slip-confirmation-actions"><button class="grade-slip-confirm-yes" id="registration-confirm-yes" type="button">YES</button><button class="grade-slip-confirm-no" id="registration-confirm-no" type="button" autofocus>NO</button></div>
+</dialog>
+
+<dialog class="portal-dialog" id="request-dialog" aria-labelledby="request-dialog-title">
+  <div class="modal-header"><div><span class="dialog-eyebrow">ACADEMIC SERVICES</span><h2 class="modal-title" id="request-dialog-title">Request a document</h2></div><button class="dialog-close" type="button" data-close-dialog aria-label="Close dialog">&times;</button></div>
+  <form id="document-request-form">
+    <div class="modal-body"><p>Create a request for your selected document.</p><p class="request-student"><span data-profile-name>Juan Dela Cruz</span> · <span data-profile-student-number>2023-103319</span></p><label class="form-label" for="request-purpose">Purpose of request</label><select class="dialog-input" id="request-purpose" required><option value="">Select a purpose</option><option>Enrollment</option><option>Scholarship application</option><option>Employment</option><option>Personal copy</option><option>Other</option></select><p class="demo-note">Browser-local demo only. This request is saved in this browser with a Pending Review status for staff workflow testing. It is not an official registrar submission.</p></div>
+    <div class="modal-footer"><button class="secondary-button" type="button" data-close-dialog>Cancel</button><button class="primary-button" type="submit">Submit demo request</button></div>
+  </form>
+</dialog>
+
+<dialog class="portal-dialog" id="request-cancel-dialog" aria-labelledby="request-cancel-title">
+  <div class="modal-header"><div><span class="dialog-eyebrow">MY REQUEST</span><h2 class="modal-title" id="request-cancel-title">Cancel request</h2></div><button class="dialog-close" type="button" data-close-dialog aria-label="Close dialog">&times;</button></div>
+  <form id="request-cancel-form" novalidate>
+    <div class="modal-body">
+      <p>Cancel <strong id="request-cancel-document">this request</strong>? The request will remain in your history with a Cancelled status.</p>
+      <label class="form-label" for="request-cancel-reason">Reason for cancellation</label>
+      <textarea class="form-control dialog-input" id="request-cancel-reason" name="cancelReason" rows="3" maxlength="500" required></textarea>
+      <p class="dialog-status" id="request-cancel-status" role="status" aria-live="polite"></p>
+    </div>
+    <div class="modal-footer"><button class="secondary-button" type="button" data-close-dialog>Keep request</button><button class="btn danger-button" type="submit" id="request-cancel-submit">Cancel request</button></div>
+  </form>
+</dialog>
+
+<dialog class="portal-dialog assistant-dialog" id="assistant-dialog" aria-labelledby="assistant-dialog-title">
+  <div class="modal-header"><div><span class="dialog-eyebrow">YOUR ACADEMIC GUIDE</span><h2 class="modal-title" id="assistant-dialog-title">Ask the Assistant</h2></div><button class="dialog-close" type="button" data-close-dialog aria-label="Close dialog">&times;</button></div>
+  <div class="modal-body"><p class="assistant-question-text" id="assistant-question-text"></p><div class="assistant-answer" id="assistant-answer" role="status"></div><p class="demo-note">Local keyword-based guide using published FAQs, not a live generative AI service. Confirm official requirements through authorized university channels.</p></div>
+  <div class="modal-footer"><button class="secondary-button" type="button" data-close-dialog>Close</button><button class="primary-button" type="button" id="assistant-services">Explore services</button></div>
+</dialog>
+
+<dialog class="portal-dialog" id="recovery-dialog" aria-labelledby="recovery-title">
+  <div class="modal-content">
+    <div class="modal-header"><div><span class="dialog-eyebrow">ACCOUNT SUPPORT</span><h2 class="modal-title" id="recovery-title">Forgot your password?</h2></div><button class="dialog-close" type="button" data-close-dialog aria-label="Close dialog">&times;</button></div>
+    <form id="recovery-form" novalidate>
+      <div class="modal-body">
+        <p>Enter your university email address to request a password reset.</p>
+        <label class="form-label" for="recovery-email">University email</label>
+        <input class="form-control dialog-input" id="recovery-email" name="email" type="email" autocomplete="email" placeholder="you@rtu.edu.ph" required aria-describedby="recovery-status">
+        <p class="dialog-status" id="recovery-status" role="status" aria-live="polite"></p>
+        <p class="demo-note">Demo only. No reset email will be sent.</p>
+      </div>
+      <div class="modal-footer"><button class="btn secondary-button" type="button" data-close-dialog>Cancel</button><button class="btn primary-button" type="submit">Request reset</button></div>
+    </form>
+  </div>
+</dialog>
+
+<dialog class="portal-dialog" id="register-dialog" aria-labelledby="register-title">
+  <div class="modal-content">
+    <div class="modal-header"><div><span class="dialog-eyebrow">WELCOME TO THE PORTAL</span><h2 class="modal-title" id="register-title">Create a student account</h2></div><button class="dialog-close" type="button" data-close-dialog aria-label="Close dialog">&times;</button></div>
+    <form id="register-form" novalidate>
+      <div class="modal-body">
+        <p id="register-description">Use your university details to get started.</p>
+        <div class="mb-3"><label class="form-label" for="register-name">Full name</label><input class="form-control dialog-input" id="register-name" name="name" type="text" autocomplete="name" maxlength="100" required></div>
+        <div class="mb-3"><label class="form-label" id="register-number-label" for="register-number">Student number</label><input class="form-control dialog-input" id="register-number" name="accountNumber" type="text" autocomplete="username" maxlength="40" required></div>
+        <div class="mb-3"><label class="form-label" for="register-email">University email</label><input class="form-control dialog-input" id="register-email" name="email" type="email" autocomplete="email" maxlength="254" placeholder="you@rtu.edu.ph" required></div>
+        <div class="mb-3"><label class="form-label" for="register-college">College</label><select class="form-control dialog-input" id="register-college" name="college" required><option value="">Select college</option><option>College of Education</option><option>College of Engineering</option><option>College of Business and Management</option><option>Institute of Computer Studies</option><option>College of Arts and Sciences</option></select></div>
+        <div class="mb-3"><label class="form-label" for="register-program">Program</label><input class="form-control dialog-input" id="register-program" name="program" type="text" maxlength="150" placeholder="e.g. Bachelor of Secondary Education - Major in Filipino" autocomplete="off" required></div>
+        <div><label class="form-label" for="register-password">Password <span class="label-hint">(at least 8 characters)</span></label><input class="form-control dialog-input" id="register-password" name="newPassword" type="password" autocomplete="new-password" minlength="8" required></div>
+        <div class="mb-3 register-consent"><input id="register-terms" name="termsAccepted" type="checkbox" required><label for="register-terms">I have read and agree to the <button class="text-link" type="button" data-open-dialog="terms-dialog">Terms &amp; Conditions</button> and <button class="text-link" type="button" data-open-dialog="privacy-dialog">Privacy Policy</button>.</label></div>
+        <p class="dialog-status" id="register-status" role="status" aria-live="polite"></p>
+        <p class="demo-note">Demo accounts are saved in this browser so you can sign in and view your profile.</p>
+      </div>
+      <div class="modal-footer"><button class="btn secondary-button" type="button" data-close-dialog>Cancel</button><button class="btn primary-button" type="submit">Create account</button></div>
+    </form>
+  </div>
+</dialog>
+
+<dialog class="portal-dialog legal-dialog" id="terms-dialog" aria-labelledby="terms-dialog-title">
+  <div class="modal-header"><div><span class="dialog-eyebrow">LEGAL</span><h2 class="modal-title" id="terms-dialog-title">Terms &amp; Conditions</h2></div><button class="dialog-close" type="button" data-close-dialog aria-label="Close dialog">&times;</button></div>
+  <div class="modal-body">
+    <p>These Terms &amp; Conditions govern your use of the Academic Services &amp; Records Assistant of Rizal Technological University – Pasig Campus (the &ldquo;Portal&rdquo;). By creating an account or using the Portal, you agree to be bound by these terms and by the Privacy Policy.</p>
+    <h3>1. Acceptance of Terms</h3>
+    <p>By registering, signing in, or using any feature of the Portal&mdash;including document requests, appointment booking, academic records, announcements, and help &amp; support&mdash;you acknowledge that you have read, understood, and agree to these Terms &amp; Conditions. If you do not agree, do not use the Portal.</p>
+    <h3>2. Description of the Service</h3>
+    <p>The Portal supports academic services such as grade slip, registration form, and ID printing requests; appointment scheduling; announcements; and support tickets. This instance is a front-end demonstration prototype: data is stored only in your browser, and submissions are not official registrar transactions.</p>
+    <h3>3. Eligibility and Accounts</h3>
+    <p>Student accounts are intended for students of the university using their real institutional details. Staff accounts are provisioned by the Academic Services Office and are not available through public registration. You are responsible for keeping your password confidential and for all activity performed under your account.</p>
+    <h3>4. Accurate Information</h3>
+    <p>You must provide complete and accurate registration details and must confirm that the information submitted in document requests is correct and complete. Knowingly submitting false, incomplete, or misleading information may result in rejection or cancellation of your requests.</p>
+    <h3>5. Acceptable Use</h3>
+    <p>You agree not to misuse the Portal, disrupt its operation, submit fraudulent requests or appointments, impersonate another person, use the Portal for unlawful purposes, or disclose another student&rsquo;s confidential information.</p>
+    <h3>6. Document Requests and Appointments</h3>
+    <p>Requests follow the published workflow of review, correction, approval, processing, and release. Appointments are subject to availability and staff confirmation. Documents may only be released to the requester upon identity verification; unauthorized release to other persons is prohibited.</p>
+    <h3>7. Academic Records Confidentiality</h3>
+    <p>Grades, registration data, and personal information shown in the Portal are confidential. You must not share your account credentials or reproduce another student&rsquo;s records.</p>
+    <h3>8. Privacy</h3>
+    <p>The collection, use, and protection of personal data are governed by the Privacy Policy, in accordance with the Data Privacy Act of 2012 (Republic Act No. 10173) and applicable university policies.</p>
+    <h3>9. No Official Guarantee</h3>
+    <p>This Portal is a demonstration build. It does not replace official university systems, and entries made here do not constitute official academic records or confirmations.</p>
+    <h3>10. Limitation of Liability</h3>
+    <p>To the maximum extent permitted by applicable law, the university is not liable for any direct or indirect damages arising from the use of or inability to use the Portal.</p>
+    <h3>11. Changes to These Terms</h3>
+    <p>These Terms &amp; Conditions may be updated from time to time. Continued use of the Portal after changes are posted constitutes acceptance of the revised terms.</p>
+    <h3>12. Contact</h3>
+    <p>For questions about these terms, contact the Academic Services Office, Rizal Technological University – Pasig Campus, or use the Help &amp; Support section of the Portal.</p>
+    <p class="demo-note">Demo build. These terms are provided for prototype evaluation and do not constitute an official university agreement.</p>
+  </div>
+  <div class="modal-footer"><button class="primary-button" type="button" data-close-dialog>Close</button></div>
+</dialog>
+
+<dialog class="portal-dialog legal-dialog" id="privacy-dialog" aria-labelledby="privacy-dialog-title">
+  <div class="modal-header"><div><span class="dialog-eyebrow">LEGAL</span><h2 class="modal-title" id="privacy-dialog-title">Privacy Policy</h2></div><button class="dialog-close" type="button" data-close-dialog aria-label="Close dialog">&times;</button></div>
+  <div class="modal-body">
+    <p>The Academic Services &amp; Records Assistant of Rizal Technological University – Pasig Campus is committed to protecting the privacy and security of students&rsquo; personal information and academic records. This policy explains how information is collected, processed, stored, and protected when using the system, in accordance with the Data Privacy Act of 2012 (Republic Act No. 10173) and applicable university policies.</p>
+    <h3>Information We Collect</h3>
+    <p>When you register and use the Portal, information such as your full name, student number, university email, college, program, contact details, document request details, appointment schedules, and support tickets may be recorded.</p>
+    <h3>How We Use Your Information</h3>
+    <p>Student information is processed only for legitimate and authorized academic service purposes, including fulfilling document requests, managing appointments, displaying academic records, and sending in-app notifications about your submissions.</p>
+    <h3>How We Protect Your Information</h3>
+    <p>The system applies appropriate organizational, physical, and technical safeguards to protect student information against unauthorized access, disclosure, alteration, loss, or misuse. Access to personal information and academic records is limited to authorized personnel based on their assigned responsibilities.</p>
+    <h3>Your Rights</h3>
+    <p>You may review and update your profile and contact details in My Profile and Settings. For concerns about your data, contact the Academic Services Office or use the Help &amp; Support section of the Portal.</p>
+    <p class="demo-note">Demo build. In this prototype, data is stored only in your browser&rsquo;s local storage and is not transmitted to any server.</p>
+  </div>
+  <div class="modal-footer"><button class="primary-button" type="button" data-close-dialog>Close</button></div>
+</dialog>
+</body>

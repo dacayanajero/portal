@@ -1,0 +1,38 @@
+<body>
+<section class="dashboard-view" data-view="dashboard" aria-labelledby="welcome-title" hidden>
+  <div class="welcome-area">
+    <h2 id="welcome-title" tabindex="-1">Good day, <span><span data-profile-first-name>Juan</span>!</span></h2>
+    <p class="welcome-subtitle">How can we help you today?</p>
+    <div class="assistant-search-area">
+      <form class="assistant-search" id="assistant-search">
+        <svg class="portal-icon" aria-hidden="true"><use href="#icon-chat"/></svg>
+        <label class="visually-hidden" for="assistant-question">Ask the academic assistant</label>
+        <input id="assistant-question" type="text" placeholder="Ask anything about academic services, records, or documents..." required maxlength="500">
+        <button type="submit" aria-label="Send question"><svg class="portal-icon" aria-hidden="true"><use href="#icon-arrow"/></svg></button>
+      </form>
+      <button class="dashboard-mascot" type="button" data-assistant="How can you help me?" aria-label="Ask the assistant"><span>Ask me!</span><img src="assets/images/assistant.svg" alt="Friendly academic assistant robot" width="120" height="144"></button>
+      <div class="suggested-questions" aria-label="Suggested questions">
+        <button type="button" data-assistant="What documents do I need for a gradeslip?">What documents do I need for a gradeslip?</button>
+        <button type="button" data-assistant="How can I request a regiform?">How can I request a regiform?</button>
+        <button type="button" data-assistant="What is the status of my request?">What is the status of my request?</button>
+      </div>
+    </div>
+  </div>
+
+  <section class="quick-services" aria-labelledby="quick-services-title">
+    <div class="view-services-row"><button type="button" data-page="services">View All Services <svg class="portal-icon" aria-hidden="true"><use href="#icon-arrow"/></svg></button></div>
+    <h3 class="section-ribbon" id="quick-services-title">Quick Services</h3>
+    <div class="service-grid">
+      <button class="service-card" type="button" data-page="registration-form"><span class="service-card-heading"><svg class="portal-icon" aria-hidden="true"><use href="#icon-document"/></svg><strong>REQUEST<br> REGISTRATION FORM</strong></span><span class="service-card-description">Get your registration form<br> for the next term.</span></button>
+      <button class="service-card" type="button" data-page="grade-slip"><span class="service-card-heading"><svg class="portal-icon" aria-hidden="true"><use href="#icon-grades"/></svg><strong>REQUEST GRADE SLIP</strong></span><span class="service-card-description">View and request your<br> grade slip.</span></button>
+      <button class="service-card" type="button" data-assistant="How can you help me?"><span class="service-card-heading"><svg class="portal-icon" aria-hidden="true"><use href="#icon-chat"/></svg><strong>ASK THE ASSISTANT</strong></span><span class="service-card-description">Get instant answers to your<br> academic concerns.</span></button>
+    </div>
+    <div class="service-workflow" aria-label="Request process: provide necessary documents, then reserve a schedule">
+      <div class="workflow-connectors" aria-hidden="true"></div>
+      <p>Provide necessary<br>documents requested</p>
+      <p>Schedule Reserved!</p>
+    </div>
+  </section>
+  <section class="content-card latest-announcements" id="latest-announcements" aria-labelledby="latest-announcements-title" hidden><header><h3 id="latest-announcements-title">Latest Announcements</h3><button class="secondary-button" type="button" data-page="announcements">View All Announcements</button></header><div class="latest-announcements-list" id="latest-announcements-list"></div></section>
+</section>
+</body>

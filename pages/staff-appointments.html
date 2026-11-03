@@ -1,0 +1,211 @@
+<body>
+<section class="dashboard-view staff-view staff-appointment-management" data-view="staff-appointments" aria-labelledby="staff-appointments-title" hidden>
+  <header class="staff-page-heading">
+    <h2 id="staff-appointments-title" tabindex="-1" class="visually-hidden">Appointment Management</h2>
+    <span class="staff-count-pill"><strong id="staff-appointments-visible-count">0</strong> shown</span>
+  </header>
+
+  <section class="staff-appointment-summary-grid" aria-label="Appointment summary">
+    <article class="staff-appointment-summary-card">
+      <span class="staff-appointment-summary-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-calendar"/></svg></span>
+      <div><p>Today's Appointments</p><strong id="staff-appointments-today">0</strong><small>Scheduled for today</small></div>
+    </article>
+    <article class="staff-appointment-summary-card">
+      <span class="staff-appointment-summary-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-clock"/></svg></span>
+      <div><p>Upcoming Appointments</p><strong id="staff-appointments-upcoming">0</strong><small>Future active bookings</small></div>
+    </article>
+    <article class="staff-appointment-summary-card">
+      <span class="staff-appointment-summary-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-check"/></svg></span>
+      <div><p>Completed Appointments</p><strong id="staff-appointments-completed">0</strong><small>Finished appointments</small></div>
+    </article>
+    <article class="staff-appointment-summary-card">
+      <span class="staff-appointment-summary-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-logout"/></svg></span>
+      <div><p>Cancelled Appointments</p><strong id="staff-appointments-cancelled">0</strong><small>Cancelled bookings</small></div>
+    </article>
+  </section>
+
+  <p class="demo-note staff-appointment-demo-note">Browser-local demo: appointments are derived from student requests and stored only in this browser. Availability is based on a configurable one-appointment-per-slot development default, not an official university capacity.</p>
+
+  <section class="content-card staff-panel staff-appointment-calendar-panel" aria-labelledby="staff-appointment-calendar-title">
+    <header class="staff-panel-heading">
+      <div><h3 id="staff-appointment-calendar-title">Appointment calendar</h3><p>Select a date to review its bookings.</p></div>
+      <div class="staff-appointment-view-switch" role="group" aria-label="Calendar view">
+        <button type="button" data-appointment-view="month" aria-pressed="true">Month</button>
+        <button type="button" data-appointment-view="week" aria-pressed="false">Week</button>
+        <button type="button" data-appointment-view="day" aria-pressed="false">Day</button>
+      </div>
+    </header>
+
+    <div class="staff-appointment-calendar-toolbar">
+      <button class="secondary-button" id="staff-appointment-prev" type="button">Previous</button>
+      <button class="secondary-button" id="staff-appointment-today" type="button">Today</button>
+      <button class="secondary-button" id="staff-appointment-next" type="button">Next</button>
+      <h4 id="staff-appointment-calendar-label">Month</h4>
+    </div>
+
+    <div id="staff-appointment-calendar" class="staff-appointment-calendar" aria-live="polite"></div>
+    <p class="staff-empty" id="staff-appointment-calendar-empty" hidden>No appointments are scheduled for this selection.</p>
+  </section>
+
+  <section class="content-card staff-panel staff-appointment-list-panel" aria-labelledby="staff-appointment-list-title">
+    <header class="staff-panel-heading">
+      <div><h3 id="staff-appointment-list-title">Appointment list</h3><p>Search, filter, and manage student appointments.</p></div>
+    </header>
+
+    <div class="staff-appointment-toolbar">
+      <label class="staff-search staff-appointment-search" for="staff-appointments-search">
+        <svg class="portal-icon" aria-hidden="true"><use href="#icon-search"/></svg>
+        <span class="visually-hidden">Search appointments</span>
+        <input id="staff-appointments-search" type="search" placeholder="Search ID, student, or number…" autocomplete="off">
+      </label>
+      <label class="staff-appointment-filter" for="staff-appointments-date">
+        <span>Date</span>
+        <input id="staff-appointments-date" type="date">
+      </label>
+      <label class="staff-appointment-filter" for="staff-appointments-service">
+        <span>Service</span>
+        <select id="staff-appointments-service"><option value="all">All services</option></select>
+      </label>
+      <label class="staff-appointment-filter" for="staff-appointments-status">
+        <span>Status</span>
+        <select id="staff-appointments-status"><option value="all">All statuses</option></select>
+      </label>
+      <label class="staff-appointment-filter" for="staff-appointments-sort">
+        <span>Sort</span>
+        <select id="staff-appointments-sort">
+          <option value="date-asc">Date and time ascending</option>
+          <option value="date-desc">Date and time descending</option>
+          <option value="student">Student name A-Z</option>
+        </select>
+      </label>
+      <button class="secondary-button staff-appointment-reset" id="staff-appointments-reset" type="button">Clear filters</button>
+    </div>
+
+    <p class="staff-appointment-feedback" id="staff-appointments-feedback" role="status" aria-live="polite"></p>
+
+    <div class="staff-table-wrap staff-appointment-table-wrap">
+      <table class="staff-table staff-appointment-table">
+        <caption class="visually-hidden">Student appointments</caption>
+        <thead>
+          <tr>
+            <th scope="col">Appointment ID</th>
+            <th scope="col">Student Name</th>
+            <th scope="col">Student Number</th>
+            <th scope="col">Service Type</th>
+            <th scope="col">Appointment Date</th>
+            <th scope="col">Time Slot</th>
+            <th scope="col">Status</th>
+            <th scope="col"><span class="visually-hidden">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody id="staff-appointments-rows"></tbody>
+      </table>
+    </div>
+
+    <div class="staff-appointment-empty" id="staff-appointments-empty" hidden>
+      <svg class="portal-icon" aria-hidden="true"><use href="#icon-calendar"/></svg>
+      <h3 id="staff-appointments-empty-title">No appointments yet</h3>
+      <p id="staff-appointments-empty-text">Student bookings from the portal will appear here.</p>
+    </div>
+
+    <div class="staff-appointment-pagination" id="staff-appointments-pagination">
+      <p id="staff-appointments-result-count">0 appointments</p>
+      <div>
+        <button class="secondary-button" id="staff-appointments-prev" type="button">Previous</button>
+        <span id="staff-appointments-page-label">Page 1 of 1</span>
+        <button class="secondary-button" id="staff-appointments-next" type="button">Next</button>
+      </div>
+    </div>
+  </section>
+
+  <dialog class="portal-dialog staff-appointment-details-dialog" id="staff-appointment-details-dialog" aria-labelledby="staff-appointment-details-title">
+    <div class="modal-header">
+      <div><span class="dialog-eyebrow">APPOINTMENT RECORD</span><h2 class="modal-title" id="staff-appointment-details-title" tabindex="-1">Appointment details</h2></div>
+      <button class="dialog-close" type="button" data-appointment-close aria-label="Close appointment details">&times;</button>
+    </div>
+    <div class="modal-body staff-appointment-details-body">
+      <div class="staff-appointment-detail-banner">
+        <div><strong id="staff-appointment-details-service">Appointment</strong><p id="staff-appointment-details-student">Student</p></div>
+        <span id="staff-appointment-details-status"></span>
+      </div>
+
+      <section class="staff-appointment-detail-section" aria-labelledby="staff-appointment-student-title">
+        <h3 id="staff-appointment-student-title">Student information</h3>
+        <dl class="staff-dialog-grid staff-appointment-detail-grid">
+          <div><dt>Full name</dt><dd id="staff-appointment-student-name">—</dd></div>
+          <div><dt>Student number</dt><dd id="staff-appointment-student-number">—</dd></div>
+          <div><dt>Program</dt><dd id="staff-appointment-student-program">—</dd></div>
+          <div><dt>Year level</dt><dd id="staff-appointment-student-year">—</dd></div>
+          <div><dt>Semester</dt><dd id="staff-appointment-student-semester">—</dd></div>
+        </dl>
+      </section>
+
+      <section class="staff-appointment-detail-section" aria-labelledby="staff-appointment-info-title">
+        <h3 id="staff-appointment-info-title">Appointment information</h3>
+        <dl class="staff-dialog-grid staff-appointment-detail-grid">
+          <div><dt>Appointment ID</dt><dd id="staff-appointment-id">—</dd></div>
+          <div><dt>Related request</dt><dd id="staff-appointment-request">—</dd></div>
+          <div><dt>Service type</dt><dd id="staff-appointment-service">—</dd></div>
+          <div><dt>Appointment date</dt><dd id="staff-appointment-date">—</dd></div>
+          <div><dt>Starting time</dt><dd id="staff-appointment-start">—</dd></div>
+          <div><dt>Ending time</dt><dd id="staff-appointment-end">—</dd></div>
+          <div><dt>Status</dt><dd id="staff-appointment-status-text">—</dd></div>
+          <div><dt>Booking date</dt><dd id="staff-appointment-booking">—</dd></div>
+          <div><dt>Staff remarks</dt><dd id="staff-appointment-remarks">—</dd></div>
+        </dl>
+      </section>
+
+      <section class="staff-appointment-detail-section" aria-labelledby="staff-appointment-request-title">
+        <h3 id="staff-appointment-request-title">Request information</h3>
+        <dl class="staff-dialog-grid staff-appointment-detail-grid">
+          <div><dt>Requested document</dt><dd id="staff-appointment-request-document">—</dd></div>
+          <div><dt>Purpose</dt><dd id="staff-appointment-request-purpose">—</dd></div>
+          <div><dt>Request status</dt><dd id="staff-appointment-request-status">—</dd></div>
+        </dl>
+        <button class="secondary-button" id="staff-appointment-open-request" type="button">Open related request</button>
+      </section>
+
+      <section class="staff-appointment-detail-section" aria-labelledby="staff-appointment-history-title">
+        <h3 id="staff-appointment-history-title">Appointment history</h3>
+        <ol class="staff-appointment-history" id="staff-appointment-history"></ol>
+      </section>
+
+      <section class="staff-appointment-detail-section" aria-labelledby="staff-appointment-availability-title">
+        <h3 id="staff-appointment-availability-title">Time-slot availability</h3>
+        <p id="staff-appointment-availability" class="staff-appointment-availability"></p>
+      </section>
+
+      <div class="staff-appointment-detail-actions" id="staff-appointment-actions"></div>
+    </div>
+    <div class="modal-footer"><button class="secondary-button" type="button" data-appointment-close>Close</button></div>
+  </dialog>
+
+  <dialog class="portal-dialog staff-appointment-action-dialog" id="staff-appointment-action-dialog" aria-labelledby="staff-appointment-action-title">
+    <div class="modal-header">
+      <div><span class="dialog-eyebrow">CONFIRM ACTION</span><h2 class="modal-title" id="staff-appointment-action-title">Update appointment</h2></div>
+      <button class="dialog-close" type="button" data-appointment-close aria-label="Close action dialog">&times;</button>
+    </div>
+    <form id="staff-appointment-action-form" novalidate>
+      <div class="modal-body">
+        <p id="staff-appointment-action-description"></p>
+        <div class="staff-appointment-action-field">
+          <label class="form-label" for="staff-appointment-action-reason" id="staff-appointment-action-reason-label">Staff remarks</label>
+          <textarea class="form-control dialog-input" id="staff-appointment-action-reason" name="reason" rows="3" maxlength="500"></textarea>
+        </div>
+        <div class="staff-appointment-reschedule-fields" id="staff-appointment-reschedule-fields" hidden>
+          <label class="form-label" for="staff-appointment-reschedule-date">New appointment date</label>
+          <input class="form-control dialog-input" id="staff-appointment-reschedule-date" type="date">
+          <label class="form-label" for="staff-appointment-reschedule-start">New starting time</label>
+          <select class="form-control dialog-input" id="staff-appointment-reschedule-start"></select>
+        </div>
+        <p class="dialog-status" id="staff-appointment-action-status" role="status" aria-live="polite"></p>
+        <p class="demo-note">This action updates the browser-local appointment record and student-visible status.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="secondary-button" type="button" data-appointment-close>Keep current status</button>
+        <button class="primary-button" type="submit" id="staff-appointment-action-submit">Confirm action</button>
+      </div>
+    </form>
+  </dialog>
+</section>
+</body>

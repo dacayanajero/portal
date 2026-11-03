@@ -1,0 +1,80 @@
+<body>
+<section class="dashboard-view grade-slip-view id-printing-view" data-view="id-printing" aria-labelledby="id-printing-title" hidden>
+  <header class="grade-slip-heading">
+    <div><h2 id="id-printing-title" tabindex="-1">ID Printing</h2><p>Fill out the form</p></div>
+    <div class="grade-slip-progress"><progress id="id-printing-progress" max="3" value="1" aria-label="ID Printing form progress" aria-describedby="id-printing-progress-label"></progress><p id="id-printing-progress-label" aria-live="polite">Step 1 of 3 | 33% Complete</p></div>
+  </header>
+
+  <nav class="grade-slip-steps" aria-label="ID Printing form steps">
+    <button class="grade-slip-step is-active" type="button" data-id-step="1" aria-current="step" aria-controls="id-printing-personal"><span class="grade-slip-step-number" aria-hidden="true">1</span>Personal Information</button>
+    <button class="grade-slip-step" type="button" data-id-step="2" aria-controls="id-printing-schedule"><span class="grade-slip-step-number" aria-hidden="true">2</span>Printing Schedule</button>
+    <button class="grade-slip-step" type="button" data-id-step="3" aria-controls="id-printing-review"><span class="grade-slip-step-number" aria-hidden="true">3</span>Review &amp; Submit</button>
+  </nav>
+
+  <div class="grade-slip-workspace">
+    <form class="grade-slip-card" id="id-printing-form" novalidate>
+      <section id="id-printing-personal" data-id-panel="1" aria-labelledby="id-printing-personal-title">
+        <h3 class="grade-slip-personal-heading" id="id-printing-personal-title" tabindex="-1"><svg class="portal-icon" aria-hidden="true"><use href="#icon-user"/></svg>Personal Information</h3>
+        <div class="grade-slip-fields">
+          <div class="grade-slip-field"><label for="id-printing-student-number">Student Number</label><input id="id-printing-student-number" name="studentNumber" type="text" readonly></div>
+          <div class="grade-slip-field"><label for="id-printing-full-name">Full Name</label><input id="id-printing-full-name" name="fullName" type="text" autocomplete="name" maxlength="100" required data-id-field aria-describedby="id-printing-error"></div>
+          <div class="grade-slip-field"><label for="id-printing-program">Program</label><textarea class="grade-slip-program" id="id-printing-program" name="program" rows="1" placeholder="Enter your program" maxlength="100" required data-id-field aria-describedby="id-printing-error"></textarea></div>
+          <div class="grade-slip-field"><label for="id-printing-year">Year Level</label><select id="id-printing-year" name="yearLevel" required data-id-field aria-describedby="id-printing-error"><option value="">Select year level</option><option>1st Year</option><option>2nd Year</option><option>3rd Year</option><option>4th Year</option><option>5th Year</option></select></div>
+          <div class="grade-slip-field"><label for="id-printing-semester">Semester</label><select id="id-printing-semester" name="semester" required data-id-field aria-describedby="id-printing-error"><option value="">Select semester</option><option>1st Semester</option><option>2nd Semester</option><option>Summer</option></select></div>
+        </div>
+      </section>
+
+      <section id="id-printing-schedule" data-id-panel="2" aria-labelledby="id-printing-schedule-title" hidden>
+        <div class="grade-slip-details-heading"><svg class="portal-icon" aria-hidden="true"><use href="#icon-document"/></svg><div><h3 id="id-printing-schedule-title" tabindex="-1">Printing Schedule</h3><p>A maximum of 150 students will be accommodated per day.</p></div></div>
+        <div class="id-printing-schedule-content">
+          <p class="grade-slip-enrollment-intro">Select the academic year, semester, and printing schedule for your student ID.</p>
+          <div class="grade-slip-fields grade-slip-enrollment-fields">
+            <div class="grade-slip-field"><label for="id-printing-academic-year">Academic Year</label><select id="id-printing-academic-year" name="academicYear" required data-id-field aria-describedby="id-printing-error"><option value="">Select academic year</option></select></div>
+            <div class="grade-slip-field"><label for="id-printing-requested-semester">Semester</label><select id="id-printing-requested-semester" name="requestedSemester" required data-id-field aria-describedby="id-printing-error"><option value="">Select semester</option><option>1st Semester</option><option>2nd Semester</option><option>Summer</option></select></div>
+          </div>
+          <div class="grade-slip-schedule-fields">
+            <div class="grade-slip-field"><label for="id-printing-appointment-date">Select Date</label><div class="grade-slip-picker"><input id="id-printing-appointment-date" name="appointmentDate" type="date" required data-id-field aria-describedby="id-printing-date-hint id-printing-error"><button type="button" data-id-picker="id-printing-appointment-date" aria-label="Open printing calendar" aria-controls="id-printing-appointment-date"><svg class="portal-icon" aria-hidden="true"><use href="#icon-calendar"/></svg></button></div><small id="id-printing-date-hint">Choose a printing date from the calendar.</small></div>
+            <div><h4 class="grade-slip-time-title">Select Time</h4><div class="grade-slip-time-fields">
+              <div class="grade-slip-field"><label for="id-printing-start-time">Start Time</label><div class="grade-slip-picker"><input id="id-printing-start-time" name="appointmentStart" type="time" min="08:00" max="16:00" step="60" required data-id-field aria-describedby="id-printing-time-range id-printing-error"><button type="button" data-id-picker="id-printing-start-time" aria-label="Open printing time picker" aria-controls="id-printing-start-time"><svg class="portal-icon" aria-hidden="true"><use href="#icon-clock"/></svg></button></div></div>
+              <div class="grade-slip-field"><label for="id-printing-end-time">End Time</label><input id="id-printing-end-time" type="text" readonly aria-describedby="id-printing-time-range"></div>
+            </div><p class="grade-slip-time-range" id="id-printing-time-range" role="status" aria-live="polite">Available hours: 8:00 AM–5:00 PM. The last appointment starts at 4:00 PM.</p></div>
+          </div>
+          <details class="grade-slip-request-options"><summary>Additional request details</summary><div class="grade-slip-field"><label for="id-printing-notes">Additional Notes <span>(optional)</span></label><textarea id="id-printing-notes" name="notes" rows="3" maxlength="500" placeholder="Add any details about your ID printing request." data-id-field></textarea></div></details>
+        </div>
+      </section>
+
+      <section id="id-printing-review" data-id-panel="3" aria-labelledby="id-printing-review-title" hidden>
+        <div class="grade-slip-review-banner"><h3 id="id-printing-review-title" tabindex="-1"><svg class="portal-icon" aria-hidden="true"><use href="#icon-check"/></svg>Review &amp; Submit</h3><p class="grade-slip-review-intro">Review your chosen schedule and details before submitting.</p></div>
+        <div class="grade-slip-review-layout">
+          <div class="grade-slip-review-student">
+            <dl class="grade-slip-review-grid id-printing-review-grid">
+              <div><dt>Student Name</dt><dd data-id-review="fullName"></dd></div>
+              <div><dt>Year Level</dt><dd data-id-review="yearLevel"></dd></div>
+              <div><dt>Student ID</dt><dd data-id-review="studentNumber"></dd></div>
+              <div><dt>Current Semester</dt><dd data-id-review="semester"></dd></div>
+              <div class="grade-slip-field-wide"><dt>Program</dt><dd data-id-review="program"></dd></div>
+            </dl>
+          </div>
+          <div class="grade-slip-review-schedule">
+            <div><h4>Selected Schedule</h4><time class="grade-slip-review-date" id="id-printing-review-date"><span class="grade-slip-review-month" data-id-review="appointmentMonth"></span><span class="grade-slip-review-day"><span data-id-review="appointmentWeekday"></span><strong data-id-review="appointmentDay"></strong></span></time></div>
+            <div><h4>Selected Time</h4><div class="grade-slip-review-time"><span data-id-review="appointmentTimeRange"></span></div></div>
+          </div>
+        </div>
+        <details class="grade-slip-review-additional"><summary>Additional request details</summary><dl class="grade-slip-review-grid">
+          <div><dt>Academic Year</dt><dd data-id-review="academicYearLabel"></dd></div>
+          <div><dt>Requested Semester</dt><dd data-id-review="requestedSemester"></dd></div>
+          <div class="grade-slip-field-wide"><dt>Additional Notes</dt><dd data-id-review="notes"></dd></div>
+        </dl><p class="grade-slip-demo-note">This creates a demo request in this browser, not an official submission to the registrar.</p></details>
+        <label class="grade-slip-review-consent" for="id-printing-confirm-information"><input id="id-printing-confirm-information" type="checkbox" required aria-describedby="id-printing-error"><span>I confirm that the information above is correct and complete</span></label>
+      </section>
+
+      <p class="grade-slip-error" id="id-printing-error" role="alert" hidden></p>
+      <div class="grade-slip-actions"><button class="secondary-button" id="id-printing-back" type="button" hidden>Back</button><button class="primary-button" id="id-printing-next" type="button">Next <svg class="portal-icon" aria-hidden="true"><use href="#icon-arrow"/></svg></button><button class="primary-button" id="id-printing-submit" type="submit" hidden>Confirm Schedule</button></div>
+      <p class="grade-slip-review-disclaimer" id="id-printing-review-disclaimer" hidden>DISCLAIMER: Please ensure that you arrive and attend at the exact scheduled time. Punctuality is strictly required.</p>
+    </form>
+
+    <button class="settings-assistant grade-slip-assistant" type="button" data-assistant="How can I request ID printing?"><span class="settings-assistant-hint">Questions? Chat with me!</span><img src="assets/images/assistant.svg" alt="" width="34" height="40"><span>RTU AI ASSISTANT</span></button>
+  </div>
+  <footer class="grade-slip-footer"><p role="status" aria-live="polite" aria-atomic="true"><svg class="portal-icon" aria-hidden="true"><use href="#icon-history"/></svg><span id="id-printing-save-message">Auto-save ready</span></p></footer>
+</section>
+</body>

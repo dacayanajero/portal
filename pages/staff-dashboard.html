@@ -1,0 +1,89 @@
+<body>
+<section class="dashboard-view staff-view staff-dashboard-view" data-view="staff-dashboard" aria-labelledby="staff-dashboard-title" hidden>
+  <section class="staff-welcome" aria-labelledby="staff-dashboard-title">
+    <div class="staff-welcome-copy">
+      <span class="staff-eyebrow">ACADEMIC SERVICES · STAFF WORKSPACE</span>
+      <h2 id="staff-dashboard-title" tabindex="-1">Good day, <span data-staff-first-name>Crissabelle</span>!</h2>
+      <p>Here is what is happening in the Office of the Registrar today.</p>
+      <p class="staff-today"><svg class="portal-icon" aria-hidden="true"><use href="#icon-calendar"/></svg><span id="staff-today">Today</span></p>
+    </div>
+    <div class="staff-welcome-card">
+      <span class="staff-role-chip">Staff access</span>
+      <strong data-staff-position>Academic Services Staff</strong>
+      <small data-staff-department>Office of the Registrar</small>
+      <span class="staff-welcome-id">Employee No. <span data-staff-employee-number>2020-123456</span></span>
+    </div>
+  </section>
+
+  <section class="staff-stat-grid" aria-label="Request summary">
+    <article class="staff-stat-card staff-stat-pending">
+      <span class="staff-stat-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-clock"/></svg></span>
+      <p>Pending review</p>
+      <strong id="staff-stat-pending">0</strong>
+      <small>Awaiting staff action</small>
+    </article>
+    <article class="staff-stat-card staff-stat-processing">
+      <span class="staff-stat-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-document"/></svg></span>
+      <p>In processing</p>
+      <strong id="staff-stat-processing">0</strong>
+      <small>Documents being prepared</small>
+    </article>
+    <article class="staff-stat-card staff-stat-ready">
+      <span class="staff-stat-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-check"/></svg></span>
+      <p>Ready for pickup</p>
+      <strong id="staff-stat-ready">0</strong>
+      <small>Waiting for students</small>
+    </article>
+    <article class="staff-stat-card staff-stat-released">
+      <span class="staff-stat-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-grades"/></svg></span>
+      <p>Released</p>
+      <strong id="staff-stat-released">0</strong>
+      <small>Completed requests</small>
+    </article>
+  </section>
+
+  <div class="staff-dashboard-grid">
+    <section class="content-card staff-panel staff-recent-panel" aria-labelledby="staff-recent-title">
+      <header class="staff-panel-heading">
+        <div><h3 id="staff-recent-title">Recent requests</h3><p>The latest submissions from students.</p></div>
+        <button class="staff-link-button" type="button" data-page="staff-requests">Open request management <svg class="portal-icon" aria-hidden="true"><use href="#icon-arrow"/></svg></button>
+      </header>
+      <div class="staff-table-wrap">
+        <table class="staff-table">
+          <thead><tr><th scope="col">Reference</th><th scope="col">Student</th><th scope="col">Document</th><th scope="col">Submitted</th><th scope="col">Status</th><th scope="col"><span class="visually-hidden">Action</span></th></tr></thead>
+          <tbody id="staff-recent-requests"></tbody>
+        </table>
+      </div>
+      <p class="staff-empty" id="staff-recent-empty" hidden>No requests have been submitted yet.</p>
+    </section>
+
+    <aside class="staff-side-column">
+      <section class="content-card staff-panel" aria-labelledby="staff-quick-title">
+        <header class="staff-panel-heading"><div><h3 id="staff-quick-title">Quick actions</h3><p>Common staff tasks.</p></div></header>
+        <div class="staff-quick-actions">
+          <button class="staff-quick-button" type="button" data-support-shortcut="tickets"><span class="staff-quick-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-chat"/></svg></span><span><strong>View Open Support Tickets</strong><small><span id="staff-support-open-count">0</span> unresolved in your authorized support queue</small></span></button>
+          <button class="staff-quick-button" type="button" data-support-shortcut="faqs"><span class="staff-quick-icon staff-quick-icon-gold"><svg class="portal-icon" aria-hidden="true"><use href="#icon-help"/></svg></span><span><strong>Manage FAQs &amp; Knowledge</strong><small>Review published portal usage guidance</small></span></button>
+          <button class="staff-quick-button" type="button" data-page="staff-reports"><span class="staff-quick-icon staff-quick-icon-plum"><svg class="portal-icon" aria-hidden="true"><use href="#icon-chart"/></svg></span><span><strong>View Reports &amp; Analytics</strong><small>Review service activity and authorized operational reports</small></span></button>
+          <button class="staff-quick-button" type="button" data-page="staff-document-processing"><span class="staff-quick-icon staff-quick-icon-gold"><svg class="portal-icon" aria-hidden="true"><use href="#icon-document"/></svg></span><span><strong>Document Processing &amp; Release</strong><small>Prepare documents, verify recipients, and record handover</small></span></button>
+          <button class="staff-quick-button" type="button" data-page="staff-requests"><span class="staff-quick-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-inbox"/></svg></span><span><strong>Manage student requests</strong><small>Review and process document requests</small></span></button>
+          <button class="staff-quick-button" type="button" data-page="staff-records"><span class="staff-quick-icon staff-quick-icon-green"><svg class="portal-icon" aria-hidden="true"><use href="#icon-search"/></svg></span><span><strong>Search student records</strong><small>Find a student by name or number</small></span></button>
+          <button class="staff-quick-button" type="button" data-page="staff-announcements"><span class="staff-quick-icon staff-quick-icon-gold"><svg class="portal-icon" aria-hidden="true"><use href="#icon-announcement"/></svg></span><span><strong>Post an announcement</strong><small>Share an office update</small></span></button>
+          <button class="staff-quick-button" type="button" data-page="staff-profile"><span class="staff-quick-icon staff-quick-icon-plum"><svg class="portal-icon" aria-hidden="true"><use href="#icon-user"/></svg></span><span><strong>Open my profile</strong><small>Review your staff information</small></span></button>
+        </div>
+      </section>
+
+      <section class="content-card staff-panel" aria-labelledby="staff-dashboard-appointments-title">
+        <header class="staff-panel-heading"><div><h3 id="staff-dashboard-appointments-title">Today's appointments</h3><p>Upcoming student bookings.</p></div><button class="staff-link-button" type="button" data-page="staff-appointments">Manage <svg class="portal-icon" aria-hidden="true"><use href="#icon-arrow"/></svg></button></header>
+        <p><strong id="staff-dashboard-today-appointments">0</strong> appointment(s) today</p>
+        <div id="staff-dashboard-upcoming-appointments"></div>
+        <p class="staff-empty" id="staff-dashboard-appointments-empty" hidden>No upcoming appointments.</p>
+      </section>
+
+      <section class="content-card staff-panel" aria-labelledby="staff-volume-title">
+        <header class="staff-panel-heading"><div><h3 id="staff-volume-title">Service volume</h3><p>Requests by academic service.</p></div></header>
+        <div class="staff-volume-list" id="staff-service-volume"></div>
+      </section>
+    </aside>
+  </div>
+</section>
+</body>

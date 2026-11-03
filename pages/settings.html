@@ -1,0 +1,82 @@
+<body>
+<section class="dashboard-view settings-view" data-view="settings" aria-labelledby="settings-title" hidden>
+  <h2 id="settings-title" tabindex="-1"><svg class="portal-icon" aria-hidden="true"><use href="#icon-settings"/></svg>Settings</h2>
+  <div class="settings-layout">
+    <div class="settings-menu" role="tablist" aria-label="Settings sections" aria-orientation="vertical">
+      <button class="settings-tab" id="settings-tab-account" type="button" role="tab" aria-selected="true" aria-controls="settings-panel-account" data-settings-tab="account">Account Information</button>
+      <button class="settings-tab" id="settings-tab-password" type="button" role="tab" aria-selected="false" aria-controls="settings-panel-password" tabindex="-1" data-settings-tab="password">Change Password</button>
+      <button class="settings-tab" id="settings-tab-notifications" type="button" role="tab" aria-selected="false" aria-controls="settings-panel-notifications" tabindex="-1" data-settings-tab="notifications">Notification Settings</button>
+      <button class="settings-tab" id="settings-tab-privacy" type="button" role="tab" aria-selected="false" aria-controls="settings-panel-privacy" tabindex="-1" data-settings-tab="privacy">Privacy and Security</button>
+      <button class="settings-tab" id="settings-tab-terms" type="button" role="tab" aria-selected="false" aria-controls="settings-panel-terms" tabindex="-1" data-settings-tab="terms">Terms of Service</button>
+    </div>
+    <div class="settings-workspace">
+      <section class="settings-panel" id="settings-panel-account" role="tabpanel" aria-labelledby="settings-tab-account" data-settings-panel="account">
+        <div class="settings-panel-heading"><h3>Account Information</h3><button class="settings-edit-button" id="settings-edit-button" type="button" aria-controls="settings-account-form" aria-pressed="false"><span id="settings-edit-label">Edit Info</span><svg class="portal-icon" aria-hidden="true"><use id="settings-edit-icon" href="#icon-pencil"/></svg></button></div>
+        <form class="settings-account-grid" id="settings-account-form" novalidate>
+          <div class="settings-field"><label for="settings-full-name">Student Name</label><input id="settings-full-name" name="fullName" type="text" autocomplete="name" maxlength="100" required readonly aria-describedby="settings-save-status"></div>
+          <div class="settings-field"><label for="settings-year">Year Level</label><input id="settings-year" name="yearLevel" type="text" placeholder="Not provided" maxlength="30" readonly></div>
+          <div class="settings-field"><label for="settings-program">Program</label><textarea id="settings-program" name="program" rows="1" placeholder="Not provided" maxlength="100" readonly></textarea></div>
+          <div class="settings-field"><label for="settings-student-number">Student ID</label><input id="settings-student-number" name="studentNumber" type="text" readonly></div>
+          <div class="settings-field settings-semester"><label for="settings-semester">Current Semester</label><input id="settings-semester" name="semester" type="text" placeholder="Not provided" maxlength="40" readonly></div>
+          <div class="settings-field"><label for="settings-phone">Phone Number</label><input id="settings-phone" name="phoneNumber" type="tel" placeholder="Not provided" autocomplete="tel" maxlength="20" readonly aria-describedby="settings-save-status"></div>
+          <div class="settings-field settings-email"><label for="settings-email">Email Address</label><input id="settings-email" name="email" type="email" autocomplete="email" maxlength="254" required readonly aria-describedby="settings-save-status"></div>
+          <div class="settings-field settings-address"><label for="settings-address">Address</label><input id="settings-address" name="address" type="text" placeholder="Not provided" autocomplete="street-address" maxlength="254" readonly></div>
+        </form>
+      </section>
+      <section class="settings-panel" id="settings-panel-password" role="tabpanel" aria-labelledby="settings-tab-password" data-settings-panel="password" hidden>
+        <h3>Change Password</h3><p class="settings-description">Update the password you use to sign in to your demo account.</p>
+        <form class="settings-password-form" id="change-password-form" novalidate>
+          <div class="settings-form-field"><label for="settings-current-password">Current password</label><div class="settings-password-input"><input id="settings-current-password" name="currentPassword" type="password" autocomplete="current-password" required aria-describedby="password-change-status"><button class="settings-password-toggle" type="button" data-password-toggle="settings-current-password" aria-controls="settings-current-password" aria-label="Show current password" aria-pressed="false"><svg class="portal-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-eye"/><path class="eye-slash" d="m3 21 18-18"/></svg></button></div></div>
+          <div class="settings-form-field"><label for="settings-new-password">New password</label><div class="settings-password-input"><input id="settings-new-password" name="newPassword" type="password" autocomplete="new-password" minlength="8" required aria-describedby="password-change-status"><button class="settings-password-toggle" type="button" data-password-toggle="settings-new-password" aria-controls="settings-new-password" aria-label="Show new password" aria-pressed="false"><svg class="portal-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-eye"/><path class="eye-slash" d="m3 21 18-18"/></svg></button></div><small>Use at least 8 characters.</small></div>
+          <div class="settings-form-field"><label for="settings-confirm-password">Confirm new password</label><div class="settings-password-input"><input id="settings-confirm-password" name="confirmPassword" type="password" autocomplete="new-password" minlength="8" required aria-describedby="password-change-status"><button class="settings-password-toggle" type="button" data-password-toggle="settings-confirm-password" aria-controls="settings-confirm-password" aria-label="Show new password confirmation" aria-pressed="false"><svg class="portal-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-eye"/><path class="eye-slash" d="m3 21 18-18"/></svg></button></div></div>
+          <button class="primary-button" type="submit">Update password</button>
+          <p class="settings-feedback" id="password-change-status" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+      <section class="settings-panel settings-notifications-panel" id="settings-panel-notifications" role="tabpanel" aria-labelledby="settings-tab-notifications" data-settings-panel="notifications" hidden>
+        <h3>Notification Settings</h3><p class="settings-description">Choose what kind of updates you want to receive.</p>
+        <form class="settings-preferences settings-notification-options" id="notification-settings-form">
+          <label class="settings-switch"><input name="requestUpdates" type="checkbox" role="switch" aria-labelledby="service-updates-label" aria-describedby="service-updates-description" checked><span><strong id="service-updates-label">Service Updates</strong><small id="service-updates-description">Get notified about your requests and status.</small></span></label>
+          <label class="settings-switch"><input name="announcementAlerts" type="checkbox" role="switch" aria-labelledby="announcement-alerts-label" aria-describedby="announcement-alerts-description" checked><span><strong id="announcement-alerts-label">Announcement</strong><small id="announcement-alerts-description">Receive important announcements.</small></span></label>
+          <label class="settings-switch"><input name="deadlineReminders" type="checkbox" role="switch" aria-labelledby="deadline-reminders-label" aria-describedby="deadline-reminders-description" checked><span><strong id="deadline-reminders-label">Reminders</strong><small id="deadline-reminders-description">Get reminders for deadlines.</small></span></label>
+        </form>
+      </section>
+      <section class="settings-panel settings-privacy-panel" id="settings-panel-privacy" role="tabpanel" aria-labelledby="settings-tab-privacy" data-settings-panel="privacy" hidden>
+        <h3>Privacy and Security</h3>
+        <div class="settings-policy">
+          <h4>Privacy Policy</h4>
+          <p>The Academic Services &amp; Records Assistant of Rizal Technological University – Pasig Campus is committed to protecting the privacy and security of students’ personal information and academic records. This policy explains how information is collected, processed, stored, and protected when using the system, in accordance with the Data Privacy Act of 2012 (Republic Act No. 10173) and applicable university policies.</p>
+          <h4>How We Protect Your Information</h4>
+          <p>The system applies appropriate organizational, physical, and technical safeguards to protect student information against unauthorized access, disclosure, alteration, loss, or misuse. Access to personal information and academic records should be limited to authorized personnel based on their assigned responsibilities. Student information must only be processed for legitimate and authorized purposes.</p>
+        </div>
+        <details class="settings-session-preferences">
+          <summary>Session preferences</summary>
+          <form class="settings-preferences" id="privacy-settings-form"><label class="settings-switch"><span><strong>Keep me signed in on refresh</strong><small>Remember your sign-in in this tab until you log out.</small></span><input name="rememberSession" type="checkbox" role="switch" checked></label></form>
+          <div class="settings-session"><h4>Current account</h4><p><strong data-profile-name>Juan Dela Cruz</strong><br>Student ID: <span data-profile-student-number>2023-103319</span></p><p>Your demo account, profile, and preferences are saved in this browser.</p><button class="secondary-button" id="settings-logout-button" type="button">Log out of this tab</button></div>
+        </details>
+      </section>
+      <section class="settings-panel settings-privacy-panel" id="settings-panel-terms" role="tabpanel" aria-labelledby="settings-tab-terms" data-settings-panel="terms" hidden>
+        <h3>Terms of Service</h3>
+        <div class="settings-policy">
+          <h4>Acceptance of Terms</h4>
+          <p>By creating an account or using the Academic Services &amp; Records Assistant of Rizal Technological University – Pasig Campus (the Portal), you agree to these Terms of Service and to the Privacy Policy. If you do not agree, do not use the Portal.</p>
+          <h4>Eligibility and Accounts</h4>
+          <p>Student accounts are intended for students using their real institutional details. Staff accounts are provisioned by the Academic Services Office. You are responsible for keeping your password confidential and for all activity under your account.</p>
+          <h4>Accurate Information and Acceptable Use</h4>
+          <p>You must provide accurate registration details and confirm the correctness of information submitted in document requests. You must not misuse the Portal, submit fraudulent requests or appointments, impersonate another person, or disclose another student&rsquo;s confidential information.</p>
+          <h4>Document Requests and Appointments</h4>
+          <p>Requests follow the published review-to-release workflow, and appointments are subject to availability and staff confirmation. Documents are released only to the requester upon identity verification.</p>
+          <h4>Privacy</h4>
+          <p>The collection, use, and protection of personal data are governed by the Privacy Policy, in accordance with the Data Privacy Act of 2012 (Republic Act No. 10173) and applicable university policies.</p>
+          <h4>No Official Guarantee</h4>
+          <p>This Portal is a demonstration build. It does not replace official university systems, and entries made here do not constitute official academic records. To the maximum extent permitted by law, the university is not liable for damages arising from the use of the Portal. These terms may be updated; continued use constitutes acceptance.</p>
+          <h4>Contact</h4>
+          <p>For questions about these terms, contact the Academic Services Office, Rizal Technological University – Pasig Campus, or use the Help &amp; Support section of the Portal. The full text is also available from the login screen and the account menu.</p>
+        </div>
+      </section>
+      <button class="settings-assistant" type="button" data-assistant="How can you help me?"><span class="settings-assistant-hint">Questions? Chat with me!</span><img src="assets/images/assistant.svg" alt="" width="34" height="40"><span>RTU AI ASSISTANT</span></button>
+    </div>
+  </div>
+  <footer class="settings-footer"><p class="profile-save-status" id="settings-save-status" role="status" aria-live="polite" aria-atomic="true"><svg class="portal-icon" aria-hidden="true"><use href="#icon-history"/></svg><span id="settings-save-message">Auto-save ready</span></p></footer>
+</section>
+</body>

@@ -1,0 +1,94 @@
+<body>
+<section class="dashboard-view grade-slip-view registration-view" data-view="registration-form" aria-labelledby="registration-form-title" hidden>
+  <header class="grade-slip-heading">
+    <div><h2 id="registration-form-title" tabindex="-1">Registration Form</h2><p>Fill out the form</p></div>
+    <div class="grade-slip-progress"><progress id="registration-progress" max="3" value="1" aria-label="Registration Form progress" aria-describedby="registration-progress-label"></progress><p id="registration-progress-label" aria-live="polite">Step 1 of 3 | 33% Complete</p></div>
+  </header>
+
+  <nav class="grade-slip-steps" aria-label="Registration Form steps">
+    <button class="grade-slip-step is-active" type="button" data-registration-step="1" aria-current="step" aria-controls="registration-personal"><span class="grade-slip-step-number" aria-hidden="true">1</span>Personal Information</button>
+    <button class="grade-slip-step" type="button" data-registration-step="2" aria-controls="registration-enrollment"><span class="grade-slip-step-number" aria-hidden="true">2</span>Enrollment Details</button>
+    <button class="grade-slip-step" type="button" data-registration-step="3" aria-controls="registration-review"><span class="grade-slip-step-number" aria-hidden="true">3</span>Review &amp; Submit</button>
+  </nav>
+
+  <div class="registration-workspace">
+    <form class="grade-slip-card registration-card" id="registration-request-form" novalidate>
+      <section id="registration-personal" data-registration-panel="1" aria-labelledby="registration-personal-title">
+        <h3 class="grade-slip-personal-heading" id="registration-personal-title" tabindex="-1"><svg class="portal-icon" aria-hidden="true"><use href="#icon-user"/></svg>Personal Information</h3>
+        <div class="grade-slip-fields">
+          <div class="grade-slip-field"><label for="registration-student-number">Student Number</label><input id="registration-student-number" name="studentNumber" type="text" readonly></div>
+          <div class="grade-slip-field"><label for="registration-full-name">Full Name</label><input id="registration-full-name" name="fullName" type="text" autocomplete="name" maxlength="100" required data-registration-field aria-describedby="registration-error"></div>
+          <div class="grade-slip-field"><label for="registration-program">Program</label><textarea class="grade-slip-program" id="registration-program" name="program" rows="1" placeholder="Enter your program" maxlength="100" required data-registration-field aria-describedby="registration-error"></textarea></div>
+          <div class="grade-slip-field"><label for="registration-year">Year Level</label><select id="registration-year" name="yearLevel" required data-registration-field aria-describedby="registration-error"><option value="">Select year level</option><option>1st Year</option><option>2nd Year</option><option>3rd Year</option><option>4th Year</option><option>5th Year</option></select></div>
+          <div class="grade-slip-field"><label for="registration-semester">Semester</label><select id="registration-semester" name="semester" required data-registration-field aria-describedby="registration-error"><option value="">Select semester</option><option>1st Semester</option><option>2nd Semester</option><option>Summer</option></select></div>
+        </div>
+      </section>
+
+      <section id="registration-enrollment" data-registration-panel="2" aria-labelledby="registration-enrollment-title" hidden>
+        <div class="grade-slip-details-heading"><svg class="portal-icon" aria-hidden="true"><use href="#icon-document"/></svg><div><h3 id="registration-enrollment-title" tabindex="-1">Enrollment Details</h3><p>A maximum of 150 students will be accommodated per day.</p></div></div>
+        <p class="grade-slip-enrollment-intro">Please select the academic year and semester for the registration form you wish to request.</p>
+        <div class="grade-slip-fields grade-slip-enrollment-fields">
+          <div class="grade-slip-field"><label for="registration-academic-year">Academic Year</label><select id="registration-academic-year" name="academicYear" required data-registration-field aria-describedby="registration-error"><option value="">Select academic year</option></select></div>
+          <div class="grade-slip-field"><label for="registration-requested-semester">Semester</label><select id="registration-requested-semester" name="requestedSemester" required data-registration-field aria-describedby="registration-error"><option value="">Select semester</option><option>1st Semester</option><option>2nd Semester</option><option>Summer</option></select></div>
+        </div>
+        <div class="grade-slip-schedule-fields">
+          <div class="grade-slip-field"><label for="registration-appointment-date">Select Date</label><div class="grade-slip-picker"><input id="registration-appointment-date" name="appointmentDate" type="date" required data-registration-field aria-describedby="registration-date-hint registration-error"><button type="button" data-registration-picker="registration-appointment-date" aria-label="Open appointment calendar" aria-controls="registration-appointment-date"><svg class="portal-icon" aria-hidden="true"><use href="#icon-calendar"/></svg></button></div><small id="registration-date-hint">Choose an appointment date from the calendar.</small></div>
+          <div><h4 class="grade-slip-time-title">Select Time</h4><div class="grade-slip-time-fields">
+            <div class="grade-slip-field"><label for="registration-start-time">Start Time</label><div class="grade-slip-picker"><input id="registration-start-time" name="appointmentStart" type="time" min="08:00" max="16:00" step="60" required data-registration-field aria-describedby="registration-time-range registration-error"><button type="button" data-registration-picker="registration-start-time" aria-label="Open appointment time picker" aria-controls="registration-start-time"><svg class="portal-icon" aria-hidden="true"><use href="#icon-clock"/></svg></button></div></div>
+            <div class="grade-slip-field"><label for="registration-end-time">End Time</label><input id="registration-end-time" type="text" readonly aria-describedby="registration-time-range"></div>
+          </div><p class="grade-slip-time-range" id="registration-time-range" role="status" aria-live="polite">Available hours: 8:00 AM–5:00 PM. The last appointment starts at 4:00 PM.</p></div>
+        </div>
+        <details class="grade-slip-request-options"><summary>Additional request details</summary><div class="grade-slip-fields">
+          <div class="grade-slip-field"><label for="registration-purpose">Purpose of Request</label><select id="registration-purpose" name="purpose" required data-registration-field aria-describedby="registration-error"><option>Personal copy</option><option>Enrollment</option><option>Scholarship application</option><option>Employment</option><option>Other</option></select></div>
+          <div class="grade-slip-field"><label for="registration-copies">Number of Copies</label><input id="registration-copies" name="copies" type="number" min="1" max="10" step="1" value="1" required data-registration-field aria-describedby="registration-copies-hint registration-error"><small id="registration-copies-hint">Choose 1–10 copies.</small></div>
+          <div class="grade-slip-field grade-slip-field-wide"><label for="registration-notes">Additional Notes <span>(optional)</span></label><textarea id="registration-notes" name="notes" rows="3" maxlength="500" placeholder="Add any details about your request." data-registration-field></textarea></div>
+        </div></details>
+      </section>
+
+      <section id="registration-review" data-registration-panel="3" aria-labelledby="registration-review-title" hidden>
+        <div class="grade-slip-review-banner"><h3 id="registration-review-title" tabindex="-1"><svg class="portal-icon" viewBox="0 0 32 32" aria-hidden="true"><use href="#icon-document"/><path d="m13 23 5 5 12-13" stroke-width="3"/></svg>Review &amp; Submit</h3><p class="grade-slip-review-intro">Review your chosen schedule and details before submitting.</p></div>
+        <div class="grade-slip-review-layout">
+          <div class="grade-slip-review-student">
+            <dl class="grade-slip-review-grid registration-review-grid">
+              <div><dt>Student Name</dt><dd data-registration-review="fullName"></dd></div>
+              <div><dt>Year Level</dt><dd data-registration-review="yearLevel"></dd></div>
+              <div><dt>Student ID</dt><dd data-registration-review="studentNumber"></dd></div>
+              <div><dt>Current Semester</dt><dd data-registration-review="semester"></dd></div>
+              <div class="grade-slip-field-wide"><dt>Program</dt><dd data-registration-review="program"></dd></div>
+            </dl>
+          </div>
+          <div class="grade-slip-review-schedule">
+            <div><h4>Selected Schedule</h4><time class="grade-slip-review-date" id="registration-review-date"><span class="grade-slip-review-month" data-registration-review="appointmentMonth"></span><span class="grade-slip-review-day"><span data-registration-review="appointmentWeekday"></span><strong data-registration-review="appointmentDay"></strong></span></time></div>
+            <div><h4>Selected Time</h4><div class="grade-slip-review-time"><span data-registration-review="appointmentTimeRange"></span></div></div>
+          </div>
+        </div>
+        <details class="grade-slip-review-additional"><summary>Additional request details</summary><dl class="grade-slip-review-grid">
+          <div><dt>Academic Year</dt><dd data-registration-review="academicYear"></dd></div>
+          <div><dt>Requested Semester</dt><dd data-registration-review="requestedSemester"></dd></div>
+          <div><dt>Purpose</dt><dd data-registration-review="purpose"></dd></div>
+          <div><dt>Copies</dt><dd data-registration-review="copies"></dd></div>
+          <div class="grade-slip-field-wide"><dt>Additional Notes</dt><dd data-registration-review="notes"></dd></div>
+        </dl><p class="grade-slip-demo-note">This creates a demo request in this browser, not an official submission to the registrar.</p></details>
+        <label class="grade-slip-review-consent" for="registration-confirm-information"><input id="registration-confirm-information" type="checkbox" required aria-describedby="registration-error"><span>I confirm that the information above is correct and complete</span></label>
+        <button class="settings-assistant registration-review-assistant" type="button" data-assistant="How can I request a registration form?"><span class="settings-assistant-hint">Questions? Chat with me!</span><img src="assets/images/assistant.svg" alt="" width="34" height="40"><span>RTU AI ASSISTANT</span></button>
+      </section>
+
+      <p class="grade-slip-error" id="registration-error" role="alert" hidden></p>
+      <div class="grade-slip-actions"><button class="secondary-button" id="registration-back" type="button" hidden>Back</button><button class="primary-button" id="registration-next" type="button">Next <svg class="portal-icon" aria-hidden="true"><use href="#icon-arrow"/></svg></button><button class="primary-button" id="registration-submit" type="submit" hidden>Confirm Schedule</button></div>
+      <p class="grade-slip-review-disclaimer" id="registration-review-disclaimer" hidden>DISCLAIMER: Please ensure that you arrive and attend at the exact scheduled time. Punctuality is strictly required.</p>
+    </form>
+
+    <aside class="registration-assistant" aria-labelledby="registration-assistant-title">
+      <header class="registration-assistant-header"><img src="assets/images/assistant.svg" alt="" width="42" height="42"><h3 id="registration-assistant-title">RTU AI ASSISTANT</h3></header>
+      <div class="registration-chat" id="registration-chat" role="log" aria-label="Academic assistant conversation" aria-live="polite" aria-relevant="additions" tabindex="0"></div>
+      <form class="registration-composer" id="registration-assistant-form">
+        <label class="visually-hidden" for="registration-question">Ask the academic assistant</label>
+        <input id="registration-question" name="question" type="text" maxlength="500" placeholder="Type your message here..." autocomplete="off" required>
+        <button type="submit" aria-label="Send message"><svg class="portal-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 18-8-8 18-2-8Z M11 13 21 3"/></svg></button>
+      </form>
+    </aside>
+  </div>
+
+  <footer class="grade-slip-footer registration-footer"><p role="status" aria-live="polite" aria-atomic="true"><svg class="portal-icon" aria-hidden="true"><use href="#icon-history"/></svg><span id="registration-save-message">Auto-save ready</span></p></footer>
+</section>
+</body>
