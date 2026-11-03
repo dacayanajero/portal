@@ -18,15 +18,15 @@ window.initializePortalLogin = () => {
   const roles = {
     student: {
       title: "Student Login",
-      accountLabel: "Student Number",
-      example: "e.g. 2020-12345",
+      accountLabel: "Email address",
+      example: "name@example.com",
       description: ["Sign in to access your academic services,", " records, and more."],
       registerTitle: "Create a student account",
     },
     staff: {
       title: "Staff Login",
-      accountLabel: "Employee Number",
-      example: "e.g. 2020-123456",
+      accountLabel: "Email address",
+      example: "staff@example.com",
       description: ["Sign in to manage academic services,", " records, and requests."],
       registerTitle: "Staff accounts are provisioned",
     },
@@ -132,8 +132,7 @@ window.initializePortalLogin = () => {
       const account = await accounts.authenticate(accountInput.value, passwordInput.value, activeRole);
       passwordInput.value = "";
       if (!account) {
-        const identifier = activeRole === "student" ? "student number" : "employee number";
-        loginStatus.textContent = `Incorrect ${identifier} or password. Please try again.`;
+        loginStatus.textContent = "Incorrect email or password. Please try again.";
         passwordInput.focus();
         return;
       }
@@ -257,8 +256,10 @@ window.initializePortalLogin = () => {
       hidePassword();
       setFieldError(accountInput, "");
       setFieldError(passwordInput, "");
-      accountInput.value = account.accountNumber;
-      loginStatus.textContent = "Account created! Sign in with your student number and password.";
+      accountInput.value = account.email;
+      loginStatus.textContent = account.needsEmailConfirmation
+        ? "Account created! Confirm your email, then sign in using your email address and password."
+        : "Account created in Supabase! Sign in with your email address and password.";
       passwordInput.focus();
     } catch (error) {
       status.textContent = error.message;

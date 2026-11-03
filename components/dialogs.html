@@ -67,14 +67,14 @@
       <div class="modal-body">
         <p id="register-description">Use your university details to get started.</p>
         <div class="mb-3"><label class="form-label" for="register-name">Full name</label><input class="form-control dialog-input" id="register-name" name="name" type="text" autocomplete="name" maxlength="100" required></div>
-        <div class="mb-3"><label class="form-label" id="register-number-label" for="register-number">Student number</label><input class="form-control dialog-input" id="register-number" name="accountNumber" type="text" autocomplete="username" maxlength="40" required></div>
-        <div class="mb-3"><label class="form-label" for="register-email">University email</label><input class="form-control dialog-input" id="register-email" name="email" type="email" autocomplete="email" maxlength="254" placeholder="you@rtu.edu.ph" required></div>
+        <div class="mb-3"><label class="form-label" id="register-number-label" for="register-number">Student number</label><input class="form-control dialog-input" id="register-number" name="accountNumber" type="text" autocomplete="username" maxlength="30" minlength="3" required></div>
+        <div class="mb-3"><label class="form-label" for="register-email">Email address (must be accessible)</label><input class="form-control dialog-input" id="register-email" name="email" type="email" autocomplete="email" maxlength="254" placeholder="you@example.com" required></div>
         <div class="mb-3"><label class="form-label" for="register-college">College</label><select class="form-control dialog-input" id="register-college" name="college" required><option value="">Select college</option><option>College of Education</option><option>College of Engineering</option><option>College of Business and Management</option><option>Institute of Computer Studies</option><option>College of Arts and Sciences</option></select></div>
         <div class="mb-3"><label class="form-label" for="register-program">Program</label><input class="form-control dialog-input" id="register-program" name="program" type="text" maxlength="150" placeholder="e.g. Bachelor of Secondary Education - Major in Filipino" autocomplete="off" required></div>
         <div><label class="form-label" for="register-password">Password <span class="label-hint">(at least 8 characters)</span></label><input class="form-control dialog-input" id="register-password" name="newPassword" type="password" autocomplete="new-password" minlength="8" required></div>
         <div class="mb-3 register-consent"><input id="register-terms" name="termsAccepted" type="checkbox" required><label for="register-terms">I have read and agree to the <button class="text-link" type="button" data-open-dialog="terms-dialog">Terms &amp; Conditions</button> and <button class="text-link" type="button" data-open-dialog="privacy-dialog">Privacy Policy</button>.</label></div>
         <p class="dialog-status" id="register-status" role="status" aria-live="polite"></p>
-        <p class="demo-note">Demo accounts are saved in this browser so you can sign in and view your profile.</p>
+        <p class="demo-note">Registration uses Supabase Authentication. You may need to confirm your email before signing in. University IDs are not independently verified in this prototype.</p>
       </div>
       <div class="modal-footer"><button class="btn secondary-button" type="button" data-close-dialog>Cancel</button><button class="btn primary-button" type="submit">Create account</button></div>
     </form>

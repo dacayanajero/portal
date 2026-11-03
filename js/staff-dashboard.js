@@ -383,10 +383,10 @@ window.initializeStaffDashboard = () => {
     syncNotificationPreferences();
     staffSessionInput.checked = Boolean(preferences.rememberSession);
     const session = accounts.sessionInfo();
-    setText("#staff-session-signed-in", session?.signedInAt ? formatDateTime(session.signedInAt) : "Not recorded (legacy marker)");
-    setText("#staff-session-expires", session?.expiresAt ? formatDateTime(session.expiresAt) : "Not recorded (legacy marker)");
-    setText("#staff-session-persistence", session?.persistent ? "Yes, in this tab until recorded expiration" : "No — current visit only");
-    setText("#staff-session-explanation", session?.legacy ? "This legacy demo marker has no sign-in/expiration timestamps. Sign out and sign in to create a timed demo session. No historical sign-in time is inferred." : "New demo sessions have an eight-hour absolute lifetime. Client checks are demonstration behavior, not server-enforced expiration. No IP/location or last-activity data is collected.");
+    setText("#staff-session-signed-in", session?.signedInAt ? formatDateTime(session.signedInAt) : "Not available");
+    setText("#staff-session-expires", session?.expiresAt ? formatDateTime(session.expiresAt) : "Not available");
+    setText("#staff-session-persistence", session?.persistent ? "Managed by Supabase Auth" : "Not signed in");
+    setText("#staff-session-explanation", "Supabase Auth manages session persistence and token refresh. Sign out to clear this browser’s session; the old demo-session preference does not control Supabase.");
     setText("#staff-password-changed-at", activeAccount?.passwordChangedAt ? formatDateTime(activeAccount.passwordChangedAt) : "Not recorded");
     const container = document.querySelector("#staff-account-capabilities"); container.replaceChildren();
     [["Announcements", () => window.PortalAnnouncementService.capabilities()], ["Reports", () => window.PortalReportService.capabilities()], ["Help & Support", () => window.PortalSupportService.capabilities()]].forEach(([label, read]) => {
@@ -584,10 +584,14 @@ window.initializeStaffDashboard = () => {
     document.dispatchEvent(new CustomEvent("portal:staffaccountchange", { detail: { account: { ...account }, profile: { ...staffProfile } } }));
   }
 
-  function logOutStaff(forced = false, message = "") {
+  async function logOutStaff(forced = false, message = "") {
     if (!forced && !document.dispatchEvent(new CustomEvent("portal:staffbeforelogout", { cancelable: true }))) return;
     if (!forced) document.dispatchEvent(new Event("portal:beforelogout"));
-    accounts.clearSession();
+    try { await accounts.clearSession(); }
+    catch (error) {
+      window.alert(`Sign-out failed: ${error.message}`);
+      return;
+    }
     activeAccount = null;
     staffProfile = null;
     setStaffProfileEditing(false);
@@ -809,7 +813,7 @@ window.initializeStaffDashboard = () => {
   staffSessionForm.addEventListener("submit", (event) => event.preventDefault());
   staffSessionInput.addEventListener("change", () => {
     if (!activeAccount) return;
-    if (savePreferences({ rememberSession: staffSessionInput.checked })) { syncStaffSettings(); setStaffSettingsStatus(accounts.sessionInfo()?.persistent ? "The current session is persisted in this tab until its recorded expiration." : "The current session is visit-only; refresh requires sign-in."); }
+    if (savePreferences({ rememberSession: staffSessionInput.checked })) { syncStaffSettings(); setStaffSettingsStatus("Supabase Auth manages session persistence; this preference does not change it yet."); }
   });
 
   document.addEventListener("portal:login", (event) => {
@@ -823,7 +827,6 @@ window.initializeStaffDashboard = () => {
   syncNavigation();
   applyTheme();
 
-  const savedAccount = accounts.restoreSession();
-  if (savedAccount?.role === "staff") openStaffDashboard(savedAccount);
+  // app.js now restores Supabase sessions after both dashboards mount.
   window.setInterval(() => { if (activeAccount) accounts.isSessionValid(activeAccount); }, 15000);
 };

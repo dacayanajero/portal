@@ -401,11 +401,15 @@ window.initializePortalDashboard = () => {
     }
   });
 
-  function logOutStudent(forced = false, message = "") {
+  async function logOutStudent(forced = false, message = "") {
     if (!forced) document.dispatchEvent(new Event("portal:beforelogout"));
     if (!forced && profileSaveTimer !== undefined) saveProfile();
     window.clearTimeout(profileSaveTimer); profileSaveTimer = undefined;
-    accounts.clearSession();
+    try { await accounts.clearSession(); }
+    catch (error) {
+      window.alert(`Sign-out failed: ${error.message}`);
+      return;
+    }
     activeAccount = null;
     setProfileEditing(false);
     dashboardScreen.hidden = true;
@@ -1319,6 +1323,5 @@ window.initializePortalDashboard = () => {
     initializeChatbot();
   }
 
-  const savedAccount = accounts.restoreSession();
-  if (savedAccount?.role === "student") openDashboard(savedAccount);
+  // app.js now restores Supabase sessions after both dashboards mount.
 };
