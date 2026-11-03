@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120">
+  <defs>
+    <path id="topText" d="M22 61a38 38 0 0 1 76 0"/>
+    <path id="bottomText" d="M23 72a40 40 0 0 0 74 0"/>
+    <linearGradient id="ribbon" x2="1" y2="1"><stop stop-color="#5393d0"/><stop offset="1" stop-color="#204e9d"/></linearGradient>
+  </defs>
+  <g fill="url(#ribbon)" stroke="#78a4cd" stroke-width=".7">
+    <path d="m49 8 7-5 8 5 9-2 5 8 9 1 2 9 8 5-2 10 7 7-4 9 4 9-7 7 2 10-8 5-2 9-9 1-5 8-9-2-8 5-7-5-10 2-5-8-9-1-2-9-8-5 2-10-6-7 4-9-4-9 6-7-2-10 8-5 2-9 9-1 5-8z"/>
+  </g>
+  <circle cx="60" cy="58" r="44" fill="#d9e0e6" stroke="#102e67" stroke-width="2"/>
+  <circle cx="60" cy="58" r="40.5" fill="#173a7c" stroke="#f9cf42" stroke-width="1"/>
+  <g fill="#fff" font-family="Arial,sans-serif" font-size="6.8" font-weight="700" letter-spacing=".25">
+    <text><textPath href="#topText" startOffset="50%" text-anchor="middle">RIZAL TECHNOLOGICAL UNIVERSITY</textPath></text>
+    <text font-size="6.4"><textPath href="#bottomText" startOffset="50%" text-anchor="middle">MANDALUYONG · PHILIPPINES</textPath></text>
+  </g>
+  <circle cx="60" cy="58" r="29" fill="#f5f1de" stroke="#f6cb37" stroke-width="1.4"/>
+  <path d="M39 38h42v27c0 13-21 22-21 22S39 78 39 65V38Z" fill="#fff" stroke="#16366e" stroke-width="1.5"/>
+  <path d="M42 41h12v32l-12-9z" fill="#153a86"/><path d="M66 41h12v23l-12 9z" fill="#153a86"/>
+  <path d="M55 41h10v36l-5 5-5-5z" fill="#e9bc20"/>
+  <path d="m60 46-4 9 4-2 4 2z" fill="#102c61"/>
+  <path d="M57 56h6v12h-6z" fill="#102c61"/>
+  <path d="m48 58 5 3v11l-5-3zm19 3 5-3v11l-5 3z" fill="#f5d140"/>
+  <path d="m48 76 12 5 12-5" fill="none" stroke="#173c78" stroke-width="1.5"/>
+  <text x="60" y="94" fill="#f9db67" font-family="Arial,sans-serif" font-size="6" text-anchor="middle" font-weight="700">1969</text>
+  <path d="m22 90 10 6 28 9 28-9 10-6-7 13-31 11-31-11z" fill="#2b66ad" stroke="#9cb9d6" stroke-width=".7"/>
+  <text x="60" y="105" fill="#fff" font-family="Arial,sans-serif" font-size="5.4" text-anchor="middle" letter-spacing="1.3">PASIG CAMPUS</text>
+</svg>
