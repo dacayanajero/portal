@@ -424,7 +424,7 @@ window.initializeGradeSlip = () => {
     }
   });
 
-  confirmYes.addEventListener("click", () => {
+  confirmYes.addEventListener("click", async () => {
     if (!confirmation.open || !account || submitting || pendingAccountNumber !== account.accountNumber) return;
     if (!validateSubmission()) return;
     submitting = true;
@@ -432,15 +432,25 @@ window.initializeGradeSlip = () => {
     confirmYes.disabled = true;
     confirmNo.disabled = true;
     const data = requestDetails();
-    const request = window.PortalRequests.create(
+    let request;
+    try {
+      request = await window.PortalRequests.create(
       { document: "Grade Slip", purpose: data.purpose, details: { ...data, studentNumber: account.accountNumber } },
       { nextPage: "grade-slip-complete", notify: false },
-    );
+      );
+    } catch (error) {
+      submitting = false;
+      submitButton.disabled = false;
+      confirmation.close("error");
+      errorMessage.textContent = "Request was not saved to Supabase: " + error.message;
+      errorMessage.hidden = false;
+      return;
+    }
     if (!request) {
       submitting = false;
       submitButton.disabled = false;
       confirmation.close("error");
-      errorMessage.textContent = "Your demo request could not be created. Please sign in and try again.";
+      errorMessage.textContent = "Supabase did not confirm your request. Please sign in and try again.";
       errorMessage.hidden = false;
       return;
     }

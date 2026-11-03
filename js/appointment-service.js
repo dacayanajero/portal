@@ -564,6 +564,7 @@
   });
 
   document.addEventListener("portal:requestschanged", () => {
+    if (window.PortalSupabaseRequestsActive) return;
     try { readAll(); } catch {}
     document.dispatchEvent(new CustomEvent("portal:appointmentschanged", { detail: { source: "requests" } }));
   });

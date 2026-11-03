@@ -965,9 +965,9 @@ window.initializePortalDashboard = () => {
     });
   }
 
-  function createRequest({ document: documentName, purpose, details } = {}, { nextPage = "requests", notify = true } = {}) {
+  async function createRequest({ document: documentName, purpose, details } = {}, { nextPage = "requests", notify = true } = {}) {
     if (!activeAccount || !accounts.isSessionValid(activeAccount)) return null;
-    const request = requestService.create({ student: activeAccount, document: documentName, purpose, details });
+    const request = await requestService.create({ student: activeAccount, document: documentName, purpose, details });
     if (!request) return null;
     renderRequests();
     navigate(Object.hasOwn(routes, nextPage) ? nextPage : "requests");
@@ -975,10 +975,20 @@ window.initializePortalDashboard = () => {
     return request;
   }
 
-  document.querySelector("#document-request-form").addEventListener("submit", (event) => {
+  document.querySelector("#document-request-form").addEventListener("submit", async (event) => {
     event.preventDefault();
-    const request = createRequest({ document: selectedDocument, purpose: document.querySelector("#request-purpose").value });
-    if (request) requestDialog.close();
+    const button = event.currentTarget.querySelector('[type="submit"]');
+    if (button?.disabled) return;
+    if (button) button.disabled = true;
+    try {
+      const request = await createRequest({ document: selectedDocument, purpose: document.querySelector("#request-purpose").value });
+      if (request) requestDialog.close();
+    } catch (error) {
+      setRequestFeedback(error.message, true);
+      window.alert("Request was not saved: " + error.message);
+    } finally {
+      if (button) button.disabled = false;
+    }
   });
 
   requestList.addEventListener("click", (event) => {
@@ -1019,7 +1029,7 @@ window.initializePortalDashboard = () => {
     requestCancelReason.focus();
   });
 
-  requestList.addEventListener("submit", (event) => {
+  requestList.addEventListener("submit", async (event) => {
     const form = event.target.closest("[data-correction-form]");
     if (!form || !activeAccount) return;
     event.preventDefault();
@@ -1032,7 +1042,7 @@ window.initializePortalDashboard = () => {
     }
     input.setCustomValidity("");
     try {
-      requestService.studentResubmit(form.dataset.requestId, activeAccount, note);
+      await requestService.studentResubmit(form.dataset.requestId, activeAccount, note);
       setRequestFeedback("Corrections submitted. Your request is back in Pending Review.");
       renderRequests();
       document.querySelector("#requests-title").focus({ preventScroll: true });
@@ -1048,7 +1058,7 @@ window.initializePortalDashboard = () => {
     requestCancelStatus.classList.remove("is-error");
   });
 
-  requestCancelForm.addEventListener("submit", (event) => {
+  requestCancelForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (!activeAccount || !activeRequestId) return;
     const reason = requestCancelReason.value.trim();
@@ -1059,7 +1069,7 @@ window.initializePortalDashboard = () => {
     }
     requestCancelSubmit.disabled = true;
     try {
-      requestService.studentCancel(activeRequestId, activeAccount, reason);
+      await requestService.studentCancel(activeRequestId, activeAccount, reason);
       requestCancelDialog.close();
       setRequestFeedback("Request cancelled. The record remains in your request history.");
       renderRequests();
@@ -1115,6 +1125,9 @@ window.initializePortalDashboard = () => {
 
   document.addEventListener("portal:requestschanged", () => {
     if (activeAccount?.role === "student") renderRequests();
+  });
+  document.addEventListener("portal:requestsyncerror", (event) => {
+    if (activeAccount?.role === "student") setRequestFeedback("Could not load saved requests: " + event.detail.message, true);
   });
 
   document.addEventListener("portal:appointmentschanged", () => {
@@ -1233,7 +1246,7 @@ window.initializePortalDashboard = () => {
         description: 'Cancel a pending request',
         action: () => {
           const requests = requestService.listForStudent(activeAccount.accountNumber);
-          const activeRequests = requests.filter(r => requestService.isActive(r.status));
+          const activeRequests = requests.filter(r => requestService.canStudentCancel(r.status));
           if (activeRequests.length === 0) {
             document.getElementById('chatbot-question').textContent = 'Cancel Request';
             document.getElementById('chatbot-answer').textContent = 'You do not have any active requests that can be cancelled.';
@@ -1252,17 +1265,19 @@ window.initializePortalDashboard = () => {
               
               const confirmBtn = document.getElementById('confirm-cancel');
               const originalAction = confirmBtn.onclick;
-              confirmBtn.onclick = () => {
+              confirmBtn.onclick = async () => {
                 const reason = document.getElementById('cancel-reason').value.trim();
                 if (reason) {
                   try {
-                    requestService.studentCancel(requestId, activeAccount, reason);
+                    confirmBtn.disabled = true;
+                    await requestService.studentCancel(requestId, activeAccount, reason);
                     document.getElementById('chatbot-question').textContent = 'Request Cancelled';
                     document.getElementById('chatbot-answer').textContent = 'Your request has been cancelled. The record remains in your history.';
                     chatbotDialog.close();
                     if (typeof renderRequests === 'function') renderRequests();
                   } catch (e) {
                     document.getElementById('chatbot-answer').textContent = `Error: ${e.message}`;
+                    confirmBtn.disabled = false;
                   }
                 }
               };

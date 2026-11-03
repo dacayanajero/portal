@@ -571,7 +571,7 @@ window.initializeStaffAppointments = () => {
     else actionReason.focus();
   }
 
-  function handleActionSubmit(event) {
+  async function handleActionSubmit(event) {
     event.preventDefault();
     if (!selectedAppointmentId || !pendingAction) return;
     const config = actionConfig[pendingAction];
@@ -593,18 +593,18 @@ window.initializeStaffAppointments = () => {
     actionStatus.classList.remove("is-error");
     try {
       let result;
-      if (pendingAction === "confirm") result = service.confirmAppointment(selectedAppointmentId, actor, reason);
-      else if (pendingAction === "checkin") result = service.checkIn(selectedAppointmentId, actor);
-      else if (pendingAction === "complete") result = service.completeAppointment(selectedAppointmentId, actor, reason);
-      else if (pendingAction === "noshow") result = service.markNoShow(selectedAppointmentId, actor, reason);
-      else if (pendingAction === "cancel") result = service.cancelAppointment(selectedAppointmentId, actor, reason);
+      if (pendingAction === "confirm") result = await service.confirmAppointment(selectedAppointmentId, actor, reason);
+      else if (pendingAction === "checkin") result = await service.checkIn(selectedAppointmentId, actor);
+      else if (pendingAction === "complete") result = await service.completeAppointment(selectedAppointmentId, actor, reason);
+      else if (pendingAction === "noshow") result = await service.markNoShow(selectedAppointmentId, actor, reason);
+      else if (pendingAction === "cancel") result = await service.cancelAppointment(selectedAppointmentId, actor, reason);
       else if (pendingAction === "reschedule") {
         const newDate = rescheduleDate.value;
         const newStart = rescheduleStart.value;
         const newEnd = service.fromMinutes(service.toMinutes(newStart) + service.SLOT_MINUTES);
         if (!service.validDate(newDate)) throw new Error("Choose a valid appointment date.");
         if (newDate < service.manilaDate()) throw new Error("Appointment dates cannot be in the past.");
-        result = service.rescheduleAppointment(selectedAppointmentId, actor, newDate, newStart, newEnd, reason);
+        result = await service.rescheduleAppointment(selectedAppointmentId, actor, newDate, newStart, newEnd, reason);
       }
       actionDialog.close();
       renderAll();
