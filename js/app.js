@@ -128,6 +128,14 @@
       window.initializeRegistrationForm();
       root.removeAttribute("aria-busy");
       document.dispatchEvent(new Event("portal:ready"));
+      // Restore the authenticated session after the student and staff views
+      // have mounted and their login handlers have been registered.
+      try {
+        const account = await window.PortalAccounts.restoreSession();
+        if (account) document.dispatchEvent(new CustomEvent("portal:login", { detail: account }));
+      } catch (error) {
+        document.querySelector("#login-status").textContent = error.message;
+      }
       return true;
     } catch (error) {
       showLoadError(error);
