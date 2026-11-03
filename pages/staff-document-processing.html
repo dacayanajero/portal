@@ -1,0 +1,42 @@
+<body>
+<section class="dashboard-view staff-view document-workspace" data-view="staff-document-processing" aria-labelledby="document-processing-title" hidden>
+  <h2 id="document-processing-title" tabindex="-1" class="visually-hidden">Document Processing &amp; Release</h2>
+  <p class="demo-note">Development prototype · Records and in-app notices are saved in this browser only. Preparation uses a development checklist; release verification requires approved policy configuration.</p>
+  <section class="staff-stat-grid" id="document-stats" aria-label="Document processing overview"></section>
+  <section class="content-card staff-panel">
+    <div class="document-tabs" role="group" aria-label="Document queues">
+      <button type="button" class="secondary-button" data-document-tab="queue" aria-pressed="true">Processing Queue</button>
+      <button type="button" class="secondary-button" data-document-tab="pickup" aria-pressed="false">Ready for Pickup</button>
+      <button type="button" class="secondary-button" data-document-tab="history" aria-pressed="false">Release History</button>
+    </div>
+    <form id="document-filters" class="document-filters">
+      <label>Search<input name="search" type="search" placeholder="Request ID, student name or number" autocomplete="off"></label>
+      <label>Document type<select name="service"><option value="">All services</option></select></label>
+      <label>Date from<input type="date" name="from"></label>
+      <label>Date to<input type="date" name="to"></label>
+      <label>Sort by queue date<select name="sort"><option value="newest">Newest first</option><option value="oldest">Oldest first</option></select></label>
+      <button type="reset" class="secondary-button">Clear Filters</button>
+    </form>
+    <p id="document-date-hint" class="demo-note">Dates filter approval date in the processing queue, readiness date in pickup, and release date in history.</p>
+    <p id="document-feedback" role="status" aria-live="polite"></p>
+    <button type="button" id="document-export" class="secondary-button" hidden>Export filtered release history (CSV)</button>
+    <div class="staff-table-wrap" tabindex="0" role="region" aria-label="Document queue table, scroll horizontally for more columns"><table class="staff-table document-table"><caption class="visually-hidden" id="document-table-caption">Document processing queue</caption><thead id="document-columns"></thead><tbody id="document-rows"></tbody></table></div>
+    <p class="staff-empty" id="document-empty" hidden>No eligible documents match these filters. Approved requests become available here after staff review.</p>
+    <div class="staff-request-pagination"><p id="document-result-count" aria-live="polite"></p><div><button type="button" class="secondary-button" id="document-prev">Previous</button><span id="document-page"></span><button type="button" class="secondary-button" id="document-next">Next</button></div></div>
+  </section>
+  <dialog class="portal-dialog document-dialog" id="document-details" aria-labelledby="document-details-title">
+    <header class="modal-header"><h3 id="document-details-title" tabindex="-1">Document details</h3><button type="button" class="secondary-button" id="document-close" aria-label="Close document details">Close</button></header>
+    <div class="document-dialog-body" id="document-details-body"></div>
+    <p id="document-details-feedback" role="status" aria-live="polite"></p>
+  </dialog>
+  <dialog class="portal-dialog document-confirm" id="document-confirm" aria-labelledby="document-confirm-title" aria-describedby="document-confirm-summary">
+    <form id="document-confirm-form">
+      <h3 id="document-confirm-title">Confirm document action</h3>
+      <p id="document-confirm-summary"></p>
+      <label id="document-handover-label" class="document-check" hidden><input type="checkbox" id="document-handover">I confirm that I have physically handed over this document to the verified recipient.</label>
+      <p id="document-confirm-feedback" role="alert"></p>
+      <div class="document-actions"><button type="button" class="secondary-button" id="document-confirm-cancel">Cancel</button><button type="submit" class="primary-button" id="document-confirm-submit">Confirm</button></div>
+    </form>
+  </dialog>
+</section>
+</body>

@@ -1,0 +1,37 @@
+<body>
+<section class="dashboard-view profile-view" data-view="profile" aria-labelledby="profile-title" hidden>
+  <h2 id="profile-title" tabindex="-1">My Profile</h2>
+  <div class="profile-panel">
+    <header class="profile-identity">
+      <span class="profile-avatar"><svg class="portal-icon" aria-hidden="true"><use href="#icon-user"/></svg></span>
+      <div><h3 data-profile-name>Juan Dela Cruz</h3><p><span class="profile-role">BSIT Student</span></p><p>Rizal Technological University - Pasig Branch</p></div>
+    </header>
+
+    <form id="profile-form" novalidate>
+      <fieldset class="profile-section">
+        <legend><span>Personal Information</span><button class="profile-edit-button" id="profile-edit-button" type="button" aria-label="Edit profile information" aria-controls="profile-form" aria-pressed="false" title="Edit profile information"><svg class="portal-icon" aria-hidden="true"><use id="profile-edit-icon" href="#icon-pencil"/></svg><span id="profile-edit-label">Edit</span></button></legend>
+        <div class="profile-fields">
+          <div class="profile-field"><label for="profile-full-name">Full Name</label><input id="profile-full-name" name="fullName" type="text" value="Juan Dela Cruz" autocomplete="name" maxlength="100" required readonly data-profile-editable aria-describedby="profile-save-status"></div>
+          <div class="profile-field"><label for="profile-year">Year Level</label><input id="profile-year" name="yearLevel" type="text" value="3rd Year" placeholder="Not provided" maxlength="30" readonly data-profile-editable></div>
+          <div class="profile-field"><label for="profile-program">Program</label><input id="profile-program" name="program" type="text" value="BSIT" placeholder="Not provided" maxlength="100" readonly data-profile-editable></div>
+          <div class="profile-field"><label for="profile-student-number">Student Number</label><input id="profile-student-number" name="studentNumber" type="text" value="2023-103319" readonly></div>
+          <div class="profile-field"><label for="profile-semester">Semester</label><input id="profile-semester" name="semester" type="text" value="1st Semester" placeholder="Not provided" maxlength="40" readonly data-profile-editable></div>
+        </div>
+      </fieldset>
+
+      <fieldset class="profile-section profile-account-section">
+        <legend>Account Information</legend>
+        <div class="profile-fields">
+          <div class="profile-field"><label for="profile-email">Email Address</label><input id="profile-email" name="email" type="email" value="2023-103319@rtu.edu.ph" autocomplete="email" maxlength="254" required readonly data-profile-editable aria-describedby="profile-save-status"></div>
+          <div class="profile-field"><label for="profile-phone">Phone Number</label><input id="profile-phone" name="phoneNumber" type="tel" value="0999199192" placeholder="Add your phone number" autocomplete="tel" maxlength="20" readonly data-profile-editable aria-describedby="profile-save-status"></div>
+          <div class="profile-field"><label for="profile-address">Address</label><input id="profile-address" name="address" type="text" placeholder="Add your address" autocomplete="street-address" maxlength="254" readonly data-profile-editable aria-describedby="profile-save-status"></div>
+        </div>
+      </fieldset>
+
+      <footer class="profile-footer">
+        <p class="profile-save-status" id="profile-save-status" role="status" aria-live="polite" aria-atomic="true"><svg class="portal-icon" aria-hidden="true"><use href="#icon-history"/></svg><span id="profile-save-message">Auto-save ready</span></p>
+      </footer>
+    </form>
+  </div>
+</section>
+</body>

@@ -1,0 +1,22 @@
+<body>
+<section class="dashboard-view profile-view staff-profile-view staff-account-view" data-view="staff-profile" aria-labelledby="staff-profile-title" hidden>
+  <h2 id="staff-profile-title" tabindex="-1" class="visually-hidden">My Staff Profile</h2>
+  <p class="demo-note">Development-only provisioned account information. Browser-saved contact preferences are not institutional employment verification and do not synchronize across devices.</p>
+  <div class="profile-panel">
+    <header class="profile-identity"><span class="profile-avatar staff-profile-avatar" data-staff-initials aria-hidden="true">ST</span><div><h3 data-staff-name>Staff member</h3><p>Employee Number: <span data-staff-employee-number></span></p><p><span data-staff-role>Staff</span> · <span data-staff-position></span></p><p data-staff-department></p></div><button class="profile-edit-button" id="staff-profile-edit-button" type="button" aria-label="Edit staff profile information" aria-controls="staff-profile-form" aria-pressed="false"><svg class="portal-icon" aria-hidden="true"><use id="staff-profile-edit-icon" href="#icon-pencil"/></svg><span id="staff-profile-edit-label">Edit Profile</span></button></header>
+    <form id="staff-profile-form" novalidate>
+      <fieldset class="profile-section"><legend>Personal Information</legend><div class="profile-fields">
+        <div class="profile-field"><label for="staff-profile-full-name">Full Name (provisioned)</label><input id="staff-profile-full-name" name="legalName" type="text" readonly></div>
+        <div class="profile-field"><label for="staff-profile-employee-number">Employee Number</label><input id="staff-profile-employee-number" name="employeeNumber" type="text" readonly></div>
+        <div class="profile-field"><label for="staff-profile-email">Registered Email (provisioned)</label><input id="staff-profile-email" name="email" type="email" readonly></div>
+        <div class="profile-field"><label for="staff-profile-display-name">Display Name (optional)</label><input id="staff-profile-display-name" name="displayName" type="text" maxlength="100" placeholder="Use provisioned name" readonly data-staff-editable aria-describedby="staff-profile-status"></div>
+        <div class="profile-field"><label for="staff-profile-phone">Contact Number (optional)</label><input id="staff-profile-phone" name="phoneNumber" type="tel" autocomplete="tel" maxlength="20" placeholder="Not provided" readonly data-staff-editable aria-describedby="staff-profile-status"></div>
+      </div><p class="demo-note">Only display name and contact number can be edited. Employee identity, legal name, registered email and employment attributes require an authorized provisioning process.</p></fieldset>
+      <fieldset class="profile-section"><legend>Employment Information</legend><dl class="staff-settings-summary"><div><dt>Assigned Role</dt><dd data-staff-role>Staff</dd></div><div><dt>Position</dt><dd data-staff-value="position">Not provided</dd></div><div><dt>Department / Office</dt><dd data-staff-value="department">Not provided</dd></div><div><dt>Office Location (configured)</dt><dd data-staff-value="officeLocation">Not provided</dd></div><div><dt>Office Hours (configured)</dt><dd data-staff-value="officeHours">Not provided</dd></div><div><dt>Institutional Account Status</dt><dd data-staff-value="accountStatus">Not connected</dd></div></dl><p class="demo-note">These are provisioned demo attributes, not verified HR records or an administrative role editor.</p></fieldset>
+      <div class="staff-account-actions" id="staff-profile-edit-actions" hidden><button class="primary-button" type="submit" id="staff-profile-save">Save Changes</button><button class="secondary-button" type="button" id="staff-profile-cancel">Cancel</button></div>
+      <footer class="profile-footer"><p class="profile-save-status" id="staff-profile-status" role="status" aria-live="polite" aria-atomic="true"><svg class="portal-icon" aria-hidden="true"><use href="#icon-history"/></svg><span id="staff-profile-message">Profile is read-only until Edit Profile is selected.</span></p></footer>
+    </form>
+  </div>
+  <section class="content-card staff-account-section"><h3>Account Activity</h3><p>Secure account activity and login-history auditing are not connected. No device locations, IP addresses or historical sign-ins are inferred.</p><p id="staff-profile-last-saved">No saved profile timestamp available.</p><a class="secondary-button" href="#/staff/settings" data-page="staff-settings">Open Account Settings</a></section>
+</section>
+</body>

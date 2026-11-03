@@ -1,0 +1,42 @@
+<body>
+<section class="dashboard-view content-view student-requests-view" data-view="requests" aria-labelledby="requests-title" hidden>
+  <div class="student-requests-heading">
+    <div>
+      <h2 id="requests-title" tabindex="-1">My Requests</h2>
+      <p class="page-intro">Track your academic document requests.</p>
+    </div>
+  </div>
+  <p class="student-request-feedback" id="student-request-feedback" role="status" aria-live="polite"></p>
+  <div class="student-request-empty" id="student-request-empty">
+    <span class="student-request-empty-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-inbox"/></svg></span>
+    <h3>No requests yet</h3>
+    <p>Your document requests and their latest status will appear here.</p>
+    <button class="primary-button" type="button" data-page="services">Explore services</button>
+  </div>
+  <div class="student-request-list" id="request-list" aria-live="polite"></div>
+
+<!-- Chatbot Section -->
+<div class="chatbot-trigger" id="chatbot-trigger" role="button" tabindex="0" aria-label="Open chatbot" aria-expanded="false">
+  <span class="chatbot-icon"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2v3h8v14h-5v-6l2.5-3.5L17 7.5l3.5 5L13 2zM12 20v-6h4v2h4v-2h4v6l-4 1.5L12 21l-4-1.5z" /></svg></span>
+  <span class="chatbot-label">Chatbot</span>
+</div>
+
+<dialog class="portal-dialog" id="chatbot-dialog" aria-labelledby="chatbot-dialog-title" style="width: min(440px, 100%); max-height: 70vh; margin: 20px auto;">
+  <div class="modal-header" style="border-bottom: 1px solid var(--requests-line); padding-bottom: 16px; margin-bottom: 16px;">
+    <div><span class="dialog-eyebrow" style="color: var(--requests-title);">MY REQUESTS ASSISTANT</span><h2 class="modal-title" id="chatbot-dialog-title">How can I help?</h2></div><button class="dialog-close" type="button" data-close-dialog aria-label="Close dialog">&times;</button>
+  </div>
+  <div class="modal-body" style="padding: 0; max-height: 500px; overflow-y: auto; font-size: 13px;">
+    <div id="chatbot-options" style="display: grid; gap: 12px; padding: 16px; background: var(--requests-panel); border-radius: 12px;">
+      <!-- Buttons populated by JS -->
+    </div>
+    <div id="chatbot-conversation" style="display: none; padding: 16px; min-height: 100px;">
+      <p id="chatbot-question" style="color: var(--requests-ink); font-weight: 600; margin: 0 0 8px;"></p>
+      <div id="chatbot-answer" style="color: var(--requests-muted); line-height: 1.5; margin: 0;"></div>
+    </div>
+  </div>
+  <div class="modal-footer" style="justify-content: flex-start; gap: 8px; padding-top: 12px; border-top: 1px solid var(--requests-line);">
+    <button class="secondary-button" type="button" data-close-dialog style="flex: 1;">Close</button>
+  </div>
+</dialog>
+</section>
+</body>

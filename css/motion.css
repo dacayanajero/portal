@@ -1,0 +1,87 @@
+/* Shared motion only: layout, colors, and typography remain in their owning stylesheets. */
+:root { --motion-fast: 160ms; --motion-normal: 220ms; --motion-ease: cubic-bezier(.2,.7,.2,1); }
+
+:is(button, a[data-page], summary, [role="button"]) {
+  transition: scale var(--motion-fast) var(--motion-ease), translate var(--motion-fast) var(--motion-ease), transform var(--motion-fast) var(--motion-ease),
+    background-color var(--motion-fast) ease-out, color var(--motion-fast) ease-out,
+    border-color var(--motion-fast) ease-out, box-shadow var(--motion-fast) ease-out;
+  -webkit-tap-highlight-color: transparent;
+}
+:where(button, a[data-page], summary, [role="button"]):not(:disabled):active { scale: .975; }
+button:disabled { scale: 1; }
+.service-card { transition: transform 180ms ease-out, scale var(--motion-fast) ease-out, border-color 180ms ease-out, box-shadow 180ms ease-out; }
+.suggested-questions button:hover { translate: 0 -1px; }
+.nav-item::before { transition: opacity var(--motion-fast), background-color var(--motion-fast); }
+.services-chevron, .account-chevron { transition: transform var(--motion-normal) var(--motion-ease); }
+.sidebar-tools, .dashboard-sidebar { transition: width var(--motion-normal) var(--motion-ease), padding var(--motion-normal) var(--motion-ease), background-color var(--motion-normal); }
+.dashboard-sidebar { overflow-x: hidden; }
+.dashboard-header .dashboard-brand { min-width: 0; overflow: hidden; transition: flex-basis var(--motion-normal) var(--motion-ease), width var(--motion-normal) var(--motion-ease), background-color var(--motion-normal); }
+.dashboard-main { transition: margin-left var(--motion-normal) var(--motion-ease), background-color var(--motion-normal), color var(--motion-normal); }
+.sidebar-overlay:not([hidden]) { animation: portal-fade-in var(--motion-fast) ease-out; }
+.nav-label { animation: portal-fade-in var(--motion-fast) ease-out; }
+
+/* Exiting content is visual only. hidden + inert retain correct focus/accessibility behavior. */
+.motion-leaving[hidden] {
+  display: var(--motion-display, block) !important;
+  position: absolute !important;
+  top: var(--motion-top) !important;
+  left: var(--motion-left) !important;
+  width: var(--motion-width) !important;
+  margin: 0 !important;
+  pointer-events: none !important;
+  user-select: none;
+  z-index: 1;
+}
+.motion-disclosing, .motion-disclosing[hidden] { display: flex !important; overflow: hidden; }
+.dashboard-shell.sidebar-collapsed .services-submenu { display: none !important; }
+.account-options { transform-origin: top right; }
+.account-options:not([hidden]) { animation: portal-menu-in var(--motion-normal) var(--motion-ease); }
+
+:is(input, select, textarea) { transition: border-color var(--motion-fast), box-shadow var(--motion-fast), background-color var(--motion-normal), color var(--motion-normal); }
+input:is([type="checkbox"], [type="radio"]):active { scale: .94; }
+.settings-switch input::before { transition: transform var(--motion-fast) var(--motion-ease), background-color var(--motion-normal); }
+.role-button, .grade-slip-step, .settings-tab { transition: background-color var(--motion-normal), color var(--motion-normal), border-color var(--motion-normal), scale var(--motion-fast); }
+progress::-webkit-progress-value { transition: width var(--motion-normal) var(--motion-ease); }
+progress::-moz-progress-bar { transition: width var(--motion-normal) var(--motion-ease); }
+.password-toggle svg, .settings-password-toggle svg, .theme-toggle svg { transition: rotate var(--motion-normal), opacity var(--motion-fast); }
+.password-toggle[aria-pressed="true"] svg, .settings-password-toggle[aria-pressed="true"] svg { rotate: -6deg; }
+.theme-toggle[aria-pressed="true"] svg { rotate: 20deg; }
+:is(body, .dashboard-shell, .dashboard-topbar, .content-card, .welcome-area, .service-card, .settings-layout, .settings-menu, .settings-workspace, .profile-panel, .portal-dialog) { transition-property: background-color, color, border-color, box-shadow, transform, scale; transition-duration: var(--motion-normal); transition-timing-function: var(--motion-ease); }
+
+/* Native dialog lifecycle stays intact, including Escape, returnValue, and focus restoration.
+   Discrete display/overlay transitions keep closing dialogs painted in the top layer. */
+.portal-dialog {
+  opacity: 0;
+  transform: translateY(6px) scale(.98);
+  transition: opacity var(--motion-normal) var(--motion-ease), transform var(--motion-normal) var(--motion-ease),
+    display var(--motion-normal) allow-discrete, overlay var(--motion-normal) allow-discrete,
+    background-color var(--motion-normal), color var(--motion-normal);
+}
+.portal-dialog[open] { opacity: 1; transform: translateY(0) scale(1); }
+.portal-dialog:not([open]), .portal-dialog:not([open])::backdrop { pointer-events: none; }
+.portal-dialog::backdrop {
+  opacity: 0;
+  transition: opacity var(--motion-normal) ease-out, display var(--motion-normal) allow-discrete, overlay var(--motion-normal) allow-discrete;
+}
+.portal-dialog[open]::backdrop { opacity: 1; }
+@starting-style {
+  .portal-dialog[open] { opacity: 0; transform: translateY(6px) scale(.98); }
+  .portal-dialog[open]::backdrop { opacity: 0; }
+}
+
+/* Progressive enhancement for native Additional Request Details disclosures. */
+@supports (interpolate-size: allow-keywords) {
+  details::details-content { interpolate-size: allow-keywords; block-size: 0; overflow: clip; opacity: 0; transition: block-size var(--motion-normal) var(--motion-ease), opacity var(--motion-normal), content-visibility var(--motion-normal) allow-discrete; }
+  details[open]::details-content { block-size: auto; opacity: 1; }
+}
+@keyframes portal-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes portal-menu-in { from { opacity: 0; translate: 0 -4px; scale: .98; } to { opacity: 1; translate: 0; scale: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after, details::details-content, dialog::backdrop {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  :where(button, a[data-page], summary, [role="button"]):active, input:active { scale: 1 !important; }
+}

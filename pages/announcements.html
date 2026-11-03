@@ -1,0 +1,26 @@
+<body>
+<section class="dashboard-view content-view" data-view="announcements" aria-labelledby="announcements-title" hidden>
+  <header class="announcements-hero">
+    <span class="announcements-hero-icon" aria-hidden="true"><svg class="portal-icon" aria-hidden="true"><use href="#icon-announcement"/></svg></span>
+    <div>
+      <h2 id="announcements-title" tabindex="-1">Announcements</h2>
+      <p>Stay updated with the latest news, updates, and important reminders from the university.</p>
+    </div>
+  </header>
+  <p id="student-announcement-feedback" role="status" aria-live="polite"></p>
+  <div class="announcements-toolbar">
+    <div class="announcements-search">
+      <svg class="portal-icon" aria-hidden="true"><use href="#icon-search"/></svg>
+      <input id="announcement-search" name="announcementSearch" type="search" placeholder="Search announcements..." autocomplete="off" aria-label="Search announcements">
+    </div>
+    <div class="announcements-sort">
+      <svg class="portal-icon" aria-hidden="true"><use href="#icon-calendar"/></svg>
+      <select id="announcement-sort" name="announcementSort" aria-label="Sort announcements"><option value="latest">Latest First</option><option value="oldest">Oldest First</option></select>
+      <svg class="portal-icon announcements-sort-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+    </div>
+  </div>
+  <div id="student-announcement-feed" class="announcement-feed"></div>
+  <p class="content-card announcement-feed-empty" id="student-announcement-empty" hidden>No published announcements are available right now.</p>
+  <dialog class="portal-dialog announcement-dialog" id="student-announcement-details" aria-labelledby="student-announcement-detail-title"><header class="modal-header"><h3 id="student-announcement-detail-title" tabindex="-1">Announcement</h3><button class="secondary-button" type="button" id="student-announcement-back">Back to Announcements</button></header><div id="student-announcement-detail-body"></div></dialog>
+</section>
+</body>

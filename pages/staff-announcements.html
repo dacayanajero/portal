@@ -1,0 +1,39 @@
+<body>
+<section class="dashboard-view staff-view announcement-workspace" data-view="staff-announcements" aria-labelledby="staff-announcements-title" hidden>
+  <header class="staff-page-heading"><h2 id="staff-announcements-title" tabindex="-1" class="visually-hidden">Announcements Management</h2><button type="button" class="primary-button" id="announcement-create">Create Announcement</button></header>
+  <p class="demo-note">Development-only general announcements · Saved in this browser, not official university publications. Scheduled notices require an authorized publisher to publish when due; no background scheduler is connected.</p>
+  <section class="staff-stat-grid" id="announcement-stats" aria-label="Announcement overview"></section>
+  <section class="content-card staff-panel">
+    <div class="announcement-actions" role="group" aria-label="Announcement sections"><button type="button" class="secondary-button" data-announcement-section="active" aria-pressed="true">Manage Announcements</button><button type="button" class="secondary-button" data-announcement-section="archive" aria-pressed="false">Archived Announcements</button></div>
+    <h3 id="announcement-list-heading">Manage Announcements</h3>
+    <form class="announcement-filters" id="announcement-filters">
+      <label>Search announcements<input name="query" type="search" placeholder="Title or announcement ID" autocomplete="off"></label>
+      <label>Category<select name="category"><option value="">All categories</option></select></label>
+      <label>Status<select name="status"><option value="">All statuses</option></select></label>
+      <label>Audience<select name="audience"><option value="">All audiences</option></select></label>
+      <label>Created from<input type="date" name="from"></label><label>Created to<input type="date" name="to"></label>
+      <label>Sort<select name="sort"><option value="newest">Newest first</option><option value="oldest">Oldest first</option></select></label>
+      <button class="secondary-button" type="reset">Clear Filters</button>
+    </form>
+    <p id="announcement-feedback" role="status" aria-live="polite"></p>
+    <div class="staff-table-wrap" tabindex="0" role="region" aria-label="Announcements table, scroll for more columns"><table class="staff-table announcement-table"><caption class="visually-hidden">Staff announcements</caption><thead><tr><th scope="col">Announcement ID</th><th scope="col">Title</th><th scope="col">Category</th><th scope="col">Audience</th><th scope="col">Created By</th><th scope="col">Date Created</th><th scope="col">Publish Date</th><th scope="col">Status</th><th scope="col">Actions</th></tr></thead><tbody id="announcement-rows"></tbody></table></div>
+    <p class="staff-empty" id="announcement-empty" hidden>No announcements match these filters.</p>
+    <div class="staff-request-pagination"><p id="announcement-results"></p><div><button type="button" class="secondary-button" id="announcement-prev">Previous</button><span id="announcement-page"></span><button type="button" class="secondary-button" id="announcement-next">Next</button></div></div>
+  </section>
+  <dialog class="portal-dialog announcement-dialog" id="announcement-editor" aria-labelledby="announcement-editor-title">
+    <header class="modal-header"><h3 id="announcement-editor-title" tabindex="-1">Create Announcement</h3><button type="button" class="secondary-button" id="announcement-editor-close">Close editor</button></header>
+    <form id="announcement-editor-form" class="announcement-editor-form">
+      <label>Announcement Title<input name="title" type="text" maxlength="120" required></label>
+      <div class="announcement-editor-grid"><label>Announcement Category<select name="category" required><option value="">Select a category</option></select></label><label>Intended Audience<select name="audience" required><option value="">Select an audience</option></select></label></div>
+      <p class="demo-note">Only general All Students notices are available. Secure program, year-level and group targeting is not connected.</p>
+      <label>Announcement Content<textarea name="content" rows="10" maxlength="10000" required aria-describedby="announcement-editor-help"></textarea></label>
+      <p class="demo-note" id="announcement-editor-help">Plain text with paragraphs and line breaks. HTML and URLs are displayed as text; scripts, embeds and executable links are never rendered.</p>
+      <div class="announcement-editor-grid"><label>Publication Date and Time (Asia/Manila)<input name="scheduledAt" type="datetime-local"></label><label>Expiration Date and Time (optional, Asia/Manila)<input name="expiresAt" type="datetime-local"></label><label>Priority<select name="priority" required></select></label></div>
+      <p id="announcement-editor-feedback" role="status" aria-live="polite"></p>
+      <div class="announcement-actions"><button class="secondary-button" type="submit" id="announcement-save-draft">Save as Draft</button><button class="secondary-button" type="button" id="announcement-preview">Preview Announcement</button><button class="secondary-button" type="button" id="announcement-schedule">Schedule Publication</button><button class="primary-button" type="button" id="announcement-publish">Publish Now</button></div>
+    </form>
+  </dialog>
+  <dialog class="portal-dialog announcement-dialog" id="announcement-details" aria-labelledby="announcement-details-title"><header class="modal-header"><h3 id="announcement-details-title" tabindex="-1">Announcement details</h3><button class="secondary-button" type="button" id="announcement-details-close">Back</button></header><div id="announcement-details-body"></div></dialog>
+  <dialog class="portal-dialog announcement-confirm" id="announcement-confirm" aria-labelledby="announcement-confirm-title"><form id="announcement-confirm-form"><h3 id="announcement-confirm-title">Confirm announcement action</h3><p id="announcement-confirm-summary"></p><label id="announcement-reason-label" hidden>Rejection reason<textarea id="announcement-reason" maxlength="1000" rows="3"></textarea></label><p id="announcement-confirm-feedback" role="alert"></p><div class="announcement-actions"><button type="button" class="secondary-button" id="announcement-confirm-cancel">Cancel</button><button type="submit" class="primary-button" id="announcement-confirm-submit">Confirm</button></div></form></dialog>
+</section>
+</body>

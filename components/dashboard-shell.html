@@ -1,0 +1,47 @@
+<body>
+<div class="dashboard-shell" id="dashboard-screen" hidden>
+  <header class="dashboard-header">
+    <a class="dashboard-brand" href="#/dashboard" data-page="dashboard" aria-label="RTU Pasig dashboard">
+      <img src="assets/images/rtu-logo.png" alt="RTU seal" width="60" height="60">
+      <span>RIZAL TECHNOLOGICAL<br>UNIVERSITY<small>Pasig Campus</small></span>
+    </a>
+    <div class="dashboard-topbar">
+      <h1>Academic Services &amp; Records Assistant</h1>
+      <button class="theme-toggle icon-button" id="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false" title="Switch to dark mode"><svg class="portal-icon" aria-hidden="true"><use id="theme-toggle-icon" href="#icon-moon"/></svg></button>
+      <button class="notification-button icon-button" type="button" data-page="announcements" aria-label="Announcements"><svg class="portal-icon" aria-hidden="true"><use href="#icon-inbox"/></svg><span hidden>0</span></button>
+      <div class="account-dropdown" id="account-dropdown">
+        <button class="account-button" id="account-toggle" type="button" aria-label="Account options" aria-controls="account-options" aria-expanded="false"><span class="account-avatar"><svg class="portal-icon" aria-hidden="true"><use href="#icon-user"/></svg></span><span class="account-greeting"><strong data-profile-name>Juan Dela Cruz</strong><small>Student</small></span><svg class="account-chevron portal-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+        <nav class="account-options" id="account-options" aria-label="Account" hidden>
+          <a class="account-option" href="#/profile" data-page="profile"><svg class="portal-icon" aria-hidden="true"><use href="#icon-user"/></svg>My Profile</a>
+          <a class="account-option" href="#/settings" data-page="settings"><svg class="portal-icon" aria-hidden="true"><use href="#icon-settings"/></svg>Settings</a>
+          <button class="account-option" type="button" data-open-dialog="terms-dialog"><svg class="portal-icon" aria-hidden="true"><use href="#icon-document"/></svg>Terms &amp; Conditions</button>
+          <button class="account-option" id="logout-button" type="button"><svg class="portal-icon" aria-hidden="true"><use href="#icon-logout"/></svg>Log out</button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <div class="sidebar-tools">
+    <button class="sidebar-toggle" id="sidebar-toggle" type="button" aria-label="Collapse navigation" title="Collapse navigation" aria-controls="dashboard-sidebar" aria-expanded="true"><svg class="portal-icon" aria-hidden="true"><use href="#icon-menu"/></svg></button>
+  </div>
+  <aside class="dashboard-sidebar" id="dashboard-sidebar" aria-label="Main navigation">
+    <nav class="dashboard-nav">
+      <a class="nav-item is-active" href="#/dashboard" data-page="dashboard" aria-label="Dashboard" title="Dashboard" aria-current="page"><span class="nav-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-home"/></svg></span><span class="nav-label">Dashboard</span></a>
+      <div class="nav-group" id="services-nav-group">
+        <button class="nav-item services-toggle" id="services-toggle" type="button" aria-label="Services" title="Services" aria-controls="services-submenu" aria-expanded="false"><span class="nav-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-document"/></svg></span><span class="nav-label">Services</span><svg class="services-chevron portal-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+        <div class="services-submenu" id="services-submenu" hidden>
+          <a class="nav-subitem" href="#/services/grade-slip" data-page="grade-slip">Grade Slip</a>
+          <a class="nav-subitem" href="#/services/registration-form" data-page="registration-form">Registration Form</a>
+          <a class="nav-subitem" href="#/services/id-printing" data-page="id-printing">ID Printing</a>
+        </div>
+      </div>
+      <a class="nav-item" href="#/my-request" data-page="requests" aria-label="My Requests" title="My Requests"><span class="nav-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-clock"/></svg></span><span class="nav-label">My Requests</span></a>
+      <a class="nav-item" href="#/announcements" data-page="announcements" aria-label="Announcements" title="Announcements"><span class="nav-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-announcement"/></svg></span><span class="nav-label">Announcements</span></a>
+      <a class="nav-item" href="#/help" data-page="help" aria-label="Help" title="Help"><span class="nav-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-help"/></svg></span><span class="nav-label">Help</span></a>
+    </nav>
+  </aside>
+  <button class="sidebar-overlay" id="sidebar-overlay" type="button" aria-label="Close navigation" hidden></button>
+  <main class="dashboard-main" id="dashboard-main"></main>
+</div>
+<p class="portal-notice" id="portal-notice" role="status" aria-live="polite" hidden></p>
+</body>

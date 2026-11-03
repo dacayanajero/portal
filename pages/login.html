@@ -1,0 +1,69 @@
+<body>
+<main class="portal-shell container-fluid p-0" id="login-screen">
+  <div class="brand-backdrop" aria-hidden="true"></div>
+
+  <section class="login-panel" aria-labelledby="login-title">
+    <a class="mobile-brand" href="./" aria-label="RTU Pasig portal home">
+      <img src="assets/images/rtu-logo.png" alt="" width="44" height="44">
+      <span>RIZAL TECHNOLOGICAL UNIVERSITY<small>Pasig Campus</small></span>
+    </a>
+
+    <div class="login-content">
+      <div class="role-switch" role="group" aria-label="Select your account type">
+        <button class="role-button is-active" type="button" data-role="student" aria-pressed="true">Student</button>
+        <button class="role-button" type="button" data-role="staff" aria-pressed="false">Staff</button>
+      </div>
+
+      <header class="login-heading">
+        <h1 id="login-title">Student Login</h1>
+        <p id="login-description">Sign in to access your academic services,<br class="desktop-break"> records, and more.</p>
+      </header>
+
+      <form id="login-form" novalidate>
+        <div class="field-group">
+          <label class="field-label" id="account-label" for="account-number">Student Number</label>
+          <input class="form-control portal-input" id="account-number" name="username" type="text" placeholder="e.g. 2020-12345" autocomplete="username" autocapitalize="none" spellcheck="false" required aria-describedby="account-error">
+          <span class="field-error" id="account-error"></span>
+        </div>
+        <div class="field-group password-group">
+          <label class="field-label" for="password">Password</label>
+          <div class="password-field">
+            <input class="form-control portal-input" id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required aria-describedby="password-error">
+            <button class="password-toggle" id="password-toggle" type="button" aria-label="Show password" aria-pressed="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path class="eye-slash" d="m3 21 18-18"/></svg>
+            </button>
+          </div>
+          <span class="field-error" id="password-error"></span>
+        </div>
+        <div class="privacy-consent">
+          <input class="privacy-consent-input" id="privacy-consent" name="privacy-consent" type="checkbox" aria-describedby="privacy-consent-error">
+          <label class="privacy-consent-label" for="privacy-consent">I have read and understand the <a class="text-link privacy-statement-link" href="#" data-open-dialog="privacy-dialog">Data Privacy Statement</a></label>
+          <span class="field-error" id="privacy-consent-error"></span>
+        </div>
+        <div class="forgot-row"><button class="text-link" type="button" data-open-dialog="recovery-dialog">Forgot Password?</button></div>
+        <div class="login-action"><button class="btn login-button" type="submit">Login</button></div>
+        <p class="register-prompt" id="register-prompt">New user? <button class="text-link register-link" type="button" data-open-dialog="register-dialog">Register</button> here!</p>
+        <p class="provision-note" id="staff-provision-note" hidden>Staff accounts are provisioned by the Academic Services Office. Contact the administrator for access.</p>
+        <p class="form-status" id="login-status" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+    <p class="demo-label">Academic services portal <span aria-hidden="true">·</span> Front-end demo</p>
+  </section>
+
+  <aside class="brand-panel" aria-labelledby="assistant-title">
+    <a class="university-brand" href="./" aria-label="RTU Pasig portal home">
+      <span>RIZAL TECHNOLOGICAL UNIVERSITY<small>Pasig Campus</small></span>
+      <img src="assets/images/rtu-logo.png" alt="Rizal Technological University seal" width="65" height="65">
+    </a>
+    <div class="assistant-intro">
+      <div class="assistant-heading">
+        <img class="assistant-mascot" src="assets/images/assistant.svg" alt="A friendly blue and gold robot assistant" width="96" height="112">
+        <h2 id="assistant-title">NLP-Based Academic Services<br class="wide-break"> &amp; Records Assistant</h2>
+      </div>
+      <p>Ask about your grades, request records, and follow every document from request to release.</p>
+      <p>Students and staff sign in with their institutional number.</p>
+    </div>
+    <div class="brand-footer"><span class="status-dot" aria-hidden="true"></span> Your academic journey, made simpler.</div>
+  </aside>
+</main>
+</body>

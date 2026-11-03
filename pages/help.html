@@ -1,0 +1,71 @@
+<body>
+<section class="dashboard-view content-view student-help-workspace" data-view="help" aria-labelledby="help-title" hidden>
+  <header class="help-hero">
+    <span class="help-hero-mark" aria-hidden="true">?</span>
+    <div class="help-hero-copy">
+      <h2 id="help-title" tabindex="-1">Help</h2>
+      <p class="page-intro">Find answers to common questions, guides, and support to make your academic journey easier.</p>
+    </div>
+  </header>
+
+  <div class="help-layout">
+    <div class="help-workspace">
+      <form id="student-help-search" class="help-search" role="search">
+        <svg class="portal-icon" aria-hidden="true"><use href="#icon-search"/></svg>
+        <label class="visually-hidden" for="student-help-query">Search frequently asked questions</label>
+        <input id="student-help-query" name="query" type="search" placeholder="Search frequently asked questions ..." autocomplete="off">
+      </form>
+      <p id="student-help-feedback" class="help-feedback" role="status" aria-live="polite"></p>
+      <div id="student-help-faqs" class="help-faq-groups"></div>
+      <p id="student-help-empty" class="help-empty" hidden>No published FAQ matches this search. Clear the search or contact support for assistance.</p>
+      <div class="help-main-actions">
+        <button class="secondary-button" type="button" data-assistant="How can you help me?">Ask the assistant</button>
+      </div>
+      <p class="demo-note">The existing assistant is a local keyword-based guide grounded in the same published FAQs, not a live generative AI service. Development-only guidance is saved in this browser; no actual university office receipt or external delivery is claimed.</p>
+    </div>
+
+    <aside class="help-sidebar" aria-labelledby="help-contact-title">
+      <div class="help-support-card">
+        <img class="help-assistant" src="assets/images/assistant.svg" alt="" width="150" height="180">
+        <h3 id="help-contact-title">Still have questions?</h3>
+        <p>Our support team is here to help you. Feel free to reach out!</p>
+        <ul class="help-contact-list">
+          <li>
+            <span class="help-contact-icon" aria-hidden="true"><svg class="portal-icon"><use href="#icon-envelope"/></svg></span>
+            <span class="help-contact-text"><span class="help-contact-label">Email</span><span class="help-contact-value">2024-123456@rtu.edu.ph</span></span>
+          </li>
+          <li>
+            <span class="help-contact-icon" aria-hidden="true"><svg class="portal-icon"><use href="#icon-phone"/></svg></span>
+            <span class="help-contact-text"><span class="help-contact-label">Phone</span><span class="help-contact-value">1234567890</span></span>
+          </li>
+          <li>
+            <span class="help-contact-icon" aria-hidden="true"><svg class="portal-icon"><use href="#icon-clock"/></svg></span>
+            <span class="help-contact-text"><span class="help-contact-label">Operating Hours</span><span class="help-contact-value">Mon - Fri<br>8:00 AM - 5:00 PM</span></span>
+          </li>
+        </ul>
+        <button class="primary-button help-contact-button" type="button" id="student-contact-support">Contact Support</button>
+        <p class="help-contact-note">Do not include passwords or unnecessary private information in an inquiry. These are demo contact details for this browser prototype; confirm official channels with the university.</p>
+      </div>
+    </aside>
+  </div>
+
+  <section class="content-card help-secondary-card" aria-labelledby="student-support-title">
+    <h3 id="student-support-title">My Support Tickets</h3>
+    <p id="student-support-feedback" role="status" aria-live="polite"></p>
+    <div id="student-support-tickets" class="support-ticket-cards"></div>
+    <p id="student-support-empty" hidden>No support inquiries have been saved for your account.</p>
+    <div class="staff-request-pagination">
+      <p id="student-support-count"></p>
+      <div><button class="secondary-button" type="button" id="student-support-prev">Previous inquiries</button><span id="student-support-page"></span><button class="secondary-button" type="button" id="student-support-next">Next inquiries</button></div>
+    </div>
+  </section>
+
+  <section class="content-card help-secondary-card" aria-labelledby="student-advisories-title">
+    <h3 id="student-advisories-title">Published Service Advisories</h3>
+    <div id="student-help-advisories"></div>
+    <a class="secondary-button" href="#/announcements">View All Announcements</a>
+  </section>
+
+  <dialog class="portal-dialog support-dialog" id="student-support-create-dialog" aria-labelledby="student-support-create-title"><header class="modal-header"><h3 id="student-support-create-title" tabindex="-1">Contact Support</h3><button class="secondary-button" type="button" id="student-support-create-close">Close inquiry form</button></header><form id="student-support-create-form" class="support-editor"><div class="support-form-grid"><label>Student Name<input id="support-student-name" readonly></label><label>Student Number<input id="support-student-number" readonly></label><label>Registered Email (when available)<input id="support-student-email" readonly></label><label>Inquiry Category<select name="category" required><option value="">Select a category</option></select></label></div><label>Subject<input name="subject" maxlength="160" required></label><label>Description<textarea name="description" rows="6" maxlength="5000" required></textarea></label><div class="support-form-grid"><label>Related Request (optional)<select name="requestId"><option value="">No related request</option></select></label><label>Related Appointment (optional)<select name="appointmentId"><option value="">No related appointment</option></select></label></div><p class="demo-note">Identity is taken from your signed-in account, not editable identity fields. This saves a development inquiry only in this browser; it is not an official submission to a university office.</p><p id="student-support-create-feedback" role="status"></p><button class="primary-button" type="submit" id="student-support-create-submit">Save Support Inquiry</button></form></dialog>
+</section>
+</body>

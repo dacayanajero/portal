@@ -1,0 +1,250 @@
+/* Service request wizard: shared by Grade Slip, ID Printing and Registration Form. */
+.dashboard-shell:is([data-current-page="grade-slip"], [data-current-page="id-printing"], [data-current-page="registration-form"]) .dashboard-main { padding: 32px 32px 48px; background: var(--surface-page); }
+.grade-slip-view { width: 100%; max-width: 1040px; margin: 0 auto; color: var(--ink); }
+.grade-slip-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 18px; }
+.grade-slip-heading h2 { width: fit-content; margin: 0 0 2px; font-size: clamp(26px, 2.4vw, 32px); font-weight: 700; line-height: 1.2; letter-spacing: -.6px; color: var(--dashboard-navy); }
+.grade-slip-heading h2:focus { outline: none; }
+.grade-slip-heading > div:first-child > p { margin: 0; color: var(--ink-muted); font-size: 14px; line-height: 1.45; }
+.grade-slip-progress { width: min(260px, 40%); text-align: right; }
+.grade-slip-progress progress { display: block; width: 100%; height: 8px; overflow: hidden; border: 0; border-radius: var(--radius-pill); appearance: none; background: var(--border); color: var(--navy); accent-color: var(--navy); }
+.grade-slip-progress progress::-webkit-progress-bar { border-radius: var(--radius-pill); background: var(--border); }
+.grade-slip-progress progress::-webkit-progress-value { border-radius: var(--radius-pill); background: var(--navy); }
+.grade-slip-progress progress::-moz-progress-bar { border-radius: var(--radius-pill); background: var(--navy); }
+.grade-slip-progress p { margin: 7px 0 0; color: var(--ink-muted); font-size: 12px; line-height: 1.4; }
+
+.grade-slip-steps { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+.grade-slip-step { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 7px 14px; border: 1px solid var(--dashboard-border); border-radius: var(--radius-pill); background: var(--surface); color: var(--ink-muted); font-size: 13px; font-weight: 600; line-height: 1.3; text-align: left; }
+.grade-slip-step:hover { border-color: var(--border-strong); color: var(--ink); }
+.grade-slip-step-number { display: grid; place-items: center; flex: 0 0 22px; width: 22px; height: 22px; border-radius: 50%; background: var(--surface-muted); color: var(--ink-muted); font-size: 11px; font-weight: 700; }
+.grade-slip-step.is-complete { border-color: var(--border-strong); color: var(--navy); }
+.grade-slip-step.is-complete .grade-slip-step-number { background: var(--navy); color: #fff; }
+.grade-slip-step.is-active { border-color: var(--navy); background: var(--navy); color: #fff; }
+.grade-slip-step.is-active .grade-slip-step-number { background: #ffffff2e; color: #fff; }
+
+.grade-slip-workspace { position: relative; min-height: 0; }
+.grade-slip-card { width: 100%; margin: 0; padding: 26px 28px 24px; border: 1px solid var(--dashboard-border); border-radius: var(--radius-xl); background: var(--surface); box-shadow: var(--shadow-sm); }
+.grade-slip-card h3 { display: flex; align-items: center; gap: 10px; margin: 0 0 6px; font-size: 21px; font-weight: 700; line-height: 1.3; color: var(--dashboard-navy); }
+.grade-slip-card h3 .portal-icon { width: 26px; height: 26px; stroke-width: 1.7; }
+.grade-slip-card h3:focus { outline: none; }
+.grade-slip-card .grade-slip-personal-heading { margin: 0 0 22px; padding: 0; background: none; color: inherit; }
+
+.grade-slip-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 24px; }
+.grade-slip-field { min-width: 0; }
+.grade-slip-field label { display: block; margin: 0 0 6px; color: var(--ink-muted); font-size: 13px; font-weight: 600; line-height: 1.35; }
+.grade-slip-field label span { font-size: 12px; font-weight: 400; }
+.grade-slip-field :is(input, select, textarea) { display: block; width: 100%; min-width: 0; min-height: 46px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-md); outline: none; background: var(--surface); color: var(--ink); font: inherit; font-size: 15px; line-height: 1.4; }
+.grade-slip-field textarea { min-height: 96px; resize: vertical; }
+.grade-slip-field textarea.grade-slip-program { min-height: 46px; resize: none; overflow: hidden; overflow-wrap: anywhere; }
+.grade-slip-field :is(input, select, textarea):hover { border-color: var(--border-strong); }
+.grade-slip-field :is(input, select, textarea):focus-visible { outline: 3px solid var(--focus-ring-strong); outline-offset: 1px; border-color: var(--navy); }
+.grade-slip-field :is(input, select, textarea)[aria-invalid="true"] { border-color: var(--error); }
+.grade-slip-field input[readonly] { background: var(--surface-muted); color: var(--ink-muted); cursor: default; }
+.grade-slip-field input[readonly]:hover { border-color: var(--border); }
+.grade-slip-field :is(input, textarea)::placeholder { color: var(--ink-subtle); opacity: 1; }
+.grade-slip-field small { display: block; margin-top: 5px; color: var(--ink-subtle); font-size: 12px; line-height: 1.4; }
+.grade-slip-field-wide { grid-column: 1 / -1; }
+
+.grade-slip-details-heading { display: flex; align-items: flex-start; gap: 10px; margin: 0 0 18px; }
+.grade-slip-details-heading > .portal-icon { flex: 0 0 26px; width: 26px; height: 26px; stroke-width: 1.7; }
+.grade-slip-details-heading h3 { margin: 0 0 2px; }
+.grade-slip-details-heading p { margin: 0; color: var(--ink-muted); font-size: 13px; line-height: 1.45; }
+.grade-slip-enrollment-intro { margin: 0 0 20px; color: var(--ink-muted); font-size: 14px; line-height: 1.5; }
+.grade-slip-enrollment-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; max-width: 560px; margin: 0 0 24px; }
+.grade-slip-schedule-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 20px 24px; }
+.grade-slip-picker { position: relative; }
+.grade-slip-picker input { padding-right: 52px; }
+.grade-slip-picker.has-native-picker input::-webkit-calendar-picker-indicator { display: none; }
+.grade-slip-picker button { position: absolute; top: 50%; right: 6px; display: grid; place-items: center; width: 34px; height: 34px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-muted); color: var(--navy); transform: translateY(-50%); }
+.grade-slip-picker button:hover { border-color: var(--border-strong); background: var(--surface); }
+.grade-slip-picker button:focus-visible { outline: 3px solid var(--focus-ring-strong); outline-offset: 1px; }
+.grade-slip-picker .portal-icon { width: 20px; height: 20px; stroke-width: 1.8; }
+.grade-slip-time-title { margin: 0 0 6px; font-size: 14px; font-weight: 700; color: var(--ink); }
+.grade-slip-time-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.grade-slip-time-fields label { font-size: 13px; }
+.grade-slip-time-range { margin: 8px 0 0; color: var(--ink-muted); font-size: 13px; line-height: 1.5; }
+.grade-slip-time-range.has-time { color: var(--ink); font-weight: 600; }
+.grade-slip-request-options { margin-top: 20px; }
+.grade-slip-request-options summary { width: fit-content; padding: 6px 0; color: var(--navy); font-size: 14px; font-weight: 600; cursor: pointer; }
+.grade-slip-request-options summary:focus-visible { outline: 3px solid var(--focus-ring-strong); outline-offset: 4px; }
+.grade-slip-request-options > .grade-slip-fields { margin-top: 14px; }
+
+.grade-slip-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+.grade-slip-actions > .secondary-button { margin-right: auto; }
+.grade-slip-actions .portal-icon { width: 18px; height: 18px; margin-left: 8px; }
+.grade-slip-error { margin: 16px 0 0; color: var(--error); font-size: 13px; line-height: 1.5; }
+
+.grade-slip-review-banner { margin: 0 0 22px; }
+.grade-slip-card .grade-slip-review-banner h3 { margin-bottom: 4px; }
+.grade-slip-review-intro { margin: 0 0 0 36px; color: var(--ink-muted); font-size: 13px; line-height: 1.45; }
+.grade-slip-review-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(200px, 260px); gap: 36px; max-width: 820px; }
+.grade-slip-review-student { min-width: 0; }
+.grade-slip-review-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 24px; margin: 0; }
+.grade-slip-review-grid > div { min-width: 0; }
+.grade-slip-review-grid dt { margin: 0 0 3px; color: var(--ink-muted); font-size: 12px; font-weight: 600; line-height: 1.35; }
+.grade-slip-review-grid dd { margin: 0; color: var(--ink); font-size: 16px; font-weight: 700; line-height: 1.35; overflow-wrap: anywhere; white-space: pre-line; }
+.grade-slip-review-academic-intro { margin: 20px 0 8px; color: var(--ink-subtle); font-size: 12px; line-height: 1.45; }
+.grade-slip-review-academic { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 0; }
+.grade-slip-review-academic > div { min-width: 0; }
+.grade-slip-review-academic dd { margin: 0; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface-muted); color: var(--navy); font-size: 13px; font-weight: 600; text-align: center; overflow-wrap: anywhere; }
+.grade-slip-review-schedule { display: grid; align-content: start; gap: 18px; min-width: 0; }
+.grade-slip-review-schedule h4 { margin: 0 0 6px; color: var(--ink-muted); font-size: 12px; font-weight: 700; letter-spacing: .04em; line-height: 1.35; text-transform: uppercase; }
+.grade-slip-review-date { display: grid; gap: 6px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface-muted); }
+.grade-slip-review-month { font-size: 12px; font-weight: 600; color: var(--ink-muted); text-align: center; }
+.grade-slip-review-day { display: grid; justify-self: center; justify-items: center; min-width: 64px; padding: 5px 8px; border-radius: var(--radius-sm); background: var(--navy); color: #fff; line-height: 1.2; }
+.grade-slip-review-day > span { font-size: 10px; text-transform: uppercase; }
+.grade-slip-review-day strong { font-size: 15px; font-weight: 600; }
+.grade-slip-review-time { padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface-muted); }
+.grade-slip-review-time > span { display: block; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--navy); color: #fff; font-size: 15px; font-weight: 600; }
+.grade-slip-review-additional { max-width: 820px; margin-top: 18px; }
+.grade-slip-review-additional summary { width: fit-content; padding: 4px 0; color: var(--navy); font-size: 13px; font-weight: 600; cursor: pointer; }
+.grade-slip-review-additional summary:focus-visible { outline: 3px solid var(--focus-ring-strong); outline-offset: 4px; }
+.grade-slip-review-additional .grade-slip-review-grid { gap: 14px 24px; margin-top: 12px; }
+.grade-slip-review-additional dd { font-size: 14px; font-weight: 600; }
+.grade-slip-review-consent { display: flex; align-items: flex-start; gap: 10px; width: fit-content; max-width: 100%; margin-top: 22px; color: var(--ink); font-size: 14px; line-height: 1.45; cursor: pointer; }
+.grade-slip-review-consent input { flex: 0 0 20px; width: 20px; height: 20px; margin: 1px 0 0; accent-color: var(--navy); cursor: pointer; }
+.grade-slip-review-consent input[aria-invalid="true"] { outline: 2px solid var(--error); outline-offset: 3px; }
+.grade-slip-demo-note { margin: 10px 0 0; color: var(--ink-subtle); font-size: 12px; line-height: 1.5; }
+.grade-slip-review-disclaimer { max-width: 520px; margin: 10px 0 0; color: var(--ink-muted); font-size: 12px; line-height: 1.5; }
+
+.grade-slip-workspace .grade-slip-assistant { position: relative; display: flex; width: fit-content; min-width: 0; margin: 34px 0 0 auto; }
+.grade-slip-footer { margin: 18px 2px 0; padding-top: 12px; border-top: 1px solid var(--dashboard-border); }
+.grade-slip-footer p { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--ink-muted); font-size: 13px; line-height: 1.5; }
+.grade-slip-footer .portal-icon { width: 18px; height: 18px; }
+
+.portal-dialog.grade-slip-confirmation { width: min(440px, calc(100% - 32px)); padding: 26px 28px; border-radius: var(--radius-lg); background: var(--surface); color: var(--ink); text-align: left; box-shadow: var(--shadow-lg); }
+.grade-slip-confirmation::backdrop { background: #071b3533; backdrop-filter: blur(7px); }
+.grade-slip-confirmation h2 { margin: 0; color: var(--ink); font-size: 18px; font-weight: 700; line-height: 1.35; }
+.grade-slip-confirmation > p { margin: 10px 0 0; color: var(--ink-muted); font-size: 14px; line-height: 1.5; }
+.grade-slip-confirmation-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+.grade-slip-confirmation-actions button { min-width: 96px; min-height: 44px; padding: 10px 18px; border: 1px solid transparent; border-radius: var(--radius-md); font-size: 14px; font-weight: 700; line-height: 1.3; }
+.grade-slip-confirm-yes { background: var(--navy); color: #fff; }
+.grade-slip-confirm-yes:hover { background: var(--navy-deep); }
+.grade-slip-confirm-no { border-color: var(--border); background: var(--surface-muted); color: var(--ink); }
+.grade-slip-confirm-no:hover { background: #e6edf3; }
+
+.dashboard-shell:is([data-current-page="grade-slip-complete"], [data-current-page="id-printing-complete"], [data-current-page="registration-form-complete"]) :is(.dashboard-brand, .dashboard-sidebar, .sidebar-overlay, .sidebar-toggle) { display: none; }
+.dashboard-shell:is([data-current-page="grade-slip-complete"], [data-current-page="id-printing-complete"], [data-current-page="registration-form-complete"]) .dashboard-main { margin-left: 0; padding: 56px 24px 48px; background: var(--surface-page); }
+.schedule-complete-view { width: 100%; max-width: 720px; margin: 0 auto; color: var(--ink); text-align: center; }
+.schedule-complete-mark { display: grid; place-items: center; width: 120px; height: 120px; margin: 0 auto; border-radius: 50%; background: var(--success); color: #fff; box-shadow: var(--shadow-md); }
+.schedule-complete-mark .portal-icon { width: 84px; height: 84px; stroke-width: 3; }
+.schedule-complete-view h2 { width: fit-content; max-width: 100%; margin: 20px auto 6px; color: var(--dashboard-navy); font-size: clamp(28px, 4vw, 42px); font-weight: 700; line-height: 1.15; letter-spacing: -.8px; }
+.schedule-complete-view h2:focus { outline: none; }
+.schedule-complete-message { margin: 0 0 18px; color: var(--ink-muted); font-size: clamp(15px, 1.8vw, 18px); line-height: 1.5; }
+.schedule-complete-card { display: inline-flex; align-items: center; gap: 16px; max-width: 100%; padding: 18px 22px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); text-align: left; box-shadow: var(--shadow-sm); }
+.schedule-complete-card > .portal-icon { flex: 0 0 44px; width: 44px; height: 44px; stroke-width: 1.7; color: var(--navy); }
+.schedule-complete-card > div { min-width: 0; }
+.schedule-complete-label { display: block; margin-bottom: 2px; color: var(--ink-muted); font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.schedule-complete-card time { display: block; color: var(--ink); font-size: clamp(17px, 2vw, 21px); font-weight: 700; line-height: 1.3; text-transform: uppercase; overflow-wrap: anywhere; }
+.schedule-complete-card p { margin: 4px 0 0; color: var(--ink-muted); font-size: 13px; line-height: 1.5; }
+.schedule-complete-request { margin: 12px 0 0; color: var(--ink-subtle); font-size: 12px; }
+.schedule-complete-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; margin-top: 26px; }
+.schedule-complete-actions a { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 44px; padding: 10px 18px; border: 1px solid transparent; border-radius: var(--radius-sm); font-size: 14px; font-weight: 700; line-height: 1.4; text-decoration: none; }
+.schedule-complete-dashboard { background: var(--navy); color: #fff; }
+.schedule-complete-dashboard:hover { background: var(--navy-deep); color: #fff; }
+.schedule-complete-requests { border-color: var(--border-strong); background: var(--surface); color: var(--navy); }
+.schedule-complete-requests:hover { background: var(--surface-muted); color: var(--navy-deep); }
+.schedule-complete-actions .portal-icon { width: 18px; height: 18px; }
+
+html[data-theme="dark"] .dashboard-shell:is([data-current-page="grade-slip"], [data-current-page="id-printing"], [data-current-page="registration-form"]) .dashboard-main,
+html[data-theme="dark"] .dashboard-shell:is([data-current-page="grade-slip-complete"], [data-current-page="id-printing-complete"], [data-current-page="registration-form-complete"]) .dashboard-main { background: var(--theme-canvas); }
+html[data-theme="dark"] .grade-slip-view { color: var(--theme-text); }
+html[data-theme="dark"] .grade-slip-heading > div:first-child > p,
+html[data-theme="dark"] .grade-slip-progress p,
+html[data-theme="dark"] .grade-slip-field label,
+html[data-theme="dark"] .grade-slip-field small,
+html[data-theme="dark"] .grade-slip-details-heading p,
+html[data-theme="dark"] .grade-slip-enrollment-intro,
+html[data-theme="dark"] .grade-slip-time-range,
+html[data-theme="dark"] .grade-slip-review-grid dt,
+html[data-theme="dark"] .grade-slip-review-intro,
+html[data-theme="dark"] .grade-slip-review-academic-intro,
+html[data-theme="dark"] .grade-slip-review-schedule h4,
+html[data-theme="dark"] .grade-slip-review-month,
+html[data-theme="dark"] .grade-slip-demo-note,
+html[data-theme="dark"] .grade-slip-review-disclaimer,
+html[data-theme="dark"] .grade-slip-footer p,
+html[data-theme="dark"] .schedule-complete-message,
+html[data-theme="dark"] .schedule-complete-card p,
+html[data-theme="dark"] .schedule-complete-request { color: var(--theme-muted); }
+html[data-theme="dark"] .grade-slip-progress progress { background: var(--theme-line); }
+html[data-theme="dark"] .grade-slip-progress progress::-webkit-progress-bar { background: var(--theme-line); }
+html[data-theme="dark"] .grade-slip-progress progress::-webkit-progress-value { background: #8bb6ff; }
+html[data-theme="dark"] .grade-slip-progress progress::-moz-progress-bar { background: #8bb6ff; }
+html[data-theme="dark"] .grade-slip-step { border-color: var(--theme-line); background: var(--theme-surface); color: var(--theme-muted); }
+html[data-theme="dark"] .grade-slip-step:hover { border-color: #6d9fd6; color: var(--theme-text); }
+html[data-theme="dark"] .grade-slip-step-number { background: var(--theme-raised); color: var(--theme-muted); }
+html[data-theme="dark"] .grade-slip-step.is-complete { border-color: #6d9fd6; color: #cfe1ff; }
+html[data-theme="dark"] .grade-slip-step.is-complete .grade-slip-step-number { background: #2a5f9e; color: #fff; }
+html[data-theme="dark"] .grade-slip-step.is-active { border-color: #2a5f9e; background: #2a5f9e; color: #fff; }
+html[data-theme="dark"] .grade-slip-card { border-color: var(--theme-line); background: var(--theme-surface); box-shadow: none; }
+html[data-theme="dark"] .grade-slip-field :is(input, select, textarea) { border-color: var(--theme-line); background: var(--theme-field); color: var(--theme-text); }
+html[data-theme="dark"] .grade-slip-field :is(input, select, textarea):hover { border-color: #6d9fd6; }
+html[data-theme="dark"] .grade-slip-field input[readonly] { background: var(--theme-raised); color: var(--theme-muted); }
+html[data-theme="dark"] .grade-slip-field :is(input, textarea)::placeholder { color: var(--theme-muted); }
+html[data-theme="dark"] .grade-slip-picker button { border-color: var(--theme-line); background: var(--theme-raised); color: #bdd8ff; }
+html[data-theme="dark"] .grade-slip-picker button:hover { background: #345b86; }
+html[data-theme="dark"] .grade-slip-request-options summary,
+html[data-theme="dark"] .grade-slip-review-additional summary { color: #9dc0ff; }
+html[data-theme="dark"] .grade-slip-request-options summary:hover,
+html[data-theme="dark"] .grade-slip-review-additional summary:hover { color: #cfe1ff; }
+html[data-theme="dark"] .grade-slip-review-grid dd,
+html[data-theme="dark"] .grade-slip-review-consent,
+html[data-theme="dark"] .grade-slip-time-title { color: var(--theme-text); }
+html[data-theme="dark"] .grade-slip-review-academic dd { border-color: var(--theme-line); background: var(--theme-raised); color: #cfe1ff; }
+html[data-theme="dark"] .grade-slip-review-date,
+html[data-theme="dark"] .grade-slip-review-time { border-color: var(--theme-line); background: var(--theme-raised); }
+html[data-theme="dark"] .grade-slip-review-day,
+html[data-theme="dark"] .grade-slip-review-time > span { background: #2a5f9e; }
+html[data-theme="dark"] .grade-slip-footer { border-color: var(--theme-line); }
+html[data-theme="dark"] .portal-dialog.grade-slip-confirmation { background: var(--theme-surface); color: var(--theme-text); }
+html[data-theme="dark"] .grade-slip-confirmation h2 { color: var(--theme-text); }
+html[data-theme="dark"] .grade-slip-confirmation > p { color: var(--theme-muted); }
+html[data-theme="dark"] .grade-slip-confirm-no { border-color: var(--theme-line); background: var(--theme-raised); color: var(--theme-text); }
+html[data-theme="dark"] .grade-slip-confirm-no:hover { background: #345b86; }
+html[data-theme="dark"] .schedule-complete-view { color: var(--theme-text); }
+html[data-theme="dark"] .schedule-complete-card { border-color: var(--theme-line); background: var(--theme-surface); box-shadow: none; }
+html[data-theme="dark"] .schedule-complete-card time { color: var(--theme-text); }
+html[data-theme="dark"] .schedule-complete-requests { border-color: #6d9fd6; background: transparent; color: #c4ddff; }
+html[data-theme="dark"] .schedule-complete-requests:hover { background: var(--theme-raised); color: #fff; }
+
+@media (max-width: 1100px) {
+  .grade-slip-review-layout { gap: 28px; }
+}
+@media (max-width: 960px) {
+  .grade-slip-fields { gap: 18px 20px; }
+  .grade-slip-review-layout { grid-template-columns: minmax(0, 1fr) minmax(190px, 230px); }
+}
+@media (max-width: 700px) {
+  .dashboard-shell:is([data-current-page="grade-slip"], [data-current-page="id-printing"], [data-current-page="registration-form"]) .dashboard-main { padding: 24px 16px 32px; }
+  .dashboard-shell:is([data-current-page="grade-slip-complete"], [data-current-page="id-printing-complete"], [data-current-page="registration-form-complete"]) .dashboard-main { padding: 40px 18px; }
+  .grade-slip-heading { flex-direction: column; align-items: stretch; gap: 14px; }
+  .grade-slip-heading h2 { font-size: 26px; }
+  .grade-slip-progress { width: 100%; text-align: left; }
+  .grade-slip-steps { gap: 6px; }
+  .grade-slip-step { padding: 7px 12px; font-size: 12px; }
+  .grade-slip-card { padding: 20px 18px; }
+  .grade-slip-schedule-fields { grid-template-columns: 1fr; }
+  .grade-slip-field :is(input, select, textarea) { font-size: 16px; }
+  .grade-slip-review-layout { grid-template-columns: 1fr; gap: 24px; }
+  .grade-slip-review-schedule { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 14px; }
+  .grade-slip-review-schedule > div { min-width: 0; }
+  .grade-slip-footer { margin-left: 0; margin-right: 0; }
+  .schedule-complete-mark { width: 104px; height: 104px; }
+  .schedule-complete-mark .portal-icon { width: 72px; height: 72px; }
+  .schedule-complete-card { gap: 12px; padding: 16px 18px; }
+  .schedule-complete-card > .portal-icon { flex-basis: 36px; width: 36px; height: 36px; }
+}
+@media (max-width: 480px) {
+  .portal-dialog.grade-slip-confirmation { padding: 22px 20px; }
+  .grade-slip-confirmation-actions button { min-width: 84px; }
+  .grade-slip-fields, .grade-slip-time-fields { grid-template-columns: 1fr; gap: 16px; }
+  .grade-slip-enrollment-fields { grid-template-columns: 1fr; }
+  .grade-slip-card h3 { font-size: 19px; }
+  .grade-slip-review-student > .grade-slip-review-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 14px; }
+  .grade-slip-review-grid dd { font-size: 15px; }
+  .grade-slip-review-schedule { grid-template-columns: 1fr; }
+  .grade-slip-review-intro { margin-left: 0; }
+  .grade-slip-actions { flex-wrap: wrap; }
+  .grade-slip-actions > .secondary-button { margin-right: 0; }
+  .schedule-complete-actions { flex-direction: column; align-items: stretch; }
+}

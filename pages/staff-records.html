@@ -1,0 +1,41 @@
+<body>
+<section class="dashboard-view staff-view student-records-workspace" data-view="staff-records" aria-labelledby="staff-records-title" hidden>
+  <header class="staff-page-heading"><h2 id="staff-records-title" tabindex="-1" class="visually-hidden">Student Records Management</h2><span class="staff-role-chip">Read-only staff access</span></header>
+  <p class="demo-note">Development-only directory · Browser-registered student accounts and self-reported profiles, available in this browser only. Official enrollment verification is not connected.</p>
+  <section class="staff-stat-grid" id="student-record-stats" aria-label="Student records overview"></section>
+  <p id="student-record-feedback" role="status" aria-live="polite"></p>
+  <section class="content-card staff-panel" id="student-directory" aria-labelledby="student-directory-title">
+    <header class="staff-panel-heading"><div><h3 id="student-directory-title" tabindex="-1">Student directory</h3><p>Saved student accounts only. Registration does not verify enrollment.</p></div></header>
+    <form id="student-directory-filters" class="student-record-filters">
+      <label>Search students<input type="search" name="query" placeholder="Student number, name, or program" autocomplete="off"></label>
+      <label>Program<select name="program"><option value="">All programs</option></select></label>
+      <label>Year level<select name="yearLevel"><option value="">All year levels</option></select></label>
+      <label>Semester<select name="semester"><option value="">All semesters</option></select></label>
+      <label>Sort by<select name="sort"><option value="name">Student name A–Z</option><option value="number">Student number</option></select></label>
+      <button type="reset" class="secondary-button">Clear Filters</button>
+    </form>
+    <div class="staff-table-wrap" role="region" aria-label="Student directory table, scroll for more columns" tabindex="0"><table class="staff-table student-directory-table"><caption class="visually-hidden">Browser-local student directory</caption><thead><tr><th scope="col">Student Number</th><th scope="col">Student Name</th><th scope="col">Program</th><th scope="col">Year Level</th><th scope="col">Semester</th><th scope="col">Enrollment Information</th><th scope="col">Active Requests</th><th scope="col">Actions</th></tr></thead><tbody id="student-directory-rows"></tbody></table></div>
+    <p class="staff-empty" id="student-directory-empty" hidden>No registered student accounts are available.</p>
+    <div class="staff-request-pagination"><p id="student-directory-count" aria-live="polite"></p><div><button type="button" class="secondary-button" id="student-directory-prev">Previous</button><span id="student-directory-page"></span><button type="button" class="secondary-button" id="student-directory-next">Next</button></div></div>
+  </section>
+  <section class="content-card staff-panel student-record-detail" id="student-record-detail" aria-labelledby="student-record-name" hidden>
+    <header class="staff-panel-heading"><div><p id="student-record-number" class="staff-eyebrow"></p><h3 id="student-record-name" tabindex="-1">Student record</h3><p id="student-record-source"></p></div><button type="button" class="secondary-button" id="student-record-back">Back to directory</button></header>
+    <div class="student-record-actions" id="student-record-origin"></div>
+    <section class="student-record-review" aria-labelledby="student-record-review-title"><h4 id="student-record-review-title">Information review</h4><p id="student-record-completeness"></p><p>Completeness is a display-field check, not enrollment verification or a university processing requirement. Verification procedures are not configured; this review is read-only.</p><p id="student-record-discrepancy"></p></section>
+    <nav class="student-record-tabs" role="tablist" aria-label="Student record sections">
+      <button type="button" role="tab" id="student-tab-personal" data-student-tab="personal" aria-controls="student-panel-personal" aria-selected="true">Personal Information</button>
+      <button type="button" role="tab" id="student-tab-academic" data-student-tab="academic" aria-controls="student-panel-academic" aria-selected="false" tabindex="-1">Academic &amp; Enrollment Information</button>
+      <button type="button" role="tab" id="student-tab-requests" data-student-tab="requests" aria-controls="student-panel-requests" aria-selected="false" tabindex="-1">Document Request History</button>
+      <button type="button" role="tab" id="student-tab-appointments" data-student-tab="appointments" aria-controls="student-panel-appointments" aria-selected="false" tabindex="-1">Appointment History</button>
+      <button type="button" role="tab" id="student-tab-releases" data-student-tab="releases" aria-controls="student-panel-releases" aria-selected="false" tabindex="-1">Document Release History</button>
+    </nav>
+    <section id="student-panel-personal" role="tabpanel" aria-labelledby="student-tab-personal" tabindex="0"></section>
+    <section id="student-panel-academic" role="tabpanel" aria-labelledby="student-tab-academic" tabindex="0" hidden></section>
+    <section id="student-panel-requests" role="tabpanel" aria-labelledby="student-tab-requests" tabindex="0" hidden></section>
+    <section id="student-panel-appointments" role="tabpanel" aria-labelledby="student-tab-appointments" tabindex="0" hidden></section>
+    <section id="student-panel-releases" role="tabpanel" aria-labelledby="student-tab-releases" tabindex="0" hidden></section>
+    <section class="student-record-quick"><h4>Quick actions</h4><div class="student-record-actions" id="student-record-quick-actions"></div></section>
+    <section><h4>Recorded student activity</h4><p class="demo-note">Lifecycle events from shared request and appointment histories. Internal processing notes and identity-verification details are excluded.</p><ol class="student-record-timeline" id="student-record-timeline"></ol><p id="student-record-timeline-count"></p></section>
+  </section>
+</section>
+</body>

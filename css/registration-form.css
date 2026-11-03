@@ -1,0 +1,53 @@
+/* Registration Form: shared wizard card plus an inline assistant panel. */
+.registration-workspace { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 340px); align-items: start; gap: 20px; min-height: 0; margin: 0; padding: 0; background: none; }
+.registration-card.grade-slip-card { width: 100%; min-width: 0; }
+.registration-card select { padding-right: 32px; text-overflow: ellipsis; }
+.registration-card .grade-slip-review-consent { align-items: flex-start; }
+.registration-intro { margin: 0 0 20px; color: var(--ink-muted); font-size: 14px; line-height: 1.5; }
+.registration-review-grid { gap: 22px 24px; }
+.registration-workspace:has(#registration-review:not([hidden])) { grid-template-columns: minmax(0, 1fr); }
+.registration-workspace:has(#registration-review:not([hidden])) > .registration-assistant { display: none; }
+.registration-review-assistant { position: relative; display: flex; width: fit-content; min-width: 0; margin: 34px 0 0 auto; }
+
+.registration-assistant { display: flex; flex-direction: column; min-width: 0; height: 420px; margin: 0; border: 1px solid var(--dashboard-border); border-radius: var(--radius-xl); background: var(--surface); color: var(--ink); box-shadow: var(--shadow-sm); }
+.registration-assistant-header { display: flex; align-items: center; gap: 10px; min-height: 56px; padding: 8px 16px; border-bottom: 1px solid var(--dashboard-border); border-radius: var(--radius-xl) var(--radius-xl) 0 0; background: var(--surface-muted); }
+.registration-assistant-header img { flex: 0 0 36px; width: 36px; height: 42px; object-fit: contain; }
+.registration-assistant-header h3 { margin: 0; color: var(--dashboard-navy); font-size: 15px; font-weight: 700; line-height: 1.3; letter-spacing: .02em; }
+.registration-chat { flex: 1; min-height: 0; padding: 16px 14px 10px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+.registration-chat:focus-visible { outline: 3px solid var(--focus-ring-strong); outline-offset: -4px; }
+.registration-bubble { width: fit-content; max-width: 100%; margin: 0 0 8px; padding: 8px 11px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface-muted); color: var(--ink); font-size: 13px; line-height: 1.45; overflow-wrap: anywhere; white-space: pre-line; }
+.registration-bubble.is-question { margin-left: auto; border-color: var(--navy); background: var(--navy); color: #fff; }
+.registration-composer { display: flex; align-items: center; gap: 8px; min-height: 46px; margin: 10px 12px 12px; padding: 4px 6px 4px 12px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); }
+.registration-composer:focus-within { border-color: var(--navy); outline: 3px solid var(--focus-ring-strong); outline-offset: 1px; }
+.registration-composer input { flex: 1; width: 0; min-width: 0; padding: 3px 0; border: 0; outline: none; background: transparent; color: var(--ink); font: inherit; font-size: 14px; }
+.registration-composer input::placeholder { color: var(--ink-subtle); opacity: 1; }
+.registration-composer button { display: grid; place-items: center; flex: 0 0 34px; width: 34px; height: 34px; padding: 6px; border: 0; border-radius: 50%; background: var(--navy); color: #fff; }
+.registration-composer button:hover { background: var(--navy-deep); }
+.registration-composer button:focus-visible { outline: 3px solid var(--focus-ring-strong); outline-offset: 2px; }
+.registration-composer .portal-icon { width: 18px; height: 18px; }
+.registration-footer { margin-top: 18px; }
+
+html[data-theme="dark"] .registration-assistant { border-color: var(--theme-line); background: var(--theme-surface); color: var(--theme-text); box-shadow: none; }
+html[data-theme="dark"] .registration-assistant-header { border-color: var(--theme-line); background: var(--theme-raised); }
+html[data-theme="dark"] .registration-assistant-header h3 { color: var(--theme-text); }
+html[data-theme="dark"] .registration-intro { color: var(--theme-muted); }
+html[data-theme="dark"] .registration-bubble { border-color: var(--theme-line); background: var(--theme-raised); color: var(--theme-text); }
+html[data-theme="dark"] .registration-bubble.is-question { border-color: #2a5f9e; background: #2a5f9e; color: #fff; }
+html[data-theme="dark"] .registration-composer { border-color: var(--theme-line); background: var(--theme-field); }
+html[data-theme="dark"] .registration-composer input { color: var(--theme-text); }
+html[data-theme="dark"] .registration-composer input::placeholder { color: var(--theme-muted); }
+
+@media (max-width: 1100px) {
+  .registration-workspace { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .registration-assistant { width: min(100%, 420px); height: 360px; margin: 0 0 0 auto; }
+}
+@media (max-width: 700px) {
+  .registration-card .grade-slip-review-layout { min-height: 0; }
+  .registration-assistant { width: 100%; height: 340px; margin: 0; }
+  .registration-composer input { font-size: 16px; }
+}
+@media (max-width: 480px) {
+  .registration-card .grade-slip-actions { flex-wrap: wrap; }
+  .registration-card .grade-slip-review-consent { font-size: 13px; }
+  .registration-assistant-header h3 { font-size: 14px; }
+}

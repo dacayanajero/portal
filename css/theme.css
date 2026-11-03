@@ -1,0 +1,125 @@
+:root { color-scheme: light; }
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --error: #ff9eae;
+  --theme-canvas: #101827;
+  --theme-surface: #172338;
+  --theme-raised: #21344f;
+  --theme-field: #14253b;
+  --theme-text: #e0eafa;
+  --theme-muted: #acbdd4;
+  --theme-line: #3b506d;
+}
+
+html[data-theme="dark"] body { background: var(--theme-canvas); color: var(--theme-text); }
+html[data-theme="dark"] .dashboard-shell {
+  --dashboard-navy: #dce9ff;
+  --dashboard-blue: #97beff;
+  --dashboard-muted: #acbdd4;
+  --dashboard-border: #3b506d;
+  background: var(--theme-canvas);
+  color: var(--theme-text);
+}
+html[data-theme="dark"] .dashboard-brand,
+html[data-theme="dark"] .sidebar-tools,
+html[data-theme="dark"] .dashboard-sidebar { background: #0c1830; }
+html[data-theme="dark"] .dashboard-topbar,
+html[data-theme="dark"] .icon-button,
+html[data-theme="dark"] .account-options { background: var(--theme-surface); }
+html[data-theme="dark"] .icon-button { color: var(--theme-muted); }
+html[data-theme="dark"] .icon-button:hover { border-color: #7898c3; background: var(--theme-raised); }
+html[data-theme="dark"] .theme-toggle,
+html[data-theme="dark"] .notification-button { color: #edc25b; }
+html[data-theme="dark"] .notification-button > span { border-color: var(--theme-surface); }
+html[data-theme="dark"] .account-button { color: var(--theme-muted); }
+html[data-theme="dark"] .account-button small { color: var(--theme-muted); }
+html[data-theme="dark"] .account-avatar { border-color: #45618a; background: #263e62; color: #b2cfff; }
+html[data-theme="dark"] .account-option .portal-icon { color: #acc8f4; }
+html[data-theme="dark"] .account-option:hover,
+html[data-theme="dark"] .account-option[aria-current="page"] { background: var(--theme-raised); }
+
+html[data-theme="dark"] .welcome-area { border-color: var(--theme-line); background: linear-gradient(110deg, #172338 35%, #1c3050); }
+html[data-theme="dark"] .assistant-search { border-color: var(--theme-line); background: var(--theme-field); color: #acc8f4; }
+html[data-theme="dark"] .assistant-search input { color: var(--theme-text); }
+html[data-theme="dark"] .assistant-search input::placeholder { color: var(--theme-muted); }
+html[data-theme="dark"] .assistant-search button { background: #386fbd; color: #fff; }
+html[data-theme="dark"] .assistant-search button:hover { background: #447fd1; }
+html[data-theme="dark"] .dashboard-mascot > span,
+html[data-theme="dark"] .suggested-questions button { border-color: var(--theme-line); background: var(--theme-raised); color: #c6d9f4; }
+html[data-theme="dark"] .suggested-questions button:hover { border-color: #7898c3; background: #2c4361; color: #fff; }
+html[data-theme="dark"] .service-card,
+html[data-theme="dark"] .content-card { background: var(--theme-surface); color: var(--theme-text); }
+html[data-theme="dark"] .service-detail-icon.portal-icon { background: #263e62; color: #b3d0ff; }
+html[data-theme="dark"] .service-card-heading .portal-icon { background: #263e62; color: #b3d0ff; }
+html[data-theme="dark"] .service-card:nth-child(2) .service-card-heading .portal-icon { background: #3c3359; color: #d4c6ff; }
+html[data-theme="dark"] .service-card:nth-child(3) .service-card-heading .portal-icon { background: #234348; color: #b4e4df; }
+html[data-theme="dark"] .service-card:nth-child(4) .service-card-heading .portal-icon { background: #493e27; color: #f0d392; }
+html[data-theme="dark"] .service-workflow { border-color: var(--theme-line); background: #182940; }
+html[data-theme="dark"] .service-workflow p { border-color: var(--theme-line); background: var(--theme-surface); color: #c3d4ed; }
+html[data-theme="dark"] .service-workflow p:last-child { background: #263e62; color: var(--theme-text); }
+html[data-theme="dark"] .announcement-tag,
+html[data-theme="dark"] .request-badge { background: #493e27; color: #f0d392; }
+html[data-theme="dark"] .help-card details,
+html[data-theme="dark"] .request-entry { border-color: var(--theme-line); }
+
+html[data-theme="dark"] .profile-view,
+html[data-theme="dark"] .settings-view { color: var(--theme-text); }
+html[data-theme="dark"] .profile-panel { background: #1d304b; }
+html[data-theme="dark"] .profile-section legend { color: var(--theme-text); }
+html[data-theme="dark"] .profile-avatar { border-color: #6c8db8; background: #263e62; color: #9dc0f0; }
+html[data-theme="dark"] .profile-role { background: #2c4465; color: #bcd7ff; }
+html[data-theme="dark"] :is(.profile-field label, .settings-field label, .settings-form-field label) { color: var(--theme-muted); }
+html[data-theme="dark"] .profile-field input { background: #294362; color: var(--theme-text); }
+html[data-theme="dark"] .profile-field input[data-profile-editable]:not([readonly]) { border-color: #6c8db8; background: var(--theme-field); }
+html[data-theme="dark"] .profile-field input:focus { border-color: #a4c9ff; }
+html[data-theme="dark"] .profile-field input::placeholder { color: var(--theme-muted); }
+html[data-theme="dark"] .profile-edit-button { border-color: #6c8db8; background: #263e62; color: #bdd6ff; }
+html[data-theme="dark"] .profile-edit-button:hover { background: #304e78; }
+html[data-theme="dark"] .profile-edit-button[aria-pressed="true"] { background: #3269b3; color: #fff; }
+html[data-theme="dark"] .profile-footer,
+html[data-theme="dark"] .settings-footer { border-color: var(--theme-line); }
+
+html[data-theme="dark"] .dashboard-shell[data-current-page="settings"] .dashboard-main { background: var(--theme-canvas); }
+html[data-theme="dark"] .settings-layout { border-color: #5c7ca4; background: #1d304b; }
+html[data-theme="dark"] .settings-menu { background: #253b5c; }
+html[data-theme="dark"] .settings-tab { border-color: #5c7597; background: #2d4566; color: var(--theme-text); box-shadow: none; }
+html[data-theme="dark"] .settings-tab:hover { background: #375579; }
+html[data-theme="dark"] .settings-tab[aria-selected="true"] { background: #17539a; color: #ffcf37; }
+html[data-theme="dark"] .settings-field :is(input, textarea) { color: var(--theme-text); }
+html[data-theme="dark"] .settings-field :is(input, textarea)::placeholder { color: var(--theme-muted); }
+html[data-theme="dark"] .settings-field :is(input, textarea):not([readonly]),
+html[data-theme="dark"] .settings-form-field input { border-color: #6c8db8; background: var(--theme-field); color: var(--theme-text); }
+html[data-theme="dark"] .settings-edit-button { border-color: #8bbcff; background: #263e62; color: #a7ceff; }
+html[data-theme="dark"] .settings-edit-button:hover { background: #29486b; }
+html[data-theme="dark"] .settings-edit-button[aria-pressed="true"] { background: #3269b3; color: #fff; }
+html[data-theme="dark"] .settings-description,
+html[data-theme="dark"] .settings-form-field small,
+html[data-theme="dark"] .settings-switch small,
+html[data-theme="dark"] .settings-session-preferences summary,
+html[data-theme="dark"] .settings-password-toggle { color: var(--theme-muted); }
+html[data-theme="dark"] .settings-password-toggle:hover { background: #29486b; color: #dce9ff; }
+html[data-theme="dark"] .settings-switch { border-color: var(--theme-line); }
+html[data-theme="dark"] .settings-switch input { border-color: #6c8db8; background: #435975; }
+html[data-theme="dark"] .settings-switch input:checked { background: #287edb; }
+html[data-theme="dark"] .settings-switch input::before { border-color: #9bb8dd; background: #d8e7fb; }
+html[data-theme="dark"] .settings-assistant { background: #29496e; color: var(--theme-text); }
+html[data-theme="dark"] .settings-assistant:hover { background: #345b86; }
+html[data-theme="dark"] .settings-assistant-hint { border-color: var(--theme-line); background: var(--theme-surface); color: var(--theme-muted); }
+
+html[data-theme="dark"] .portal-dialog { background: var(--theme-surface); color: var(--theme-text); box-shadow: 0 25px 90px #0009; }
+html[data-theme="dark"] .portal-dialog :is(.modal-header, .modal-footer) { border-color: var(--theme-line); }
+html[data-theme="dark"] .portal-dialog .modal-body > p:first-child,
+html[data-theme="dark"] .dialog-eyebrow,
+html[data-theme="dark"] .demo-note,
+html[data-theme="dark"] .label-hint,
+html[data-theme="dark"] .dialog-close { color: var(--theme-muted); }
+html[data-theme="dark"] .dialog-close:hover { background: var(--theme-raised); }
+html[data-theme="dark"] .dialog-input { border-color: var(--theme-line); background: var(--theme-field); color: var(--theme-text); }
+html[data-theme="dark"] .secondary-button { background: #2a405e; color: #dae8fb; }
+html[data-theme="dark"] .secondary-button:hover { background: #355374; }
+html[data-theme="dark"] .request-student,
+html[data-theme="dark"] .assistant-answer { border-color: #edc25b; background: #243b58; color: var(--theme-text); }
+html[data-theme="dark"] .assistant-question-text { color: var(--theme-text) !important; }
+html[data-theme="dark"] .portal-notice { border-color: #6c8db8; background: var(--theme-surface); color: var(--theme-text); }
+html[data-theme="dark"] :is(.profile-field input, .settings-field input, .settings-field textarea, .settings-form-field input, .dialog-input)[aria-invalid="true"] { border-color: var(--error); }

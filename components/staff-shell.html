@@ -1,0 +1,45 @@
+<body>
+<div class="dashboard-shell staff-shell" id="staff-screen" hidden>
+  <header class="dashboard-header">
+    <a class="dashboard-brand" href="#/staff/dashboard" data-page="staff-dashboard" aria-label="RTU Pasig staff dashboard">
+      <img src="assets/images/rtu-logo.png" alt="RTU seal" width="60" height="60">
+      <span>RIZAL TECHNOLOGICAL<br>UNIVERSITY<small>Pasig Campus</small></span>
+    </a>
+    <div class="dashboard-topbar">
+      <h1 id="staff-topbar-title">Staff Workspace</h1>
+      <button class="theme-toggle icon-button" id="staff-theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false" title="Switch to dark mode"><svg class="portal-icon" aria-hidden="true"><use id="staff-theme-toggle-icon" href="#icon-moon"/></svg></button>
+      <button class="notification-button icon-button" id="staff-notification-button" type="button" data-page="staff-requests" aria-label="Open Request Management"><svg class="portal-icon" aria-hidden="true"><use href="#icon-inbox"/></svg><span id="staff-notification-count">0</span></button>
+      <div class="account-dropdown" id="staff-account-dropdown">
+        <button class="account-button" id="staff-account-toggle" type="button" aria-label="Staff account options" aria-controls="staff-account-options" aria-expanded="false"><span class="account-avatar staff-account-avatar" data-staff-initials>ST</span><span class="account-greeting"><strong data-staff-name>Staff member</strong><small data-staff-position>Not provided</small></span><svg class="account-chevron portal-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+        <nav class="staff-account-options account-options" id="staff-account-options" aria-label="Staff account" hidden>
+          <div class="staff-account-menu-info"><strong data-staff-name>Staff member</strong><small data-staff-role>Staff</small></div>
+          <a class="account-option" href="#/staff/profile" data-page="staff-profile"><svg class="portal-icon" aria-hidden="true"><use href="#icon-user"/></svg>My Profile</a>
+          <a class="account-option" href="#/staff/settings" data-page="staff-settings"><svg class="portal-icon" aria-hidden="true"><use href="#icon-settings"/></svg>Account Settings</a>
+          <a class="account-option" href="#/staff/help-support" data-page="staff-help-support"><svg class="portal-icon" aria-hidden="true"><use href="#icon-help"/></svg>Help &amp; Support</a>
+          <button class="account-option" type="button" data-open-dialog="terms-dialog"><svg class="portal-icon" aria-hidden="true"><use href="#icon-document"/></svg>Terms &amp; Conditions</button>
+          <button class="account-option" id="staff-logout-button" type="button"><svg class="portal-icon" aria-hidden="true"><use href="#icon-logout"/></svg>Log out</button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <div class="sidebar-tools">
+    <button class="sidebar-toggle" id="staff-sidebar-toggle" type="button" aria-label="Collapse navigation" title="Collapse navigation" aria-controls="staff-sidebar" aria-expanded="true"><svg class="portal-icon" aria-hidden="true"><use href="#icon-menu"/></svg></button>
+  </div>
+  <aside class="dashboard-sidebar" id="staff-sidebar" aria-label="Staff navigation">
+    <p class="staff-nav-label">Workspace</p>
+    <nav class="dashboard-nav staff-nav">
+      <a class="nav-item is-active" href="#/staff/dashboard" data-page="staff-dashboard" aria-label="Staff dashboard" title="Staff dashboard" aria-current="page"><span class="nav-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-home"/></svg></span><span class="nav-label">Dashboard</span></a>
+      <a class="nav-item" href="#/staff/requests" data-page="staff-requests" aria-label="Request Management" title="Request Management"><span class="nav-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-inbox"/></svg></span><span class="nav-label">Request Management</span><span class="staff-nav-badge" id="staff-nav-badge">0</span></a>
+      <a class="nav-item" href="#/staff/appointments" data-page="staff-appointments" aria-label="Appointment Management" title="Appointment Management"><span class="nav-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-calendar"/></svg></span><span class="nav-label">Appointments</span></a>
+      <a class="nav-item" href="#/staff/document-processing" data-page="staff-document-processing" aria-label="Document Processing and Release" title="Document Processing and Release"><span class="nav-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-document"/></svg></span><span class="nav-label">Document Processing</span><span class="staff-nav-badge" id="staff-document-badge" hidden>0</span></a>
+      <a class="nav-item" href="#/staff/student-records" data-page="staff-records" aria-label="Student Records Management" title="Student Records Management"><span class="nav-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-users"/></svg></span><span class="nav-label">Student Records</span></a>
+      <a class="nav-item" href="#/staff/announcements" data-page="staff-announcements" aria-label="Announcements" title="Announcements"><span class="nav-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-announcement"/></svg></span><span class="nav-label">Announcements</span></a>
+      <a class="nav-item" href="#/staff/reports" data-page="staff-reports" aria-label="Reports and Analytics" title="Reports and Analytics"><span class="nav-icon"><svg class="portal-icon" aria-hidden="true"><use href="#icon-chart"/></svg></span><span class="nav-label">Reports &amp; Analytics</span></a>
+    </nav>
+  </aside>
+  <button class="sidebar-overlay" id="staff-sidebar-overlay" type="button" aria-label="Close navigation" hidden></button>
+  <main class="dashboard-main" id="staff-main"></main>
+</div>
+<p class="portal-notice" id="staff-notice" role="status" aria-live="polite" hidden></p>
+</body>
