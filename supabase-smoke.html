@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RTU Portal - Supabase smoke test</title>
+  <style>
+    body{max-width:720px;margin:2rem auto;padding:0 1rem;font:16px system-ui,sans-serif;color:#1d2939}
+    fieldset{border:1px solid #d0d5dd;border-radius:8px;margin:1rem 0;padding:1rem}
+    label{display:block;margin-top:.65rem}input,button,select{padding:.55rem;font:inherit}
+    input{width:95%;max-width:500px}button{cursor:pointer;margin:.5rem .5rem .5rem 0}
+    pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f2f4f7;padding:1rem;border-radius:8px}
+    small{color:#475467}
+  </style>
+</head>
+<body>
+  <h1>Supabase end-to-end smoke test</h1>
+  <p><small>Use sample/test accounts only. This page reads and writes REAL records in your Supabase project. Remove it before production.</small></p>
+  <fieldset>
+    <legend>1. API / credentials</legend>
+    <button id="connect">Check database connectivity</button>
+    <small>An empty result is normal before sign-in because the table has RLS.</small>
+  </fieldset>
+  <fieldset>
+    <legend>2. Sign in</legend>
+    <label>Real email (recommended) or provisioned demo account number<input id="identity" autocomplete="username" placeholder="name@example.com"></label>
+    <label>Password<input id="password" type="password" autocomplete="current-password"></label>
+    <button id="signin">Sign in</button><button id="signout">Sign out</button>
+    <button id="profile">Read my profile</button>
+  </fieldset>
+  <fieldset>
+    <legend>Optional: sign up a TEST student with a real email</legend>
+    <small>Uses Supabase Auth; if email verification is enabled, confirm the message before signing in. Student numbers are NOT independently validated by this demo.</small>
+    <label>Test student account number<input id="regnumber" placeholder="TEST-2026-001"></label>
+    <label>Full name<input id="regname" placeholder="Test Student"></label>
+    <label>Real email address<input id="regemail" type="email" placeholder="your-test-inbox@example.com"></label>
+    <label>Password<input id="regpw" type="password" autocomplete="new-password"></label>
+    <label>College<input id="regcollege" placeholder="College name"></label>
+    <label>Program<input id="regprogram" placeholder="BSIT"></label>
+    <button id="signup">Create test student</button>
+  </fieldset>
+  <fieldset>
+    <legend>3. Confirm authenticated database queries</legend>
+    <button id="docTypes">Read document types</button>
+    <button id="requests">Read requests allowed by RLS</button>
+  </fieldset>
+  <fieldset>
+    <legend>4. Optional: write a real TEST document request</legend>
+    <small>Creates a permanent test row in the <code>requests</code> table. You can delete test data later using an admin account.</small>
+    <label>Document type<select id="doctype"><option>Grade Slip</option><option>Registration Form</option><option>ID Printing</option></select></label>
+    <label>Purpose<input id="purpose" value="Supabase integration test (test account only)"></label>
+    <button id="submit">Create TEST request (no appointment)</button>
+  </fieldset>
+  <h2>Result</h2><pre id="out">Not tested yet.</pre>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/portal-supabase-api.js"></script>
+  <script>
+    "use strict";
+    const $ = id => document.getElementById(id);
+    const show = value => $("out").textContent = typeof value === "string" ? value : JSON.stringify(value, null, 2);
+    const act = async (fn) => { try { show("Working..."); show(await fn()); } catch(err) { show("ERROR: " + err.message); } };
+    $("connect").onclick=()=>act(async()=>window.PortalSupabase.testConnection());
+    $("signin").onclick=()=>act(()=>window.PortalSupabaseApi.signIn({email:$("identity").value,password:$("password").value}));
+    $("signout").onclick=()=>act(async()=>{await window.PortalSupabaseApi.signOut();return "Signed out."});
+    $("signup").onclick=()=>act(()=>window.PortalSupabaseApi.signUpStudent({
+      accountNumber:$("regnumber").value,fullName:$("regname").value,
+      email:$("regemail").value,password:$("regpw").value,
+      college:$("regcollege").value,program:$("regprogram").value
+    }));
+    $("profile").onclick=()=>act(()=>window.PortalSupabaseApi.profile());
+    $("docTypes").onclick=()=>act(()=>window.PortalSupabaseApi.documentTypes());
+    $("requests").onclick=()=>act(async()=>{
+      const me=await window.PortalSupabaseApi.profile();
+      return me.role==="student"?window.PortalSupabaseApi.myRequests():window.PortalSupabaseApi.staffRequests();
+    });
+    $("submit").onclick=()=>act(()=>window.PortalSupabaseApi.submitRequest({
+      documentType:$("doctype").value,purpose:$("purpose").value,details:{source:"smoke-test"}
+    }));
+  </script>
+</body>
+</html>
