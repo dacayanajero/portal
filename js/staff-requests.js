@@ -539,7 +539,7 @@ window.initializeStaffRequests = () => {
     actionStatus.classList.remove("is-error");
   });
 
-  actionForm.addEventListener("submit", (event) => {
+  actionForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (!selectedRequestId || !pendingActionStatus) return;
     const config = actionConfig[pendingActionStatus];
@@ -566,7 +566,7 @@ window.initializeStaffRequests = () => {
     actionStatus.textContent = "Saving request update…";
     actionStatus.classList.remove("is-error");
     try {
-      const { request } = service.updateStatus(selectedRequestId, pendingActionStatus, actor, {
+      const { request } = await service.updateStatus(selectedRequestId, pendingActionStatus, actor, {
         reason,
         remarks: reason,
         verification: config.verification ? actionRelease.checked : undefined,

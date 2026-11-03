@@ -390,22 +390,32 @@ window.initializeIdPrinting = () => {
     }
   });
 
-  confirmYes.addEventListener("click", () => {
+  confirmYes.addEventListener("click", async () => {
     if (!confirmation.open || !account || submitting || pendingAccountNumber !== account.accountNumber) return;
     if (!validateSubmission()) return;
     submitting = true;
     submitButton.disabled = true;
     confirmYes.disabled = true;
     confirmNo.disabled = true;
-    const request = window.PortalRequests.create(
+    let request;
+    try {
+      request = await window.PortalRequests.create(
       { document: "ID Printing", purpose: "Student ID printing", details: { ...requestDetails(), studentNumber: account.accountNumber } },
       { nextPage: "id-printing-complete", notify: false },
-    );
+      );
+    } catch (error) {
+      submitting = false;
+      submitButton.disabled = false;
+      confirmation.close("error");
+      errorMessage.textContent = "Request was not saved to Supabase: " + error.message;
+      errorMessage.hidden = false;
+      return;
+    }
     if (!request) {
       submitting = false;
       submitButton.disabled = false;
       confirmation.close("error");
-      errorMessage.textContent = "Your demo request could not be created. Please sign in and try again.";
+      errorMessage.textContent = "Supabase did not confirm your request. Please sign in and try again.";
       errorMessage.hidden = false;
       return;
     }
