@@ -63,7 +63,7 @@ window.initializePortalLogin = () => {
     document.querySelector("#account-label").textContent = details.accountLabel;
     accountInput.placeholder = details.example;
     document.querySelector("#register-title").textContent = details.registerTitle;
-    document.querySelector("#register-number-label").textContent = details.accountLabel;
+    document.querySelector("#register-number-label").textContent = "Student number";
     registerPrompt.hidden = role !== "student";
     provisionNote.hidden = role !== "staff";
 
@@ -262,7 +262,10 @@ window.initializePortalLogin = () => {
         : "Account created in Supabase! Sign in with your email address and password.";
       passwordInput.focus();
     } catch (error) {
-      status.textContent = error.message;
+      const message = String(error?.message || "Unable to create account.");
+      status.textContent = /email rate limit exceeded|over_email_send_rate_limit/i.test(message)
+        ? "Supabase has reached its confirmation-email limit. Please try later, or ask the project administrator to configure custom SMTP under Authentication settings. Do not repeatedly submit the form."
+        : message;
     } finally {
       registrationPending = false;
       submitButton.disabled = false;
