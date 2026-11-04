@@ -193,9 +193,12 @@ window.initializeStaffDocumentProcessing = () => {
               : /permission denied|not authorized|staff sign-in required/i.test(raw)
                 ? "Supabase denied the change. Verify that your signed-in profile is active staff and that SQL Patch 4 was installed. Details: " + raw
                 : "Couldn't save this check to Supabase: " + raw;
-            checkFeedback.textContent = message;
+            const visibleFeedback = $("document-check-feedback");
+            if (visibleFeedback) {
+              visibleFeedback.textContent = message;
+              visibleFeedback.scrollIntoView({ block: "nearest", behavior: "smooth" });
+            }
             $("document-details-feedback").textContent = message;
-            checkFeedback.scrollIntoView({ block: "nearest", behavior: "smooth" });
           }
         } finally {
           if (selected === requestId && control.input.isConnected) control.input.disabled = false;
