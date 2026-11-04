@@ -225,8 +225,14 @@
     staffOnly(actor);
     const current = get(id);
     if (!current || !baseRequests.canTransition(current.status, status)) throw new Error("Invalid request status transition.");
-    if (["Ready for Pickup", "Released"].includes(status)) {
-      throw new Error("Document preparation and release must be enabled with server-verified checks in a later migration.");
+    if (status === "Ready for Pickup") {
+      const result = await client().rpc("mark_request_ready", { p_request_id: dbIdFor(id) });
+      err(result);
+      await refresh();
+      return { request: get(id), persisted: true };
+    }
+    if (status === "Released") {
+      throw new Error("Recipient verification and final document release require a separately authorized workflow.");
     }
     const reason = String(options.reason || "").trim();
     const values = { status };
@@ -266,8 +272,28 @@
     return { request: getForStudent(id, actor.accountNumber), persisted: true };
   }
 
+  async function savePreparationCheck(id, itemId, checked, actor) {
+    staffOnly(actor);
+    const request = get(id);
+    if (!request || request.status !== "Processing") throw new Error("The request must be Processing to update preparation checks.");
+    const policy = window.PortalDocumentPolicy;
+    const configured = policy?.services?.[request.documentType];
+    if (!configured?.configured || !configured.items.some(item => item.id === itemId)) {
+      throw new Error("This preparation check is not configured.");
+    }
+    const result = await client().rpc("save_request_preparation_check", {
+      p_request_id: dbIdFor(id),
+      p_check_id: itemId,
+      p_checked: Boolean(checked),
+      p_policy_version: policy.version,
+    });
+    err(result);
+    await refresh();
+    return { request: get(id), persisted: true };
+  }
+
   function unsupported() {
-    throw new Error("This document-processing action requires the next server-side workflow migration. No changes were saved.");
+    throw new Error("This action requires a later server-side workflow migration. No changes were saved.");
   }
 
   function listAppointments() { return clone(appointmentRows); }
@@ -350,7 +376,7 @@
   const requestAdapter = Object.freeze({
     ...baseRequests, listAll, listForStudent, get, getForStudent, create, refresh,
     updateStatus, studentResubmit, studentCancel,
-    savePreparationCheck: unsupported, addProcessingNote: unsupported, verifyRecipient: unsupported,
+    savePreparationCheck, addProcessingNote: unsupported, verifyRecipient: unsupported,
     sourceInfo: () => ({ available: !lastLoadError, backend: "supabase", error: lastLoadError }),
     summary: (rows = listAll()) => baseRequests.summary(rows),
   });

@@ -167,9 +167,25 @@ window.initializeStaffDocumentProcessing = () => {
       control.input.checked = Boolean(checks[item.id]?.checked && checks[item.id].version === policy.version);
       control.input.disabled = !preparation.configured || request.status !== status.PROCESSING;
       if (checks[item.id]) control.wrapper.lastChild.append(el("small", `${checks[item.id].actor} · ${date(checks[item.id].timestamp)}`));
-      control.input.addEventListener("change", () => {
-        try { const result = service.savePreparationCheck(selected, item.id, control.input.checked, actor()); saved(result); }
-        catch (error) { control.input.checked = !control.input.checked; report(error); }
+      control.input.addEventListener("change", async () => {
+        const checked = control.input.checked;
+        const requestId = selected;
+        control.input.disabled = true;
+        $("document-details-feedback").textContent = "Saving preparation check to Supabase…";
+        try {
+          const result = await service.savePreparationCheck(requestId, item.id, checked, actor());
+          if (selected === requestId && dialog.open) {
+            showDetails();
+            saved(result);
+          }
+        } catch (error) {
+          if (selected === requestId && dialog.open) {
+            control.input.checked = !checked;
+            report(error);
+          }
+        } finally {
+          if (selected === requestId && control.input.isConnected) control.input.disabled = false;
+        }
       });
       processing.append(control.wrapper);
     });
@@ -259,7 +275,9 @@ window.initializeStaffDocumentProcessing = () => {
     }); container.append(form);
   }
   function saved(result) {
-    $("document-details-feedback").textContent = result.persisted ? "Saved in this browser." : "Storage unavailable: changes are in memory only and will be lost on reload.";
+    $("document-details-feedback").textContent = result.persisted
+      ? "Saved to Supabase."
+      : "The change was not saved to Supabase.";
   }
   function open(id) {
     try { actor(); } catch { return; }
@@ -276,11 +294,16 @@ window.initializeStaffDocumentProcessing = () => {
     $("document-handover").checked = false; $("document-handover").required = target === status.RELEASED;
     $("document-confirm-feedback").textContent = ""; confirmation.showModal(); $("document-confirm-cancel").focus();
   }
-  $("document-confirm-form").addEventListener("submit", (event) => {
+  $("document-confirm-form").addEventListener("submit", async (event) => {
     event.preventDefault(); const submit = $("document-confirm-submit"); submit.disabled = true;
+    const requestId = selected;
     try {
-      const result = service.updateStatus(selected, pending, actor(), { handoverConfirmed: $("document-handover").checked });
-      confirmation.close(); showDetails(); saved(result);
+      const result = await service.updateStatus(requestId, pending, actor(), { handoverConfirmed: $("document-handover").checked });
+      if (selected === requestId) {
+        confirmation.close();
+        showDetails();
+        saved(result);
+      }
     } catch (error) { $("document-confirm-feedback").textContent = error.message; }
     finally { submit.disabled = false; }
   });
