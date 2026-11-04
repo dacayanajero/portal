@@ -161,6 +161,11 @@ window.initializeStaffDocumentProcessing = () => {
       processing.append(el("p", `${complete} of ${preparation.items.length} preparation checks completed · policy ${policy.version}`));
     }
     const progress = el("progress"); progress.max = preparation?.items.length || 1; progress.value = complete; progress.setAttribute("aria-label", "Preparation checklist completion"); processing.append(progress);
+    const checkFeedback = el("p", "", "document-check-feedback");
+    checkFeedback.id = "document-check-feedback";
+    checkFeedback.setAttribute("role", "status");
+    checkFeedback.setAttribute("aria-live", "polite");
+    processing.append(checkFeedback);
     (preparation?.items || []).forEach((item) => {
       const control = check(`${item.label}${item.required ? " (required)" : " (optional)"}`);
       control.input.dataset.preparationCheck = item.id;
@@ -171,7 +176,8 @@ window.initializeStaffDocumentProcessing = () => {
         const checked = control.input.checked;
         const requestId = selected;
         control.input.disabled = true;
-        $("document-details-feedback").textContent = "Saving preparation check to Supabase…";
+        checkFeedback.textContent = "Saving preparation check to Supabase…";
+        $("document-details-feedback").textContent = "";
         try {
           const result = await service.savePreparationCheck(requestId, item.id, checked, actor());
           if (selected === requestId && dialog.open) {
@@ -181,7 +187,15 @@ window.initializeStaffDocumentProcessing = () => {
         } catch (error) {
           if (selected === requestId && dialog.open) {
             control.input.checked = !checked;
-            report(error);
+            const raw = String(error?.message || error);
+            const message = /could not find the function|schema cache|pgrst202/i.test(raw)
+              ? "The Supabase preparation-check function is missing. Run SQL Patch 4 in your Supabase SQL Editor, then reload this page."
+              : /permission denied|not authorized|staff sign-in required/i.test(raw)
+                ? "Supabase denied the change. Verify that your signed-in profile is active staff and that SQL Patch 4 was installed. Details: " + raw
+                : "Couldn't save this check to Supabase: " + raw;
+            checkFeedback.textContent = message;
+            $("document-details-feedback").textContent = message;
+            checkFeedback.scrollIntoView({ block: "nearest", behavior: "smooth" });
           }
         } finally {
           if (selected === requestId && control.input.isConnected) control.input.disabled = false;
