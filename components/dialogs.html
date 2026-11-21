@@ -49,11 +49,10 @@
     <div class="modal-header"><div><span class="dialog-eyebrow">ACCOUNT SUPPORT</span><h2 class="modal-title" id="recovery-title">Forgot your password?</h2></div><button class="dialog-close" type="button" data-close-dialog aria-label="Close dialog">&times;</button></div>
     <form id="recovery-form" novalidate>
       <div class="modal-body">
-        <p>Enter your university email address to request a password reset.</p>
-        <label class="form-label" for="recovery-email">University email</label>
-        <input class="form-control dialog-input" id="recovery-email" name="email" type="email" autocomplete="email" placeholder="you@rtu.edu.ph" required aria-describedby="recovery-status">
+        <p>Enter the email address you use to sign in to the portal.</p>
+        <label class="form-label" for="recovery-email">Email address</label>
+        <input class="form-control dialog-input" id="recovery-email" name="email" type="email" autocomplete="email" maxlength="254" required aria-describedby="recovery-status">
         <p class="dialog-status" id="recovery-status" role="status" aria-live="polite"></p>
-        <p class="demo-note">Demo only. No reset email will be sent.</p>
       </div>
       <div class="modal-footer"><button class="btn secondary-button" type="button" data-close-dialog>Cancel</button><button class="btn primary-button" type="submit">Request reset</button></div>
     </form>

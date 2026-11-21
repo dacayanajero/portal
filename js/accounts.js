@@ -94,6 +94,15 @@
     return trackSession(identity(profile));
   }
 
+  async function requestPasswordReset(email) {
+    const redirectTo = new URL("reset-password.html", window.location.href).href;
+    const { error } = await client().auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo });
+    // Give the same acknowledgement for registered and unregistered addresses.
+    if (!error || error.code === "user_not_found") return;
+    if (error.status === 429) throw new Error("Too many reset requests. Please wait a few minutes before trying again.");
+    throw new Error("Password reset email is unavailable right now. Please try again later.");
+  }
+
   async function restoreSession() {
     if (pendingSignOut) await pendingSignOut;
     const { data, error } = await client().auth.getSession();
@@ -209,7 +218,7 @@
   });
 
   window.PortalAccounts = Object.freeze({
-    register, authenticate, restoreSession, saveSession, clearSession, changePassword,
+    register, authenticate, restoreSession, saveSession, clearSession, changePassword, requestPasswordReset,
     listStudents, listRegisteredStudents, listStaff, staffIdentity,
     isSessionValid, sessionInfo, setSessionPersistence, preferencesKey,
     PASSWORD_POLICY, SESSION_POLICY,

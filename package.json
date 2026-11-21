@@ -5,7 +5,7 @@
   "description": "RTU Pasig Portal: Supabase Auth and browser-local service preview",
   "scripts": {
     "test": "node portal-phase-d-smoke.js && node portal-phase-e-smoke.js && node portal-phase-f-smoke.js && node portal-phase-g-smoke.js && node portal-phase-h-smoke.js && node portal-phase-i-smoke.js",
-    "test:auth": "node portal-supabase-auth-smoke.js",
+    "test:auth": "node portal-supabase-auth-smoke.js && node --test portal-password-recovery-smoke.js",
     "test:browser": "node portal-phase-d-browser-smoke.js && node portal-phase-e-browser-smoke.js && node portal-phase-f-browser-smoke.js && node portal-phase-g-browser-smoke.js && node portal-phase-h-browser-smoke.js && node portal-phase-i-browser-smoke.js",
     "test:all": "npm test && npm run test:browser"
   },
