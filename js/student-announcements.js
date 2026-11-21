@@ -54,7 +54,7 @@ window.initializeStudentAnnouncements = () => {
     const student = account(); if (student?.role !== "student") return;
     try { alerts = JSON.parse(localStorage.getItem(window.PortalAccounts.preferencesKey(student)) || "{}").announcementAlerts !== false; } catch { alerts = true; }
   }
-  function open(id) {
+  async function open(id) {
     if (document.querySelector("#dashboard-screen").dataset.currentPage !== "announcements") {
       pendingOpenId = id; location.hash = "#/announcements"; return;
     }
@@ -64,7 +64,7 @@ window.initializeStudentAnnouncements = () => {
       $("student-announcement-detail-title").textContent = record.title;
       $("student-announcement-detail-body").replaceChildren(ui.card(record));
       if (!dialog.open) dialog.showModal(); $("student-announcement-detail-title").focus();
-      service.markRead(id);
+      await service.markRead(id);
     } catch (error) { $("student-announcement-feedback").textContent = error.message; }
   }
   function render() {
