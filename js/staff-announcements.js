@@ -27,7 +27,7 @@ window.initializeStaffAnnouncements = () => {
   const permissions = () => service.capabilities();
   const currentStaff = () => window.PortalStaffContext.current();
   const raw = () => Object.fromEntries(new FormData(form));
-  const content = () => { const value = raw(); return service.validate({ ...value, scheduledAt: service.fromManila(value.scheduledAt), expiresAt: service.fromManila(value.expiresAt) }); };
+  const content = () => { const value = raw(); return service.validate({ ...value, scheduledAt: "", expiresAt: service.fromEndDate(value.expiresAt) }); };
   const option = (select, value) => select.append(new Option(value, value));
   policy.categories.forEach((value) => { option(filters.elements.category, value); option(form.elements.category, value); });
   policy.audiences.forEach((value) => { option(filters.elements.audience, value); option(form.elements.audience, value); });
@@ -51,7 +51,7 @@ window.initializeStaffAnnouncements = () => {
       const records = service.list(); const counts = service.summary(records);
       $("announcement-create").hidden = !permissions().includes("create");
       $("announcement-stats").replaceChildren();
-      [["total", "Total Announcements", "announcement", "pending"], ["published", "Published Announcements", "check-circle", "ready"], ["draft", "Draft Announcements", "document", "processing"], ["scheduled", "Scheduled Announcements", "calendar-clock", "released"]].forEach(([key, label, icon, tone]) => {
+      [["total", "Total Announcements", "announcement", "pending"], ["published", "Active Announcements", "check-circle", "ready"], ["draft", "Draft Announcements", "document", "processing"], ["scheduled", "Legacy Scheduled", "calendar-clock", "released"]].forEach(([key, label, icon, tone]) => {
         const card = el("article", undefined, `staff-stat-card staff-stat-${tone}`); const symbol = el("span", undefined, "staff-stat-icon");
         const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg"); svg.setAttribute("class", "portal-icon"); svg.setAttribute("aria-hidden", "true");
         const use = document.createElementNS("http://www.w3.org/2000/svg", "use"); use.setAttribute("href", `#icon-${icon}`); svg.append(use); symbol.append(svg);
@@ -66,7 +66,7 @@ window.initializeStaffAnnouncements = () => {
         const row = el("tr");
         const expired = record.status === S.PUBLISHED && record.expiresAt && record.expiresAt <= new Date().toISOString();
         const due = record.status === S.SCHEDULED && record.scheduledAt <= new Date().toISOString();
-        [record.id, record.title, record.category, record.audience, record.author || "Not recorded", date(record.createdAt), record.status === S.SCHEDULED ? date(record.scheduledAt) : record.published ? date(record.published.publishedAt) : "Not published", `${record.status}${expired ? " · Expired" : due ? " · Due, awaiting staff publication" : ""}`].forEach((value) => row.append(el("td", value)));
+        [record.id, record.title, record.category, record.audience, record.author || "Not recorded", date(record.createdAt), record.status === S.SCHEDULED ? date(record.scheduledAt) : record.expiresAt ? service.toEndDate(record.expiresAt) : "No end date", `${record.status}${expired ? " · Expired" : due ? " · Due, awaiting staff publication" : ""}`].forEach((value) => row.append(el("td", value)));
         const action = el("td"); action.append(button("View / Manage", () => openDetails(record.id))); row.append(action); $("announcement-rows").append(row);
       });
       $("announcement-empty").hidden = list.length > 0;
@@ -90,22 +90,20 @@ window.initializeStaffAnnouncements = () => {
       form.reset();
       ["title", "content", "category"].forEach((key) => { form.elements[key].value = record?.[key] || ""; });
       form.elements.audience.value = record?.audience || "All Students"; form.elements.priority.value = record?.priority || "Normal";
-      form.elements.scheduledAt.value = service.toManila(record?.scheduledAt); form.elements.expiresAt.value = service.toManila(record?.expiresAt);
+      form.elements.expiresAt.value = service.toEndDate(record?.expiresAt);
       $("announcement-editor-title").textContent = record ? `Edit ${record.id}` : "Create Announcement";
       $("announcement-save-draft").hidden = record?.status === S.PUBLISHED || record?.status === S.SCHEDULED;
       $("announcement-publish").hidden = !permissions().includes("publish");
       $("announcement-publish").textContent = record?.status === S.PUBLISHED ? "Publish Revision" : record?.status === S.SCHEDULED ? "Publish Due Announcement" : "Publish Now";
-      $("announcement-schedule").hidden = !permissions().includes("publish") || record?.status === S.PUBLISHED;
-      $("announcement-schedule").textContent = record?.status === S.SCHEDULED ? "Update Publication Schedule" : "Schedule Publication";
       $("announcement-editor-feedback").textContent = ""; dirty = false; baseline = JSON.stringify(raw());
       editor.showModal(); form.elements.title.focus();
     } catch (error) { $("announcement-feedback").textContent = error.message; }
   }
-  function commit(action, data) {
-    const saved = service.save(data, { id: editing?.id, revision: editing?.revision, action, confirmed: action !== "draft", token });
+  async function commit(action, data) {
+    const saved = await service.saveAsync(data, { id: editing?.id, revision: editing?.revision, action, confirmed: action !== "draft", token });
     editing = saved; dirty = false; baseline = JSON.stringify(raw());
     if (editor.open) editor.close();
-    $("announcement-feedback").textContent = action === "publish" ? "Published to the general student feed in this browser. No external messages were sent." : action === "schedule" ? "Schedule saved in this browser. An authorized publisher must publish it when due; no backend scheduler is connected." : "Draft saved in this browser.";
+    $("announcement-feedback").textContent = action === "publish" ? "Published to student accounts. It will disappear automatically after the selected end date." : "Draft saved in Supabase.";
     render();
   }
   function ask(title, summary, action, reason = false) {
@@ -118,8 +116,11 @@ window.initializeStaffAnnouncements = () => {
     if (!form.reportValidity()) return;
     try {
       const data = content();
-      if (action === "draft") commit(action, data);
-      else ask(action === "publish" ? editing?.status === S.PUBLISHED ? "Confirm published revision" : "Confirm publication" : "Confirm publication schedule", `${data.title} · ${data.category} · ${data.audience} · Priority: ${data.priority}. ${action === "schedule" ? `Scheduled for ${date(data.scheduledAt)} (Asia/Manila). This prototype will not publish automatically.` : "Publish this content to the general student feed in this browser?"}`, () => commit(action, data));
+      if (action === "draft") void commit(action, data).catch((error) => { $("announcement-editor-feedback").textContent = error.message; });
+      else {
+        if (!data.expiresAt) throw new Error("Select the end date before publishing.");
+        ask(editing?.status === S.PUBLISHED ? "Confirm published revision" : "Confirm publication", `${data.title} · ${data.category} · ${data.audience} · Priority: ${data.priority}. Publish now to all student accounts until the end of ${service.toEndDate(data.expiresAt)} (Asia/Manila)?`, () => commit(action, data));
+      }
     } catch (error) { $("announcement-editor-feedback").textContent = error.message; }
   }
   function openDetails(id) {
@@ -149,14 +150,12 @@ window.initializeStaffAnnouncements = () => {
   }
   function transition(record, action) {
     ask(`Confirm ${action === "cancelSchedule" ? "schedule cancellation" : action}`, `${record.title} (${record.id}). This action is recorded in announcement history; content is preserved.`, () => {
-      const saved = service.transition(record.id, record.revision, action, { confirmed: true, reason: $("announcement-reason").value });
-      openDetails(saved.id); render();
+      return service.transitionAsync(record.id, record.revision, action, { confirmed: true, reason: $("announcement-reason").value }).then((saved) => { openDetails(saved.id); render(); });
     }, action === "reject");
   }
   form.addEventListener("input", () => { dirty = JSON.stringify(raw()) !== baseline; $("announcement-editor-feedback").textContent = ""; });
   form.addEventListener("submit", (event) => { event.preventDefault(); save("draft"); });
   $("announcement-publish").addEventListener("click", () => save("publish"));
-  $("announcement-schedule").addEventListener("click", () => save("schedule"));
   $("announcement-preview").addEventListener("click", () => {
     if (!form.reportValidity()) return;
     try { const data = content(); previewing = true; $("announcement-details-title").textContent = "Student Announcement Preview"; $("announcement-details-body").replaceChildren(window.PortalAnnouncementUI.card({ ...data, publisher: currentStaff().profile?.fullName || currentStaff().account.fullName }, { preview: true })); details.showModal(); $("announcement-details-title").focus(); }
