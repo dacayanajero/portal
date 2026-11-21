@@ -137,12 +137,10 @@ window.initializeStaffAnnouncements = () => {
       if (service.editable(record) && ![S.ARCHIVED, S.PENDING].includes(record.status)) actions.append(button(record.status === S.PUBLISHED ? "Revise Announcement" : "Edit Announcement", () => openEditor(record)));
       if (record.status === S.SCHEDULED && permissions().includes("publish")) actions.append(button("Cancel Scheduled Publication", () => transition(record, "cancelSchedule")));
       if ([S.DRAFT, S.REJECTED, S.APPROVED, S.PUBLISHED].includes(record.status) && permissions().includes("archive")) actions.append(button("Archive Announcement", () => transition(record, "archive")));
-      if (false && policy.approvalRequired && [S.DRAFT, S.REJECTED].includes(record.status) && service.editable(record)) actions.append(button("Submit for Approval", () => transition(record, "submit")));
-      if (false && policy.approvalRequired && record.status === S.PENDING && permissions().includes("approve")) actions.append(button("Approve Announcement", () => transition(record, "approve")), button("Reject Announcement", () => transition(record, "reject")));
-      body.append(actions, el("h4", "Publishing and Editing History"));
+      body.append(actions, el("h4", record.source === "Supabase" ? "Announcement Record" : "Publishing and Editing History"));
       const history = el("ol", undefined, "announcement-audit");
       record.history.slice().reverse().forEach((event) => { const item = el("li"); const time = el("time", date(event.timestamp)); time.dateTime = event.timestamp; item.append(el("strong", event.action), time, el("small", `${event.actor} · ${event.previousStatus || "New"} → ${event.newStatus}`)); if (event.remarks) item.append(el("p", event.remarks)); history.append(item); }); body.append(history);
-      body.append(el("h4", "Preserved Published Versions"));
+      body.append(el("h4", "Published Versions"));
       if (!record.versions.length) body.append(el("p", record.source === "Supabase" ? "Previous versions are stored separately and are not loaded in this view." : "No published versions recorded."));
       record.versions.slice().reverse().forEach((version) => { const detail = el("details"); detail.append(el("summary", `Version ${version.version} · ${date(version.publishedAt)} · ${version.publisher}`), window.PortalAnnouncementUI.card(version)); body.append(detail); });
       if (!details.open) details.showModal(); $("announcement-details-title").focus();
