@@ -103,16 +103,16 @@ window.initializeStudentAnnouncements = () => {
   document.addEventListener("portal:announcementpreferences", (event) => { alerts = event.detail.enabled; render(); });
   document.addEventListener("portal:accountchange", () => { loadPreferences(); render(); });
   document.addEventListener("portal:pagechange", (event) => {
-    if (["announcements", "dashboard"].includes(event.detail)) render();
+    if (["announcements", "dashboard"].includes(event.detail)) { render(); void service.refresh(); }
     if (event.detail === "announcements" && pendingOpenId) { const id = pendingOpenId; pendingOpenId = ""; open(id); }
   });
   document.addEventListener("portal:announcementschanged", render);
   document.addEventListener("portal:notificationschanged", render);
   document.addEventListener("portal:announcementopen", (event) => open(event.detail));
   window.addEventListener("storage", (event) => { if (event.key?.startsWith("rtu.portal.settings.")) { loadPreferences(); render(); } });
-  // Visibility/expiry refresh only. This never publishes scheduled announcements.
-  window.setInterval(() => { if (!document.hidden) render(); }, 30000);
-  document.addEventListener("visibilitychange", () => { if (!document.hidden) render(); });
+  // Refresh shared announcements and automatically remove notices past their end date.
+  window.setInterval(() => { if (!document.hidden) { render(); void service.refresh(); } }, 30000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) { render(); void service.refresh(); } });
   document.addEventListener("portal:logout", () => {
     if (dialog.open) dialog.close(); selected = ""; pendingOpenId = ""; alerts = true;
     ["student-announcement-feed", "student-announcement-detail-body", "latest-announcements-list", "student-announcement-feedback"].forEach((id) => $(id).replaceChildren());
