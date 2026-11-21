@@ -101,11 +101,11 @@ window.initializeStaffAnnouncements = () => {
       editor.showModal(); form.elements.title.focus();
     } catch (error) { $("announcement-feedback").textContent = error.message; }
   }
-  function commit(action, data) {
-    const saved = service.save(data, { id: editing?.id, revision: editing?.revision, action, confirmed: action !== "draft", token });
+  async function commit(action, data) {
+    const saved = await service.save(data, { id: editing?.id, revision: editing?.revision, action, confirmed: action !== "draft", token });
     editing = saved; dirty = false; baseline = JSON.stringify(raw());
     if (editor.open) editor.close();
-    $("announcement-feedback").textContent = action === "publish" ? "Published to the general student feed in this browser. No external messages were sent." : action === "schedule" ? "Schedule saved in this browser. An authorized publisher must publish it when due; no backend scheduler is connected." : "Draft saved in this browser.";
+    $("announcement-feedback").textContent = action === "publish" ? "Published to the student feed through Supabase." : action === "schedule" ? "Schedule saved in Supabase; the student feed displays it once due." : "Draft saved in Supabase.";
     render();
   }
   function ask(title, summary, action, reason = false) {
@@ -114,12 +114,12 @@ window.initializeStaffAnnouncements = () => {
     $("announcement-reason-label").hidden = !reason; $("announcement-reason").required = reason; $("announcement-reason").value = "";
     $("announcement-confirm-feedback").textContent = ""; confirmation.showModal(); $("announcement-confirm-cancel").focus();
   }
-  function save(action) {
+  async function save(action) {
     if (!form.reportValidity()) return;
     try {
       const data = content();
-      if (action === "draft") commit(action, data);
-      else ask(action === "publish" ? editing?.status === S.PUBLISHED ? "Confirm published revision" : "Confirm publication" : "Confirm publication schedule", `${data.title} · ${data.category} · ${data.audience} · Priority: ${data.priority}. ${action === "schedule" ? `Scheduled for ${date(data.scheduledAt)} (Asia/Manila). This prototype will not publish automatically.` : "Publish this content to the general student feed in this browser?"}`, () => commit(action, data));
+      if (action === "draft") await commit(action, data);
+      else ask(action === "publish" ? editing?.status === S.PUBLISHED ? "Confirm published revision" : "Confirm publication" : "Confirm publication schedule", `${data.title} · ${data.category} · ${data.audience} · Priority: ${data.priority}. ${action === "schedule" ? `Scheduled for ${date(data.scheduledAt)} (Asia/Manila). The student feed displays it once due.` : "Publish this content to the general student feed?"}`, () => commit(action, data));
     } catch (error) { $("announcement-editor-feedback").textContent = error.message; }
   }
   function openDetails(id) {
@@ -130,7 +130,7 @@ window.initializeStaffAnnouncements = () => {
       const display = record.published ? { ...record, publishedAt: record.published.publishedAt, publisher: record.published.publisher } : record;
       const body = $("announcement-details-body"); body.replaceChildren(window.PortalAnnouncementUI.card(display, { preview: !record.published }));
       body.append(el("p", `${record.id} · ${record.status} · Record revision ${record.revision} · Created by ${record.author || "Not recorded"} · ${date(record.createdAt)}`));
-      if (record.scheduledAt) body.append(el("p", `Scheduled: ${date(record.scheduledAt)} (Asia/Manila). Publication requires authorized staff action in this prototype.`, "demo-note"));
+      if (record.scheduledAt) body.append(el("p", `Scheduled: ${date(record.scheduledAt)} (Asia/Manila). The student feed displays this announcement once due.`, "demo-note"));
       if (record.legacy) body.append(el("p", "Imported legacy notice. Original content was preserved as an unpublished draft pending authorized review.", "demo-note"));
       const actions = el("div", undefined, "announcement-actions");
       if (service.editable(record) && ![S.ARCHIVED, S.PENDING].includes(record.status)) actions.append(button(record.status === S.PUBLISHED ? "Revise Announcement" : "Edit Announcement", () => openEditor(record)));
@@ -148,8 +148,8 @@ window.initializeStaffAnnouncements = () => {
     } catch (error) { $("announcement-feedback").textContent = error.message; }
   }
   function transition(record, action) {
-    ask(`Confirm ${action === "cancelSchedule" ? "schedule cancellation" : action}`, `${record.title} (${record.id}). This action is recorded in announcement history; content is preserved.`, () => {
-      const saved = service.transition(record.id, record.revision, action, { confirmed: true, reason: $("announcement-reason").value });
+    ask(`Confirm ${action === "cancelSchedule" ? "schedule cancellation" : action}`, `${record.title} (${record.id}). This action is recorded in announcement history; content is preserved.`, async () => {
+      const saved = await service.transition(record.id, record.revision, action, { confirmed: true, reason: $("announcement-reason").value });
       openDetails(saved.id); render();
     }, action === "reject");
   }
@@ -162,9 +162,9 @@ window.initializeStaffAnnouncements = () => {
     try { const data = content(); previewing = true; $("announcement-details-title").textContent = "Student Announcement Preview"; $("announcement-details-body").replaceChildren(window.PortalAnnouncementUI.card({ ...data, publisher: currentStaff().profile?.fullName || currentStaff().account.fullName }, { preview: true })); details.showModal(); $("announcement-details-title").focus(); }
     catch (error) { $("announcement-editor-feedback").textContent = error.message; }
   });
-  $("announcement-confirm-form").addEventListener("submit", (event) => {
+  $("announcement-confirm-form").addEventListener("submit", async (event) => {
     event.preventDefault(); const submit = $("announcement-confirm-submit"); submit.disabled = true;
-    try { confirmAction?.(); confirmation.close(); }
+    try { await confirmAction?.(); confirmation.close(); }
     catch (error) { $("announcement-confirm-feedback").textContent = error.message; }
     finally { submit.disabled = false; }
   });
