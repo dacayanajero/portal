@@ -93,10 +93,10 @@
   }
   function refreshQuietly() { refresh().catch(error=>{ console.error("Announcement synchronization failed",error); }); }
   document.addEventListener("portal:login",()=>{generation++;cache=[];seenIds=[];grants=[];userId=null;loaded=false;refreshPromise=null;refreshQuietly();});
-  document.addEventListener("portal:logout",()=>{generation++;cache=[];seenIds=[];grants=[];userId=null;loaded=false;refreshPromise=null;});
+  for (const event of ["portal:logout","portal:sessioninvalidated"]) document.addEventListener(event,()=>{generation++;cache=[];seenIds=[];grants=[];userId=null;loaded=false;refreshPromise=null;});
   for(const event of ["portal:staffpagechange","portal:pagechange"]) document.addEventListener(event,refreshQuietly);
   window.addEventListener("focus",refreshQuietly);
-  setInterval(()=>{if(userId && !document.hidden) refreshQuietly();},15000);
+  setInterval(()=>{if(userId && !document.hidden && !window.PortalRealtime) refreshQuietly();},15000);
   function announceChange() { document.dispatchEvent(new Event("portal:announcementschanged")); }
   function list() { requireCapability("view"); return read().sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)); }
   function get(id) { return list().find((record) => record.id === id) || null; }
@@ -243,5 +243,5 @@
   function summary(records = list()) {
     return { total: records.length, published: records.filter((item) => item.status === STATUS.PUBLISHED && item.published && item.published.publishedAt <= now() && (!item.published.expiresAt || item.published.expiresAt > now())).length, draft: records.filter((item) => item.status === STATUS.DRAFT).length, scheduled: records.filter((item) => item.status === STATUS.SCHEDULED && item.scheduledAt > now()).length, due: records.filter((item) => item.status === STATUS.SCHEDULED && item.scheduledAt <= now()).length };
   }
-  window.PortalAnnouncementService = Object.freeze({ STORAGE_KEY, STATUS, list, get, save, transition, summary, capabilities, editable, validate, fromManila, toManila, publicFeed, publicGet, notifications, markRead });
+  window.PortalAnnouncementService = Object.freeze({ STORAGE_KEY, STATUS, refresh, list, get, save, transition, summary, capabilities, editable, validate, fromManila, toManila, publicFeed, publicGet, notifications, markRead });
 })();

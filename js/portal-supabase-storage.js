@@ -437,7 +437,7 @@
   document.addEventListener("visibilitychange", checkStudentRelease);
   document.addEventListener("portal:login", () => {
     clear();
-    if (currentRole() === "student") releaseTimer = window.setInterval(checkStudentRelease, 15000);
+    if (currentRole() === "student" && !window.PortalRealtime) releaseTimer = window.setInterval(checkStudentRelease, 15000);
     void refresh().catch(error => console.error("Could not load Supabase requests:", error.message));
   });
   document.addEventListener("portal:logout", clear);
