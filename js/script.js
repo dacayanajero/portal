@@ -217,12 +217,30 @@ window.initializePortalLogin = () => {
   }
 
   const recoveryForm = document.querySelector("#recovery-form");
-  recoveryForm.addEventListener("submit", (event) => {
+  recoveryForm.addEventListener("submit", async (event) => {
     event.preventDefault();
+    const button = recoveryForm.querySelector('[type="submit"]');
+    if (button.disabled) return;
     const status = document.querySelector("#recovery-status");
-    if (!validateDialog(recoveryForm, status)) return;
     status.classList.remove("is-success");
-    status.textContent = "Recovery is a development preview only. No password was reset, and no recovery email, link or token was sent. A secure authentication provider is required for account recovery.";
+    if (!validateDialog(recoveryForm, status)) return;
+    const input = recoveryForm.elements.email;
+    const email = input.value;
+    button.disabled = true;
+    input.readOnly = true;
+    status.textContent = "Requesting a reset link…";
+    try {
+      await accounts.requestPasswordReset(email);
+      if (input.value === email) {
+        status.classList.add("is-success");
+        status.textContent = "If an account uses this email address, check your inbox or spam folder for a reset link.";
+      }
+    } catch (error) {
+      if (input.value === email) status.textContent = error.message || "Please try again later.";
+    } finally {
+      input.readOnly = false;
+      button.disabled = false;
+    }
   });
 
   const registerForm = document.querySelector("#register-form");
