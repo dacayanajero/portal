@@ -16,7 +16,7 @@ window.PortalAnnouncementUI = Object.freeze({
     card.append(el("h3", record.title));
     const meta = document.createElement("div"); meta.className = "portal-announcement-meta";
     meta.append(el("span", preview ? "Preview — not published" : `Published ${window.PortalAnnouncementUI.date(record.publishedAt)}`), el("span", record.audience || "All Students"));
-    if (preview) meta.append(el("span", record.scheduledAt ? `Planned publication ${window.PortalAnnouncementUI.date(record.scheduledAt)}` : "Publication time assigned on publishing"));
+    if (record.expiresAt) meta.append(el("span", `Visible until ${window.PortalAnnouncementUI.shortDate(new Date(new Date(record.expiresAt).getTime() - 1).toISOString())}`));
     if (record.publisher) meta.append(el("span", `${preview ? "Publisher (preview)" : "Published by"} ${record.publisher}`));
     card.append(meta, el("p", full ? record.content : `${record.content.slice(0, 240)}${record.content.length > 240 ? "…" : ""}`, "portal-announcement-content"));
     return card;
