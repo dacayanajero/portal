@@ -13,11 +13,11 @@
   function staff() {
     const current = window.PortalStaffContext?.current();
     if (current?.account?.role !== "staff") throw new Error("Sign in as authorized staff to manage announcements.");
-    return { id: current.account.accountNumber, name: current.profile?.fullName || current.account.fullName };
+    return { id: userId, name: current.profile?.fullName || current.account.fullName };
   }
   function capabilities() {
     const actor = staff();
-    return [...(policy().accountCapabilities[actor.id] || policy().defaultCapabilities)];
+    return [...grants];
   }
   function requireCapability(capability) {
     const actor = staff();
@@ -28,40 +28,75 @@
     const actor = staff(); const permissions = capabilities();
     return permissions.includes("editAny") || (permissions.includes("editOwnDrafts") && record.authorId === actor.id && [STATUS.DRAFT, STATUS.REJECTED].includes(record.status));
   }
-  function write(list) {
-    try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
-    catch { throw new Error("Announcements could not be saved. Browser storage is unavailable or full; publication was not confirmed."); }
+  let cache = [], seenIds = [], userId = null, grants = [], generation = 0, loaded = false;
+  let refreshPromise = null;
+  const client = () => {
+    if (!window.PortalSupabase?.configured) throw new Error("Supabase is not configured.");
+    return window.PortalSupabase.client;
+  };
+  function checked(result) {
+    if (result.error) throw new Error(result.error.message);
+    return result.data;
   }
-  function read() {
-    let parsed;
-    try { parsed = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || "[]"); }
-    catch { throw new Error("Saved announcements could not be read. Check browser storage."); }
-    if (!Array.isArray(parsed)) throw new Error("Saved announcement data is invalid.");
-    const seen = new Set();
-    let changed = false;
-    const result = parsed.map((item) => {
-      if (!item || typeof item.id !== "string" || typeof item.title !== "string") throw new Error("Saved announcement data is invalid.");
-      if (seen.has(item.id)) throw new Error("Duplicate announcement identifiers require review before changes can be saved.");
-      seen.add(item.id);
-      if (item.schemaVersion === 1) {
-        if (!Object.values(STATUS).includes(item.status) || !Number.isInteger(item.revision) || !Array.isArray(item.history) || !Array.isArray(item.versions) || !Array.isArray(item.notifications) || typeof item.content !== "string") throw new Error("Saved announcement lifecycle data is invalid.");
-        return item;
+  function read() { return clone(cache); }
+  function mapRow(row, versions = []) {
+    const data = { title: row.title, content: row.content, category: row.category, audience: row.audience, priority: row.priority, scheduledAt: row.scheduled_for || "", expiresAt: row.expires_at || "" };
+    const publishedAt = row.published_at || (row.status === STATUS.SCHEDULED ? row.scheduled_for : "") || "";
+    const published = [STATUS.PUBLISHED, STATUS.SCHEDULED].includes(row.status) && publishedAt ? { ...data, version: row.revision, publishedAt, publisher: row.author_name || "" } : null;
+    return { ...data, schemaVersion: 1, id: row.id, authorId: row.author_id, author: row.author_name || "", revision: row.revision, status: row.status, createdAt: row.created_at, updatedAt: row.updated_at, publishedAt, published,
+      history: versions.map((v, i) => ({ action: "Revision Saved", actor: v.saved_by_name || "", timestamp: v.created_at, previousStatus: versions[i-1]?.status || "", newStatus: v.status })),
+      versions: versions.filter(v => v.status === STATUS.PUBLISHED).map(v => ({ title:v.title, content:v.content, category:v.category, priority:v.priority, audience:row.audience, version:v.revision, publishedAt:v.created_at, publisher:v.saved_by_name || "" })),
+      notifications: [] };
+  }
+  async function refresh() {
+    if (refreshPromise) return refreshPromise;
+    const epoch = generation;
+    const work = (async () => {
+      const sb = client();
+      const session = checked(await sb.auth.getSession()).session;
+      if (!session || epoch !== generation) return;
+      const uid = session.user.id;
+      const profile = checked(await sb.from("profiles").select("role").eq("id",uid).single());
+      const isStaff = ["staff","admin"].includes(profile.role);
+      const results = await Promise.all([
+        sb.from("announcements").select("*").order("created_at",{ascending:false}),
+        isStaff ? sb.from("announcement_versions").select("*").order("revision") : Promise.resolve({data:[]}),
+        isStaff ? sb.from("staff_capabilities").select("capability").eq("user_id",uid) : Promise.resolve({data:[]}),
+        isStaff ? Promise.resolve({data:[]}) : sb.from("announcement_reads").select("announcement_id").eq("user_id",uid)
+      ]);
+      const [rows, versions, caps, reads] = results.map(checked);
+      if (epoch !== generation) return;
+      const next = rows.map(row => mapRow(row,versions.filter(v=>v.announcement_id===row.id)));
+      const nextSeen = reads.map(r=>r.announcement_id);
+      const nextGrants = profile.role === "admin" ? ["view","create","editAny","editOwnDrafts","publish","archive","review","approve"] : caps.map(c=>c.capability);
+      const changed = !loaded || userId !== uid || JSON.stringify([cache,seenIds,grants]) !== JSON.stringify([next,nextSeen,nextGrants]);
+      userId=uid; cache=next; seenIds=nextSeen; grants=nextGrants; loaded=true;
+      if(changed) announceChange();
+    })();
+    refreshPromise=work;
+    try { await work; } finally { if(refreshPromise===work) refreshPromise=null; }
+  }
+  async function persist(record, created, previousRevision) {
+    const sb = client();
+    const values = {title:record.title,content:record.content,category:record.category,audience:record.audience,priority:record.priority,scheduled_for:record.scheduledAt||null,expires_at:record.expiresAt||null};
+    if (created) {
+      const draft=checked(await sb.from("announcements").insert(values).select("*").single());
+      record.id=draft.id;
+      if(record.status!==STATUS.DRAFT) {
+        checked(await sb.from("announcements").update({status:record.status}).eq("id",draft.id).eq("revision",draft.revision).select("*").single());
       }
-      // Old notices had no publication authorization/version metadata. Preserve,
-      // but never silently re-publish sample policy statements as official notices.
-      changed = true;
-      return { schemaVersion: 1, id: item.id, title: item.title, content: String(item.message || ""), category: "General Announcements", audience: ["All", "Students"].includes(item.audience) ? "All Students" : "", priority: "Normal", status: STATUS.DRAFT, createdAt: validTime(item.createdAt) ? item.createdAt : "", updatedAt: now(), authorId: "", author: typeof item.author === "string" ? item.author : "", revision: 1, scheduledAt: "", expiresAt: "", publishedAt: "", published: null, versions: [], notifications: [], legacy: clone(item), history: [{ action: "Legacy Notice Imported as Draft", actor: "Portal migration", staffId: "", timestamp: now(), previousStatus: "", newStatus: STATUS.DRAFT, remarks: "Requires authorized review; prior publication permissions were not recorded." }] };
-    });
-    if (changed && !migrating) {
-      // Only staff access performs migration; student reads safely project legacy
-      // entries as drafts without writing to the source.
-      if (window.PortalStaffContext?.current()?.account?.role === "staff") {
-        migrating = true;
-        try { write(result); } finally { migrating = false; }
-      }
+    } else {
+      checked(await sb.from("announcements").update({...values,status:record.status}).eq("id",record.id).eq("revision",previousRevision).select("*").single());
     }
-    return clone(result);
+    await refresh();
+    return clone(cache.find(r=>r.id===record.id) || record);
   }
+  function refreshQuietly() { refresh().catch(error=>{ console.error("Announcement synchronization failed",error); }); }
+  document.addEventListener("portal:login",()=>{generation++;cache=[];seenIds=[];grants=[];userId=null;loaded=false;refreshPromise=null;refreshQuietly();});
+  document.addEventListener("portal:logout",()=>{generation++;cache=[];seenIds=[];grants=[];userId=null;loaded=false;refreshPromise=null;});
+  for(const event of ["portal:staffpagechange","portal:pagechange"]) document.addEventListener(event,refreshQuietly);
+  window.addEventListener("focus",refreshQuietly);
+  setInterval(()=>{if(userId && !document.hidden) refreshQuietly();},15000);
   function announceChange() { document.dispatchEvent(new Event("portal:announcementschanged")); }
   function list() { requireCapability("view"); return read().sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)); }
   function get(id) { return list().find((record) => record.id === id) || null; }
@@ -99,7 +134,8 @@
   function addHistory(record, action, actor, previousStatus, remarks = "") {
     record.history.push({ action, actor: actor.name, staffId: actor.id, timestamp: now(), previousStatus, newStatus: record.status, remarks });
   }
-  function save(input, options = {}) {
+  async function save(input, options = {}) {
+    await refresh();
     const actor = requireCapability("view");
     const action = options.action || "draft";
     if (!["draft", "schedule", "publish"].includes(action)) throw new Error("Choose a supported save action.");
@@ -150,9 +186,10 @@
       if (!record.notifications.length) record.notifications.push({ id: `announcement:${record.id}`, title: record.title, timestamp, announcementId: record.id });
       addHistory(record, previous === STATUS.PUBLISHED ? "Revised and Published" : "Published", actor, previous);
     } else addHistory(record, record.status === STATUS.SCHEDULED ? "Scheduled" : created ? "Saved as Draft" : "Edited", actor, previous);
-    write(all); announceChange(); return clone(record);
+    return persist(record, created, options.revision);
   }
-  function transition(id, revision, action, options = {}) {
+  async function transition(id, revision, action, options = {}) {
+    await refresh();
     const actor = requireCapability("view");
     const all = read(); const record = all.find((item) => item.id === id);
     if (!record) throw new Error("This announcement is unavailable.");
@@ -181,7 +218,7 @@
     record.updatedAt = now(); record.revision++;
     const labels = { archive: "Archived", cancelSchedule: "Scheduled Publication Cancelled", submit: "Submitted for Approval", approve: "Approved", reject: "Rejected" };
     addHistory(record, labels[action], actor, previous, String(options.reason || "").trim().slice(0, 1000));
-    write(all); announceChange(); return clone(record);
+    return persist(record, false, revision);
   }
   function student() {
     const account = window.PortalProfile?.snapshot()?.account;
@@ -190,27 +227,21 @@
   }
   function publicFeed() {
     student(); const timestamp = now();
-    return read().filter((record) => record.status === STATUS.PUBLISHED && record.published && typeof record.published.content === "string" && record.published.audience === "All Students" && validTime(record.published.publishedAt) && record.published.publishedAt <= timestamp && (!record.published.expiresAt || validTime(record.published.expiresAt) && record.published.expiresAt > timestamp)).map(({ id, published }) => ({ id, title: published.title, content: published.content, category: published.category, audience: published.audience, priority: published.priority, version: published.version, publishedAt: published.publishedAt, expiresAt: published.expiresAt, publisher: published.publisher })).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+    return read().filter((record) => [STATUS.PUBLISHED, STATUS.SCHEDULED].includes(record.status) && record.published && typeof record.published.content === "string" && record.published.audience === "All Students" && validTime(record.published.publishedAt) && record.published.publishedAt <= timestamp && (!record.published.expiresAt || validTime(record.published.expiresAt) && record.published.expiresAt > timestamp)).map(({ id, published }) => ({ id, title: published.title, content: published.content, category: published.category, audience: published.audience, priority: published.priority, version: published.version, publishedAt: published.publishedAt, expiresAt: published.expiresAt, publisher: published.publisher })).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
   }
   function publicGet(id) { return publicFeed().find((record) => record.id === id) || null; }
-  function readKey() { return `${READ_PREFIX}${encodeURIComponent(student().accountNumber)}`; }
-  function readIds() {
-    try { const value = JSON.parse(window.localStorage.getItem(readKey()) || "[]"); return Array.isArray(value) ? value.filter((item) => typeof item === "string") : []; } catch { return []; }
-  }
+  function readIds() { return [...seenIds]; }
   function notifications() {
     const seen = new Set(readIds());
     return publicFeed().map((record) => ({ id: `announcement:${record.id}`, announcementId: record.id, title: record.title, timestamp: record.publishedAt, unread: !seen.has(record.id) }));
   }
-  function markRead(id) {
-    if (!publicGet(id)) throw new Error("This announcement is not available to your account.");
-    const ids = [...new Set([...readIds(), id])];
-    try { window.localStorage.setItem(readKey(), JSON.stringify(ids)); }
-    catch { throw new Error("Read status could not be saved in this browser."); }
-    announceChange();
+  async function markRead(id) {
+    if (!publicGet(id) || !userId) throw new Error("This announcement is not available to your account.");
+    checked(await client().from("announcement_reads").upsert({user_id:userId,announcement_id:id},{onConflict:"user_id,announcement_id",ignoreDuplicates:true}));
+    await refresh();
   }
   function summary(records = list()) {
     return { total: records.length, published: records.filter((item) => item.status === STATUS.PUBLISHED && item.published && item.published.publishedAt <= now() && (!item.published.expiresAt || item.published.expiresAt > now())).length, draft: records.filter((item) => item.status === STATUS.DRAFT).length, scheduled: records.filter((item) => item.status === STATUS.SCHEDULED && item.scheduledAt > now()).length, due: records.filter((item) => item.status === STATUS.SCHEDULED && item.scheduledAt <= now()).length };
   }
-  window.addEventListener("storage", (event) => { if (event.key === null || event.key === STORAGE_KEY || event.key?.startsWith(READ_PREFIX)) announceChange(); });
   window.PortalAnnouncementService = Object.freeze({ STORAGE_KEY, STATUS, list, get, save, transition, summary, capabilities, editable, validate, fromManila, toManila, publicFeed, publicGet, notifications, markRead });
 })();
