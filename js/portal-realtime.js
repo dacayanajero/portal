@@ -41,7 +41,8 @@
     if (initialized) {
       const before = new Set(inbox.map(row=>row.id));
       const fresh = next.filter(row=>!row.is_read && !before.has(row.id));
-      if (fresh.length) toast(fresh.length === 1 ? fresh[0].title : fresh.length+" new portal updates");
+      const permitted = fresh.filter(row => { const candidate = {source:"database",kind:row.kind,unread:true}; const staff=window.PortalStaffContext?.current()?.account; let prefs={}; try { if(staff?.role==="staff") prefs=window.PortalStaffAccountService.preferences(); } catch {} return !window.PortalNotifications || window.PortalNotifications.visible([candidate],prefs).length; });
+      if (permitted.length) toast(permitted.length === 1 ? permitted[0].title : permitted.length+" new portal updates");
     }
     inbox=next; inboxError=""; initialized=true; notify();
   }
@@ -131,7 +132,7 @@
     enqueue(...groups);
     // Slow reconciliation even when connected: time-based publication/expiry,
     // RLS visibility changes and deletes may not send a visible event.
-    periodic=setInterval(()=>{if(!document.hidden) enqueue(...(connected?["announcements"]:groups));},60000);
+    periodic=setInterval(()=>{if(!document.hidden) enqueue(...groups);},60000);
     // Reconcile all sources occasionally while connected, too.
   }
   document.addEventListener("portal:login",()=>void start().catch(console.warn));
