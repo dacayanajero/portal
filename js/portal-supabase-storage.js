@@ -74,17 +74,26 @@
     const aDate = appointment?.appt_date || savedDetails.appointmentDate || "";
     const aStart = hhmm(appointment?.start_time || savedDetails.appointmentStart);
     const aEnd = hhmm(appointment?.end_time || savedDetails.appointmentEnd);
-    const range = savedDetails.appointmentTimeRange || (aStart && aEnd ? aStart + " - " + aEnd : "");
+    const times = aStart && aEnd ? aStart + " - " + aEnd : "";
+    const range = appointment ? times : savedDetails.appointmentTimeRange || times;
+    const day = appointment ? dateLabel(aDate) : savedDetails.appointmentDateLabel || dateLabel(aDate);
+    const details = clone(savedDetails);
+    if (appointment) {
+      Object.assign(details, {
+        appointmentDate: aDate, appointmentDateLabel: day,
+        appointmentStart: aStart, appointmentEnd: aEnd, appointmentTimeRange: range,
+      });
+    }
     const submittedAt = row.created_at;
     return {
       id: row.reference_no, dbId: row.id, referenceNo: row.reference_no,
       studentNumber: row.student_number, studentName: row.student_name,
       program: row.program || "", yearLevel: row.year_level || "", semester: row.semester || "",
-      documentType: row.document_type, purpose: row.purpose, details: clone(savedDetails),
+      documentType: row.document_type, purpose: row.purpose, details,
       appointment: {
-        date: aDate, dateLabel: savedDetails.appointmentDateLabel || dateLabel(aDate),
+        date: aDate, dateLabel: day,
         start: aStart, end: aEnd, timeRange: range,
-        display: aDate ? (savedDetails.appointmentDateLabel || dateLabel(aDate)) + " · " + range : "",
+        display: aDate ? day + " · " + range : "",
       },
       submittedAt, updatedAt: row.updated_at, status: row.status,
       assignedStaff: row.assigned_staff_name || "", reviewDate: row.review_date || "",

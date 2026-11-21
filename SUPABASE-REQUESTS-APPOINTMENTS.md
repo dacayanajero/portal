@@ -24,6 +24,10 @@ The results should contain **two rows**. You must be signed in with an active `s
 
 ## Changes
 
+For existing deployments, apply `sql/portal_patch_5_booking_integrity.sql` after patch 3. It restores student cancellation and serializes bookings for each office date. Back-to-back appointments can share an endpoint.
+
+Representative pickup requires a letter signed by the requesting student. Final handover in the portal is pending the remaining release decisions. Booking, rescheduling and cancellation operate independently of document release.
+
 - New `js/portal-supabase-storage.js` substitutes the request/appointment services' persistent methods, retaining their synchronous **read/display** interfaces via a database-loaded in-memory cache. It never reads the old request or appointment localStorage.
 - Submissions now await a successful Supabase insert or atomic RPC **before** opening the success page.
 - The Grade Slip, Registration Form, and ID Printing forms save a document request + one-hour appointment transactionally.
