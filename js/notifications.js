@@ -19,14 +19,27 @@ window.PortalNotifications = (() => {
       }).map((request) => ({ id: `processing:${request.id}:${request.status}`, source: "processing", requestId: request.id, title: `Assigned document · ${request.id} · ${request.status}`, timestamp: request.updatedAt, unread: true, attention: true })));
       if (window.PortalSupportService.capabilities().some((capability) => ["viewAll", "viewAssigned"].includes(capability))) read("Support updates", () => window.PortalSupportService.notifications());
     }
-    return { items: items.sort((a, b) => (Date.parse(b.timestamp) || 0) - (Date.parse(a.timestamp) || 0)), unavailable };
+    if (student?.role === "student" || staff?.role === "staff") read("Database notifications", () => window.PortalRealtime?.list() || []);
+    // A pending-request alert and its database notice describe the same task.
+    // Keep the database notice available, but avoid double-counting staff attention.
+    const dbRefs = new Set(items.filter(n => n.source === "database" && n.refTable === "requests" && n.unread).map(n => n.refId));
+    const deduped = items.filter(n => n.source !== "requests" || !dbRefs.has(window.PortalRequestService.get(n.requestId)?.dbId));
+    return { items: deduped.sort((a, b) => (Date.parse(b.timestamp) || 0) - (Date.parse(a.timestamp) || 0)), unavailable };
   }
   function list() { return state().items; }
   function visible(items, preferences = {}) {
-    return items.filter((notice) => notice.mandatory || (notice.source === "requests" ? preferences.requestAlerts !== false : notice.source === "processing" ? preferences.processingAlerts !== false : notice.source === "support" ? preferences.supportAlerts !== false : notice.source === "announcements" ? preferences.announcementAlerts !== false : true));
+    return items.filter((notice) => notice.mandatory || (notice.source === "database" && notice.kind === "request" ? preferences.requestAlerts !== false : notice.source === "requests" ? preferences.requestAlerts !== false : notice.source === "processing" ? preferences.processingAlerts !== false : notice.source === "support" ? preferences.supportAlerts !== false : notice.source === "announcements" ? preferences.announcementAlerts !== false : true));
   }
-  function open(noticeId) {
+  async function open(noticeId) {
     const notice = list().find((entry) => entry.id === noticeId); if (!notice) throw new Error("This update is unavailable to your account.");
+    if (notice.source === "database") {
+      await window.PortalRealtime.markRead(notice.dbId);
+      const student = window.PortalProfile?.snapshot()?.account;
+      if (student?.role === "student") location.hash = "#/my-request";
+      else if (notice.refTable === "requests" && window.PortalRequestService.get(notice.refId)) window.PortalStaffContext.openRequest(window.PortalRequestService.get(notice.refId).id);
+      else if (notice.refTable === "appointments") location.hash = "#/staff/appointments";
+      return;
+    }
     if (notice.source === "support") { window.PortalSupportService.markRead(notice.id); document.dispatchEvent(new CustomEvent("portal:supportticketopen", { detail: notice.ticketId })); }
     else if (notice.source === "announcements") document.dispatchEvent(new CustomEvent("portal:announcementopen", { detail: notice.announcementId }));
     else if (notice.source === "processing") document.dispatchEvent(new CustomEvent("portal:documentopen", { detail: notice.requestId }));
@@ -60,8 +73,8 @@ window.initializePortalNotifications = () => {
     visibleItems.forEach((notice) => {
       const row = document.createElement("li"); const button = document.createElement("button"); button.type = "button"; button.className = "secondary-button";
       button.textContent = `${notice.unread ? "Unread / attention · " : ""}${notice.title}`;
-      button.addEventListener("click", () => { try { dialog.close(); window.PortalNotifications.open(notice.id); } catch (error) { feedback.textContent = error.message; } });
-      const source = document.createElement("small"); source.textContent = notice.source === "support" ? `Private support update${notice.mandatory ? " · Required operational notice" : ""}` : ["requests", "processing"].includes(notice.source) ? "Staff attention; remains until its source state changes" : "General published announcement";
+      button.addEventListener("click", async () => { button.disabled=true; try { await window.PortalNotifications.open(notice.id); dialog.close(); } catch (error) { feedback.textContent = error.message; } finally { button.disabled=false; } });
+      const source = document.createElement("small"); source.textContent = notice.source === "database" ? (notice.body || "Account notification") : notice.source === "support" ? `Private support update${notice.mandatory ? " · Required operational notice" : ""}` : ["requests", "processing"].includes(notice.source) ? "Staff attention; remains until its source state changes" : "General published announcement";
       row.append(button, source); rows.append(row);
     });
   }
