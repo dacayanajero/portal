@@ -131,19 +131,19 @@ window.initializeStaffAnnouncements = () => {
       const display = record.published ? { ...record, publishedAt: record.published.publishedAt, publisher: record.published.publisher } : record;
       const body = $("announcement-details-body"); body.replaceChildren(window.PortalAnnouncementUI.card(display, { preview: !record.published }));
       body.append(el("p", `${record.id} · ${record.status} · Record revision ${record.revision} · Created by ${record.author || "Not recorded"} · ${date(record.createdAt)}`));
-      if (record.scheduledAt) body.append(el("p", `Scheduled: ${date(record.scheduledAt)} (Asia/Manila). Publication requires authorized staff action in this prototype.`, "demo-note"));
+      if (record.scheduledAt) body.append(el("p", `Legacy scheduled publication: ${date(record.scheduledAt)} (Asia/Manila).`, "demo-note"));
       if (record.legacy) body.append(el("p", "Imported legacy notice. Original content was preserved as an unpublished draft pending authorized review.", "demo-note"));
       const actions = el("div", undefined, "announcement-actions");
       if (service.editable(record) && ![S.ARCHIVED, S.PENDING].includes(record.status)) actions.append(button(record.status === S.PUBLISHED ? "Revise Announcement" : "Edit Announcement", () => openEditor(record)));
       if (record.status === S.SCHEDULED && permissions().includes("publish")) actions.append(button("Cancel Scheduled Publication", () => transition(record, "cancelSchedule")));
       if ([S.DRAFT, S.REJECTED, S.APPROVED, S.PUBLISHED].includes(record.status) && permissions().includes("archive")) actions.append(button("Archive Announcement", () => transition(record, "archive")));
-      if (policy.approvalRequired && [S.DRAFT, S.REJECTED].includes(record.status) && service.editable(record)) actions.append(button("Submit for Approval", () => transition(record, "submit")));
-      if (policy.approvalRequired && record.status === S.PENDING && permissions().includes("approve")) actions.append(button("Approve Announcement", () => transition(record, "approve")), button("Reject Announcement", () => transition(record, "reject")));
+      if (false && policy.approvalRequired && [S.DRAFT, S.REJECTED].includes(record.status) && service.editable(record)) actions.append(button("Submit for Approval", () => transition(record, "submit")));
+      if (false && policy.approvalRequired && record.status === S.PENDING && permissions().includes("approve")) actions.append(button("Approve Announcement", () => transition(record, "approve")), button("Reject Announcement", () => transition(record, "reject")));
       body.append(actions, el("h4", "Publishing and Editing History"));
       const history = el("ol", undefined, "announcement-audit");
       record.history.slice().reverse().forEach((event) => { const item = el("li"); const time = el("time", date(event.timestamp)); time.dateTime = event.timestamp; item.append(el("strong", event.action), time, el("small", `${event.actor} · ${event.previousStatus || "New"} → ${event.newStatus}`)); if (event.remarks) item.append(el("p", event.remarks)); history.append(item); }); body.append(history);
       body.append(el("h4", "Preserved Published Versions"));
-      if (!record.versions.length) body.append(el("p", "No published versions recorded."));
+      if (!record.versions.length) body.append(el("p", record.source === "Supabase" ? "Previous versions are stored separately and are not loaded in this view." : "No published versions recorded."));
       record.versions.slice().reverse().forEach((version) => { const detail = el("details"); detail.append(el("summary", `Version ${version.version} · ${date(version.publishedAt)} · ${version.publisher}`), window.PortalAnnouncementUI.card(version)); body.append(detail); });
       if (!details.open) details.showModal(); $("announcement-details-title").focus();
     } catch (error) { $("announcement-feedback").textContent = error.message; }
@@ -161,9 +161,9 @@ window.initializeStaffAnnouncements = () => {
     try { const data = content(); previewing = true; $("announcement-details-title").textContent = "Student Announcement Preview"; $("announcement-details-body").replaceChildren(window.PortalAnnouncementUI.card({ ...data, publisher: currentStaff().profile?.fullName || currentStaff().account.fullName }, { preview: true })); details.showModal(); $("announcement-details-title").focus(); }
     catch (error) { $("announcement-editor-feedback").textContent = error.message; }
   });
-  $("announcement-confirm-form").addEventListener("submit", (event) => {
+  $("announcement-confirm-form").addEventListener("submit", async (event) => {
     event.preventDefault(); const submit = $("announcement-confirm-submit"); submit.disabled = true;
-    try { confirmAction?.(); confirmation.close(); }
+    try { await confirmAction?.(); confirmation.close(); }
     catch (error) { $("announcement-confirm-feedback").textContent = error.message; }
     finally { submit.disabled = false; }
   });
@@ -184,7 +184,7 @@ window.initializeStaffAnnouncements = () => {
   document.querySelectorAll("[data-announcement-section]").forEach((control) => control.addEventListener("click", () => { section = control.dataset.announcementSection; page = 1; filters.elements.status.value = ""; render(); }));
   ["portal:staffbeforenavigate", "portal:staffbeforelogout"].forEach((name) => document.addEventListener(name, (event) => { if (editor.open && !discard()) event.preventDefault(); }));
   window.addEventListener("beforeunload", (event) => { if (dirty) { event.preventDefault(); event.returnValue = ""; } });
-  document.addEventListener("portal:staffpagechange", (event) => { if (event.detail === "staff-announcements") render(); });
+  document.addEventListener("portal:staffpagechange", (event) => { if (event.detail === "staff-announcements") { render(); void service.refresh(); } });
   document.addEventListener("portal:announcementschanged", () => {
     if (!currentStaff()) return;
     render();
@@ -199,6 +199,6 @@ window.initializeStaffAnnouncements = () => {
     $("announcement-details-body").replaceChildren(); $("announcement-rows").replaceChildren(); $("announcement-stats").replaceChildren();
   });
   if (currentStaff()) render();
-  // Refresh due/expiry indicators only; publishing is always an explicit operation.
-  window.setInterval(() => { if (!document.hidden && !editor.open && currentStaff() && document.querySelector("#staff-screen").dataset.currentPage === "staff-announcements") render(); }, 30000);
+  // Refresh shared data and expiry indicators while staff are viewing announcements.
+  window.setInterval(() => { if (!document.hidden && !editor.open && currentStaff() && document.querySelector("#staff-screen").dataset.currentPage === "staff-announcements") void service.refresh(); }, 30000);
 };
