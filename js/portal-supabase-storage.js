@@ -20,6 +20,8 @@
   let revision = 0;
   let loading = null;
   let lastLoadError = "";
+  let releaseTimer = null;
+  let checkingRelease = false;
   const clone = value => JSON.parse(JSON.stringify(value));
   const client = () => holder.client;
   const err = ({ error }) => { if (error) throw new Error(error.message || String(error)); };
@@ -40,6 +42,8 @@
   }
 
   function clear() {
+    if (releaseTimer !== null) window.clearInterval(releaseTimer);
+    releaseTimer = null;
     revision++;
     viewerId = null;
     requestRows = [];
@@ -101,7 +105,7 @@
       rejectionReason: row.rejection_reason || "", studentCorrectionNote: row.student_correction_note || "",
       correctionSubmittedAt: row.correction_submitted_at || "", approvedAt: row.approved_at || "",
       processingStartedAt: row.processing_started_at || "", readyAt: row.ready_at || "",
-      releasedAt: row.released_at || "", releasedBy: row.released_by || "",
+      releasedAt: row.released_at || "", releasedBy: row.release?.actor || row.released_by || "",
       releaseVerification: row.release_verification || "",
       processing: { checks: detailsObject(row.processing?.checks), notes: row.processing?.notes || [], events: [] },
       notifications: [], recipientVerification: null, recipientVerifications: [],
@@ -241,7 +245,23 @@
       return { request: get(id), persisted: true };
     }
     if (status === "Released") {
-      throw new Error("Recipient verification and final document release require a separately authorized workflow.");
+      const authId = viewerId;
+      const result = await client().from("requests").update({ status: "Released" })
+        .eq("id", dbIdFor(id)).eq("status", "Ready for Pickup").select("*").maybeSingle();
+      err(result);
+      if (!result.data) {
+        await refresh();
+        throw new Error("This request is no longer Ready for Pickup. Check its current status.");
+      }
+      if (viewerId === authId && currentRole() === "staff") {
+        Object.assign(requestRows.find(row => row.dbId === result.data.id) || {}, {
+          status: result.data.status, release: result.data.release, releasedAt: result.data.released_at,
+          releasedBy: result.data.release?.actor || result.data.released_by, updatedAt: result.data.updated_at,
+        });
+        changeEvents();
+        try { await refresh(); } catch (error) { console.warn("Release saved. History refresh failed:", error.message); }
+      }
+      return { request: get(id), persisted: true };
     }
     const reason = String(options.reason || "").trim();
     const values = { status };
@@ -392,9 +412,34 @@
 
   window.PortalRequestService = requestAdapter;
   window.PortalAppointmentService = appointmentAdapter;
-  document.addEventListener("portal:login", () => { clear(); void refresh().catch(error => {
-    console.error("Could not load Supabase requests:", error.message);
-  }); });
+  async function checkStudentRelease() {
+    if (document.hidden || checkingRelease || loading || currentRole() !== "student") return;
+    const authId = viewerId;
+    const stamp = revision;
+    checkingRelease = true;
+    try {
+      if (!authId) { await refresh(); return; }
+      const result = await client().from("requests").select("id,released_at")
+        .eq("student_id", authId).eq("status", "Released")
+        .order("released_at", { ascending: false, nullsFirst: false }).order("id").limit(1);
+      err(result);
+      const latest = result.data?.[0];
+      if (latest && revision === stamp && viewerId === authId &&
+          !requestRows.some(row => row.dbId === latest.id && row.status === "Released")) {
+        await refresh();
+      }
+    } catch (error) {
+      console.warn("Student release status could not be refreshed:", error.message);
+    } finally {
+      checkingRelease = false;
+    }
+  }
+  document.addEventListener("visibilitychange", checkStudentRelease);
+  document.addEventListener("portal:login", () => {
+    clear();
+    if (currentRole() === "student") releaseTimer = window.setInterval(checkStudentRelease, 15000);
+    void refresh().catch(error => console.error("Could not load Supabase requests:", error.message));
+  });
   document.addEventListener("portal:logout", clear);
   document.addEventListener("portal:sessioninvalidated", clear);
 })();

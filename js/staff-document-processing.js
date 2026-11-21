@@ -91,7 +91,7 @@ window.initializeStaffDocumentProcessing = () => {
     document.querySelectorAll("[data-document-tab]").forEach((control) => control.setAttribute("aria-pressed", String(control.dataset.documentTab === tab)));
     $("document-export").hidden = tab !== "history" || !policy.exportAllowed;
     const headers = tab === "history"
-      ? ["Release Reference", "Request ID", "Student Name", "Document Type", "Copies Released", "Released To", "Release Date", "Released By", "Actions"]
+      ? ["Release Reference", "Request ID", "Student Name", "Document Type", "Copies Released", "Release Date", "Released By", "Actions"]
       : tab === "pickup" ? ["Request ID", "Student Name", "Student Number", "Document Type", "Copies", "Date Ready", "Pickup Appointment", "Release Status", "Actions"]
         : ["Request ID", "Student Name", "Student Number", "Document Type", "Date Approved", "Actions"];
     const head = el("tr");
@@ -105,12 +105,15 @@ window.initializeStaffDocumentProcessing = () => {
       const release = request.release;
       const appointment = window.PortalAppointmentService.getByRequest(request.id);
       const values = tab === "history"
-        ? [release?.reference || "Legacy record — no release reference", request.id, release?.studentName || request.studentName, release?.documentType || request.documentType, release?.copies || "—", release ? `${release.recipientName} · ${release.recipientType}` : "Not recorded", date(release?.timestamp || request.releasedAt), release?.actor || request.releasedBy || "Not recorded"]
-        : tab === "pickup" ? [request.id, request.studentName, request.studentNumber, request.documentType, request.details.copies || "—", date(request.readyAt), appointment ? `${appointment.id} · ${appointment.date} · ${appointment.start}–${appointment.end} · ${appointment.status}` : "Not scheduled", service.verificationComplete(request) ? "Recipient verified · awaiting handover" : "Awaiting recipient verification"]
+        ? [release?.reference || "Legacy record — no release reference", request.id, release?.studentName || request.studentName, release?.documentType || request.documentType, release?.copies || "—", date(release?.timestamp || request.releasedAt), release?.actor || request.releasedBy || "Not recorded"]
+        : tab === "pickup" ? [request.id, request.studentName, request.studentNumber, request.documentType, request.details.copies || "—", date(request.readyAt), appointment ? `${appointment.id} · ${appointment.date} · ${appointment.start}–${appointment.end} · ${appointment.status}` : "Not scheduled", "Ready for Pickup"]
           : [request.id, request.studentName, request.studentNumber, request.documentType, date(request.approvedAt)];
       values.forEach((value) => row.append(el("td", value)));
       const actions = el("td");
       actions.append(button(tab === "history" ? "View Release Details" : "View / Manage", () => open(request.id)));
+      if (request.status === status.READY) {
+        actions.append(button("Release Document", () => { open(request.id); confirm(status.RELEASED); }, true));
+      }
       row.append(actions); $("document-rows").append(row);
     });
     $("document-empty").hidden = list.length > 0;
@@ -221,9 +224,7 @@ window.initializeStaffDocumentProcessing = () => {
       actions.append(ready);
     }
     if (request.status === status.READY) {
-      renderVerification(request, body);
-      const release = button("Release Document", () => confirm(status.RELEASED), true);
-      release.disabled = !service.verificationComplete(request); actions.append(release);
+      actions.append(button("Release Document", () => confirm(status.RELEASED), true));
     }
     processing.append(actions);
     const appointment = window.PortalAppointmentService.getByRequest(request.id);
@@ -234,7 +235,7 @@ window.initializeStaffDocumentProcessing = () => {
     }
     if (request.release) {
       const released = section("Release record · read only", body);
-      fields(released, [["Release reference", request.release.reference], ["Copies released", request.release.copies], ["Released to", `${request.release.recipientName} · ${request.release.recipientType}`], ["Released", date(request.release.timestamp)], ["Released by", request.release.actor], ["Verification reference", request.release.verificationReference], ["Handover", "Explicitly confirmed by releasing staff"]]);
+      fields(released, [["Release reference", request.release.reference], ["Copies released", request.release.copies], ["Released to", request.release.recipientName], ["Released", date(request.release.timestamp)], ["Released by", request.release.actor], ["Verification reference", request.release.verificationReference]]);
     } else if (request.status === status.RELEASED) {
       section("Legacy release record", body).append(el("p", "This request was previously marked Released. Recipient verification and handover records were not recorded by Phase D; no details have been fabricated."));
     }
@@ -263,34 +264,6 @@ window.initializeStaffDocumentProcessing = () => {
     timeline.append(list);
     if (focusedCheck) [...body.querySelectorAll("[data-preparation-check]")].find((input) => input.dataset.preparationCheck === focusedCheck)?.focus({ preventScroll: true });
   }
-  function renderVerification(request, parent) {
-    const container = section("Verify recipient before release", parent);
-    if (!policy.verification.allowRepresentative) container.append(el("p", "Representative collection is not configured. Release is restricted to the requesting student.", "demo-note"));
-    if (service.verificationComplete(request)) {
-      const verification = request.recipientVerification;
-      fields(container, [["Verified recipient", verification.recipientName], ["Recipient type", verification.recipientType], ["Method", verification.methodLabel], ["Verified by", verification.actor], ["Verified at", date(verification.timestamp)], ["Reference", verification.reference]]); return;
-    }
-    if (!policy.verification.configured || !policy.verification.methods.length) {
-      container.append(el("p", "Identity verification requires approved configuration. No official verification methods are configured; release is blocked.", "demo-note")); return;
-    }
-    fields(container, [["Student name", request.studentName], ["Student number", request.studentNumber], ["Request ID", request.id], ["Document", request.documentType], ["Copies", request.details.copies]]);
-    const form = el("form");
-    const typeLabel = el("label", "Recipient type"); const type = el("select"); option(type, "Requesting Student");
-    if (policy.verification.allowRepresentative) option(type, "Authorized Representative"); typeLabel.append(type);
-    const nameLabel = el("label", "Representative name (only when permitted)"); const name = el("input"); name.type = "text"; name.maxLength = 150; nameLabel.append(name); nameLabel.hidden = true;
-    type.addEventListener("change", () => { nameLabel.hidden = type.value !== "Authorized Representative"; name.required = !nameLabel.hidden; });
-    const methodLabel = el("label", "Approved verification method"); const method = el("select"); method.required = true; option(method, "", "Select a method");
-    policy.verification.methods.forEach((entry) => option(method, entry.id, entry.label)); methodLabel.append(method);
-    const requirements = policy.verification.releaseChecks.map((item) => { const control = check(item.label, item.id); control.input.required = true; return control; });
-    const confirmed = check("I confirm that I completed the selected approved verification method for this recipient."); confirmed.input.required = true;
-    const submit = el("button", "Record Recipient Verification", "primary-button"); submit.type = "submit";
-    form.append(typeLabel, nameLabel, methodLabel, ...requirements.map((item) => item.wrapper), confirmed.wrapper, submit);
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      try { saved(service.verifyRecipient(selected, { recipientType: type.value, recipientName: name.value, methodId: method.value, confirmed: confirmed.input.checked, requirements: requirements.filter((item) => item.input.checked).map((item) => item.input.value) }, actor())); showDetails(); }
-      catch (error) { report(error); }
-    }); container.append(form);
-  }
   function saved(result) {
     $("document-details-feedback").textContent = result.persisted
       ? "Saved to Supabase."
@@ -305,17 +278,15 @@ window.initializeStaffDocumentProcessing = () => {
     const request = service.get(selected); if (!request) return;
     pending = target; confirmationOpener = document.activeElement;
     $("document-confirm-title").textContent = target === status.PROCESSING ? "Start Processing?" : target === status.READY ? "Mark Ready for Pickup?" : "Confirm Document Release";
-    const verification = request.recipientVerification;
-    $("document-confirm-summary").textContent = `${request.id} · ${request.studentName} · ${request.documentType} · Copies: ${request.details.copies || "not specified"}. Responsible staff: ${actor().name}.${target === status.RELEASED ? ` Verified recipient: ${verification?.recipientName} (${verification?.recipientType}). Verification: ${verification?.reference || "incomplete"}. Confirm only after the actual handover.` : " This will update the shared request status and create an in-app student notice."}`;
-    $("document-handover-label").hidden = target !== status.RELEASED;
-    $("document-handover").checked = false; $("document-handover").required = target === status.RELEASED;
+    $("document-confirm-summary").textContent = `${request.id} · ${request.studentName} · ${request.documentType}. ${target === status.RELEASED ? "Confirm to mark this document as Released in the student’s account." : "Confirm to update the shared request status."}`;
+    $("document-confirm-submit").textContent = target === status.RELEASED ? "Confirm Release" : "Confirm";
     $("document-confirm-feedback").textContent = ""; confirmation.showModal(); $("document-confirm-cancel").focus();
   }
   $("document-confirm-form").addEventListener("submit", async (event) => {
     event.preventDefault(); const submit = $("document-confirm-submit"); submit.disabled = true;
     const requestId = selected;
     try {
-      const result = await service.updateStatus(requestId, pending, actor(), { handoverConfirmed: $("document-handover").checked });
+      const result = await service.updateStatus(requestId, pending, actor());
       if (selected === requestId) {
         confirmation.close();
         showDetails();
