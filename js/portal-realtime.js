@@ -54,6 +54,18 @@
     if (result.error) throw new Error(result.error.message);
     if (epoch===generation) { inbox=inbox.map(row=>row.id===id?{...row,is_read:true}:row); notify(); enqueue("inbox"); }
   }
+  async function acknowledgeRequest(refId,owner) {
+    const epoch=generation;
+    if(!refId || !owner || uid!==owner) return;
+    const result=await client().from("notifications").update({is_read:true})
+      .eq("user_id",owner).eq("ref_table","requests").eq("ref_id",refId)
+      .in("title",["New request","Correction submitted"]).eq("is_read",false).select("id");
+    if(result.error) throw new Error(result.error.message);
+    if(epoch!==generation || uid!==owner) return;
+    const ids=new Set((result.data||[]).map(row=>row.id));
+    inbox=inbox.map(row=>ids.has(row.id)?{...row,is_read:true}:row);
+    notify(); enqueue("inbox");
+  }
   async function loadAnnouncements(epoch) {
     await window.PortalAnnouncementService.refresh();
     if (epoch!==generation) return;
@@ -140,5 +152,5 @@
   window.addEventListener("online",()=>enqueue(...groups));
   window.addEventListener("focus",()=>enqueue(...groups));
   document.addEventListener("visibilitychange",()=>{if(!document.hidden) enqueue(...groups);});
-  window.PortalRealtime=Object.freeze({list,markRead,connected:()=>connected,refresh:()=>enqueue(...groups)});
+  window.PortalRealtime=Object.freeze({list,markRead,acknowledgeRequest,connected:()=>connected,refresh:()=>enqueue(...groups)});
 })();
