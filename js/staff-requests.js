@@ -452,6 +452,7 @@ window.initializeStaffRequests = () => {
     renderDetails(request);
     if (!detailsDialog.open) detailsDialog.showModal();
     detailsTitle.focus({ preventScroll: true });
+    document.dispatchEvent(new CustomEvent("portal:staffrequestviewed",{detail:id}));
   }
 
   function openAction(target) {
