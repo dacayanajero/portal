@@ -29,7 +29,7 @@ window.PortalNotifications = (() => {
       read("Announcements", () => window.PortalAnnouncementService.notifications().map((notice) => ({ ...notice, source: "announcements" })));
       read("Private support updates", () => window.PortalSupportService.notifications());
     } else if (staff?.role === "staff") {
-      read("Request attention", () => window.PortalRequestService.listAll().filter((request) => [window.PortalRequestService.STATUS.PENDING, window.PortalRequestService.STATUS.CORRECTION].includes(request.status)).map((request) => ({ id: `request:${request.id}`, source: "requests", requestId: request.id, title: `Request needs review · ${request.id}`, timestamp: (request.history || []).filter(e=>e.newStatus===request.status).at(-1)?.timestamp || request.updatedAt, unread: true, attention: true })));
+      read("Request attention", () => window.PortalRequestService.listAll().filter((request) => request.status === window.PortalRequestService.STATUS.PENDING).map((request) => ({ id: `request:${request.id}`, source: "requests", requestId: request.id, title: `Request needs review · ${request.id}`, timestamp: (request.history || []).filter(e=>e.newStatus===request.status).at(-1)?.timestamp || request.updatedAt, unread: true, attention: true })));
       read("Assigned processing tasks", () => window.PortalRequestService.listAll().filter((request) => {
         const status = window.PortalRequestService.STATUS;
         const latest = (request.history || []).filter((entry) => entry.staffId && [status.APPROVED, status.PROCESSING, status.READY].includes(entry.newStatus)).at(-1);
@@ -42,7 +42,15 @@ window.PortalNotifications = (() => {
     // Keep the database notice available, but avoid double-counting staff attention.
     const dbRefs = new Set(items.filter(n => n.source === "database" && n.refTable === "requests").map(n => n.refId));
     const acknowledged=dismissed(staff);
-    const deduped=items.filter(n=>!n.attention || (!acknowledged.has(attentionKey(n)) && (n.source!=="requests" || !dbRefs.has(window.PortalRequestService.get(n.requestId)?.dbId))));
+    const deduped=items.filter(n=>{
+      if(n.attention) return !acknowledged.has(attentionKey(n)) && (n.source!=="requests" || !dbRefs.has(window.PortalRequestService.get(n.requestId)?.dbId));
+      if(staff?.role==="staff" && n.source==="database" && n.refTable==="requests" && ["New request","Correction submitted"].includes(n.title)){
+        const request=window.PortalRequestService.get(n.refId);
+        if(request && request.status!==window.PortalRequestService.STATUS.PENDING) return false;
+        if(request?.correctionSubmittedAt && Date.parse(n.timestamp)<Date.parse(request.correctionSubmittedAt)) return false;
+      }
+      return true;
+    });
     return { items: deduped.sort((a,b)=>Number(Boolean(b.unread))-Number(Boolean(a.unread)) || (Date.parse(b.timestamp)||0)-(Date.parse(a.timestamp)||0) || a.id.localeCompare(b.id)), unavailable };
   }
   function list() { return state().items; }
@@ -67,6 +75,21 @@ window.PortalNotifications = (() => {
     if (notice.attention) dismiss(staff,[notice]);
     document.dispatchEvent(new Event("portal:notificationschanged"));
   }
+  async function acknowledgeRequest(id) {
+    const staff=window.PortalStaffContext?.current()?.account;
+    const request=window.PortalRequestService.get(id);
+    if(staff?.role!=="staff" || !request) return;
+    // Acknowledge only the currently signed-in staff member's alerts.
+    await window.PortalRealtime.acknowledgeRequest(request.dbId,staff.id);
+    const current=window.PortalStaffContext?.current()?.account;
+    if(current?.id!==staff.id) return;
+    const tasks=list().filter(n=>n.attention && n.requestId===request.id);
+    dismiss(staff,tasks);
+    document.dispatchEvent(new Event("portal:notificationschanged"));
+  }
+  document.addEventListener("portal:staffrequestviewed",event=>{
+    acknowledgeRequest(event.detail).catch(error=>console.warn("Unable to acknowledge request alert:",error.message));
+  });
   return Object.freeze({ state, list, visible, open });
 })();
 
