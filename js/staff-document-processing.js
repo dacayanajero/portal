@@ -273,6 +273,7 @@ window.initializeStaffDocumentProcessing = () => {
     try { actor(); } catch { return; }
     selected = id; opener = document.activeElement; $("document-details-feedback").textContent = "";
     showDetails(); if (!dialog.open) dialog.showModal(); $("document-details-title").focus();
+    if(service.get(id)) document.dispatchEvent(new CustomEvent("portal:staffrequestviewed",{detail:id}));
   }
   function confirm(target) {
     const request = service.get(selected); if (!request) return;
