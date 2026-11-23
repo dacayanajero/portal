@@ -30,13 +30,18 @@ test("Signed-out and student callers cannot manage announcements", () => {
   current = null; assert.throws(() => service.list()); assert.throws(() => service.save(input()));
   student = { role: "student", accountNumber: "TEST" }; assert.throws(() => service.get("x")); assert.throws(() => service.transition("x", 1, "archive", { confirmed: true })); asPublisher();
 });
-test("Default staff can create and edit own drafts but cannot publish", () => {
+test("Default staff can create, edit own drafts and publish announcements", () => {
   current = { account: { role: "staff", accountNumber: "TEST-EDITOR", fullName: "Test Editor" } };
   const draft = service.save(input()); assert.equal(draft.status, S.DRAFT);
   assert.equal(service.save(input({ title: "Edited own draft" }), { id: draft.id, revision: draft.revision }).title, "Edited own draft");
-  assert.throws(() => service.save(input(), { action: "publish", confirmed: true }));
   current = { account: { role: "staff", accountNumber: "OTHER-EDITOR", fullName: "Other Editor" } };
-  assert.throws(() => service.save(input(), { id: draft.id, revision: 2 })); asPublisher();
+  assert.throws(() => service.save(input(), { id: draft.id, revision: 2 }));
+  current = { account: { role: "staff", accountNumber: "TEST-EDITOR", fullName: "Test Editor" } };
+  const beforePublish = store.get(service.STORAGE_KEY);
+  const published = service.save(input(), { id: draft.id, revision: 2, action: "publish", confirmed: true });
+  assert.equal(published.status, S.PUBLISHED);
+  assert.equal(published.published.publisherId, "TEST-EDITOR");
+  store.set(service.STORAGE_KEY, beforePublish); asPublisher();
 });
 test("Required fields, lengths, category and priority are validated", () => {
   for (const changes of [{ title: " " }, { content: "" }, { category: "" }, { audience: "" }, { title: "x".repeat(121) }, { content: "x".repeat(10001) }, { category: "Unknown" }, { priority: "Automatic urgent" }]) assert.throws(() => service.save(input(changes)));

@@ -1,6 +1,8 @@
 .announcement-workspace { min-width: 0; }
 .announcement-workspace > .staff-stat-grid { margin-bottom: 1.25rem; }
 .announcement-actions { display: flex; flex-wrap: wrap; gap: .65rem; margin: 1rem 0; }
+#announcement-publish { margin-inline-start: auto; background: #12376f; color: #fff; }
+#announcement-publish:hover { background: #0c2853; color: #fff; }
 .announcement-filters { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; align-items: end; margin: 1.25rem 0; }
 .announcement-filters label, .announcement-editor-form label, .announcement-confirm label { display: grid; gap: .4rem; font-size: .85rem; font-weight: 600; }
 .announcement-workspace input, .announcement-workspace select, .announcement-workspace textarea { width: 100%; min-width: 0; padding: .7rem; background: #f5f9ff; color: #193453; border: 1px solid #cbdcf1; border-radius: .5rem; font: inherit; }

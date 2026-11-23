@@ -8,9 +8,9 @@ window.PortalAnnouncementPolicy = Object.freeze({
   categories: Object.freeze(["Academic Services", "Document Requests", "Appointment Advisories", "Office Announcements", "System Maintenance", "General Announcements"]),
   priorities: Object.freeze(["Normal", "Important", "Urgent"]),
   audiences: Object.freeze(["All Students"]), // No secure group targeting is connected.
-  defaultCapabilities: Object.freeze(["view", "create", "editOwnDrafts"]),
+  defaultCapabilities: Object.freeze(["view", "create", "editOwnDrafts", "publish"]),
   accountCapabilities: Object.freeze({
-    // Explicit grant to the existing provisioned demo employee, not every staff account.
+    // Additional management capabilities for the existing provisioned demo employee.
     "2020-123456": Object.freeze(["view", "create", "editOwnDrafts", "editAny", "review", "approve", "publish", "archive"]),
   }),
 });

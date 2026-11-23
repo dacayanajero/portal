@@ -7,6 +7,8 @@
   const OPERATING_START = "08:00";
   const OPERATING_END = "17:00";
   const LATEST_START = "16:00";
+  const LUNCH_START = "12:00";
+  const LUNCH_END = "13:00";
   const SLOT_MINUTES = 60;
   const MANILA_TIMEZONE = "Asia/Manila";
 
@@ -113,6 +115,17 @@
   function normalizeTime(value) {
     if (!validTime(value)) return "";
     return value;
+  }
+
+  function overlapsLunch(start, end) {
+    if (!validTime(start) || !validTime(end)) return false;
+    return toMinutes(start) < toMinutes(LUNCH_END) && toMinutes(end) > toMinutes(LUNCH_START);
+  }
+
+  function startOverlapsLunch(start) {
+    if (!validTime(start)) return false;
+    const startMinutes = toMinutes(start);
+    return startMinutes < toMinutes(LUNCH_END) && startMinutes + SLOT_MINUTES > toMinutes(LUNCH_START);
   }
 
   function readStoredList() {
@@ -304,6 +317,7 @@
     const endMinutes = toMinutes(end);
     if (startMinutes < toMinutes(OPERATING_START) || endMinutes > toMinutes(OPERATING_END)) throw new Error("Appointments must be between 8:00 AM and 5:00 PM.");
     if (startMinutes > toMinutes(LATEST_START)) throw new Error("The latest appointment start time is 4:00 PM.");
+    if (overlapsLunch(start, end)) throw new Error("Appointments are unavailable from 12:00 PM to 1:00 PM.");
     if (endMinutes - startMinutes !== SLOT_MINUTES) throw new Error("Appointments must be exactly one hour.");
     const overlapping = listAll().filter((appointment) => (
       appointment.id !== excludeId
@@ -505,7 +519,8 @@
     )).length;
     const remaining = Math.max(0, DEFAULT_CAPACITY - booked);
     let status = "Available";
-    if (date < manilaDate()) status = "Unavailable";
+    if (overlapsLunch(start, end)) status = "Unavailable";
+    else if (date < manilaDate()) status = "Unavailable";
     else if (remaining === 0) status = "Fully Booked";
     else if (remaining < DEFAULT_CAPACITY) status = "Limited Slots";
     return { booked, capacity: DEFAULT_CAPACITY, remaining, status };
@@ -534,6 +549,8 @@
     OPERATING_START,
     OPERATING_END,
     LATEST_START,
+    LUNCH_START,
+    LUNCH_END,
     SLOT_MINUTES,
     DEFAULT_CAPACITY,
     isStatus,
@@ -548,6 +565,8 @@
     validTime,
     toMinutes,
     fromMinutes,
+    overlapsLunch,
+    startOverlapsLunch,
     listAll,
     listForStudent,
     get,

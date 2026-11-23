@@ -171,6 +171,7 @@ window.initializeStaffAppointments = () => {
     select.replaceChildren();
     for (let minutes = service.toMinutes(service.OPERATING_START); minutes <= service.toMinutes(service.LATEST_START); minutes += service.SLOT_MINUTES) {
       const value = service.fromMinutes(minutes);
+      if (value !== selected && service.overlapsLunch(value, service.fromMinutes(minutes + service.SLOT_MINUTES))) continue;
       const option = document.createElement("option");
       option.value = value;
       option.textContent = `${value} - ${service.fromMinutes(minutes + service.SLOT_MINUTES)}`;
