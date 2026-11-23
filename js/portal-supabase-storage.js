@@ -366,6 +366,9 @@
     if (start < baseAppointments.OPERATING_START || start > baseAppointments.LATEST_START || end > baseAppointments.OPERATING_END) {
       throw new Error("Appointment must be within office hours.");
     }
+    if (baseAppointments.overlapsLunch(start, end)) {
+      throw new Error("Appointments are unavailable from 12:00 PM to 1:00 PM.");
+    }
     // Always recheck on the database; locally known bookings are not complete.
     return true;
   }

@@ -73,6 +73,7 @@ window.initializeGradeSlip = () => {
     const startMinutes = Number(match[1]) * 60 + Number(match[2]);
     const endMinutes = (startMinutes + 60) % 1440;
     const end = `${String(Math.floor(endMinutes / 60)).padStart(2, "0")}:${String(endMinutes % 60).padStart(2, "0")}`;
+    if (window.PortalAppointmentService?.overlapsLunch(startTimeField.value, end)) return null;
     const nextDay = startMinutes + 60 >= 1440;
     return { end, nextDay, label: `${formatTime(startTimeField.value)} – ${formatTime(end)}${nextDay ? " (next day)" : ""}` };
   }
@@ -81,7 +82,7 @@ window.initializeGradeSlip = () => {
     dateField.min = localDateString();
     const range = timeRange();
     endTimeField.value = range ? `${formatTime(range.end)}${range.nextDay ? " (next day)" : ""}` : "";
-    timeRangeLabel.textContent = range ? `${range.label} · 1 hour` : "Available hours: 8:00 AM–5:00 PM. The last appointment starts at 4:00 PM.";
+    timeRangeLabel.textContent = range ? `${range.label} · 1 hour` : "Available hours: 8:00 AM–5:00 PM. The last appointment starts at 4:00 PM. 12:00 PM–1:00 PM is unavailable.";
     timeRangeLabel.classList.toggle("has-time", Boolean(range));
   }
 
@@ -93,7 +94,15 @@ window.initializeGradeSlip = () => {
 
   document.querySelectorAll("[data-grade-picker]").forEach((button) => {
     const input = document.getElementById(button.dataset.gradePicker);
+    if (input.type === "time" && window.PortalAppointmentTimePicker) {
+      window.PortalAppointmentTimePicker.attach(input, button);
+      return;
+    }
     if (typeof input.showPicker === "function") input.parentElement.classList.add("has-native-picker");
+    if (input.type === "date" && window.PortalWeekdayDatePicker) {
+      window.PortalWeekdayDatePicker.attach(input, button);
+      return;
+    }
     button.addEventListener("click", () => {
       updateSchedule();
       input.focus();
@@ -237,9 +246,15 @@ window.initializeGradeSlip = () => {
         const match = /^(\d{4})-(\d{4})$/.exec(value);
         if (!match || Number(match[2]) !== Number(match[1]) + 1) input.setCustomValidity("Enter consecutive academic years, for example 2025-2026.");
       }
-      if (input.name === "appointmentDate" && value && (!formatDate(value) || value < dateField.min)) input.setCustomValidity("Choose an appointment date today or later.");
-      if (input.name === "appointmentStart" && value && !timeRange()) input.setCustomValidity("Choose a start time from 8:00 AM to 4:00 PM so the one-hour appointment ends by 5:00 PM.");
-      const valid = input.checkValidity();
+      if (input.name === "appointmentDate" && value) {
+        if (!formatDate(value) || value < dateField.min) input.setCustomValidity("Choose an appointment date today or later.");
+        else if (window.PortalWeekdayDatePicker?.isWeekend(value)) input.setCustomValidity("Appointments are available Monday to Friday only.");
+      }
+      if (input.name === "appointmentStart" && value) {
+        if (window.PortalAppointmentService?.startOverlapsLunch(value)) input.setCustomValidity("12:00 PM–1:00 PM is unavailable. Choose another start time.");
+        else if (!timeRange()) input.setCustomValidity("Choose a start time from 8:00 AM to 4:00 PM so the one-hour appointment ends by 5:00 PM.");
+      }
+      const valid = input.checkValidity() && (input !== startTimeField || Boolean(timeRange()));
       if (mark) input.setAttribute("aria-invalid", String(!valid));
       else input.removeAttribute("aria-invalid");
       if (!valid && !firstInvalid) firstInvalid = input;
@@ -250,7 +265,7 @@ window.initializeGradeSlip = () => {
   function showInvalid(step, input) {
     showStep(step, false, false);
     const label = form.querySelector(`label[for="${input.id}"]`).textContent.trim();
-    errorMessage.textContent = `${label}: ${input.validationMessage}`;
+    errorMessage.textContent = `${label}: ${input.validationMessage || "Choose an available appointment start time outside the 12:00 PM–1:00 PM lunch break."}`;
     errorMessage.hidden = false;
     const foldedSection = input.closest("details");
     if (foldedSection) foldedSection.open = true;

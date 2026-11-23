@@ -95,8 +95,6 @@ window.initializeStaffAnnouncements = () => {
       $("announcement-save-draft").hidden = record?.status === S.PUBLISHED || record?.status === S.SCHEDULED;
       $("announcement-publish").hidden = !permissions().includes("publish");
       $("announcement-publish").textContent = record?.status === S.PUBLISHED ? "Publish Revision" : record?.status === S.SCHEDULED ? "Publish Due Announcement" : "Publish Now";
-      $("announcement-schedule").hidden = !permissions().includes("publish") || record?.status === S.PUBLISHED;
-      $("announcement-schedule").textContent = record?.status === S.SCHEDULED ? "Update Publication Schedule" : "Schedule Publication";
       $("announcement-editor-feedback").textContent = ""; dirty = false; baseline = JSON.stringify(raw());
       editor.showModal(); form.elements.title.focus();
     } catch (error) { $("announcement-feedback").textContent = error.message; }
@@ -156,7 +154,6 @@ window.initializeStaffAnnouncements = () => {
   form.addEventListener("input", () => { dirty = JSON.stringify(raw()) !== baseline; $("announcement-editor-feedback").textContent = ""; });
   form.addEventListener("submit", (event) => { event.preventDefault(); save("draft"); });
   $("announcement-publish").addEventListener("click", () => save("publish"));
-  $("announcement-schedule").addEventListener("click", () => save("schedule"));
   $("announcement-preview").addEventListener("click", () => {
     if (!form.reportValidity()) return;
     try { const data = content(); previewing = true; $("announcement-details-title").textContent = "Student Announcement Preview"; $("announcement-details-body").replaceChildren(window.PortalAnnouncementUI.card({ ...data, publisher: currentStaff().profile?.fullName || currentStaff().account.fullName }, { preview: true })); details.showModal(); $("announcement-details-title").focus(); }

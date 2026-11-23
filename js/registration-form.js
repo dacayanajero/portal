@@ -88,6 +88,7 @@ window.initializeRegistrationForm = () => {
     if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(value) || value < startTimeField.min || value > startTimeField.max) return null;
     const [hours, minutes] = value.split(":").map(Number);
     const end = `${String(hours + 1).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+    if (window.PortalAppointmentService?.overlapsLunch(value, end)) return null;
     return { end, label: `${formatTime(value)} – ${formatTime(end)}` };
   }
 
@@ -95,7 +96,7 @@ window.initializeRegistrationForm = () => {
     dateField.min = localDateString();
     const range = timeRange();
     endTimeField.value = range ? formatTime(range.end) : "";
-    timeRangeLabel.textContent = range ? `${range.label} · 1 hour` : "Available hours: 8:00 AM–5:00 PM. The last appointment starts at 4:00 PM.";
+    timeRangeLabel.textContent = range ? `${range.label} · 1 hour` : "Available hours: 8:00 AM–5:00 PM. The last appointment starts at 4:00 PM. 12:00 PM–1:00 PM is unavailable.";
     timeRangeLabel.classList.toggle("has-time", Boolean(range));
   }
 
@@ -127,7 +128,15 @@ window.initializeRegistrationForm = () => {
 
   view.querySelectorAll("[data-registration-picker]").forEach((button) => {
     const input = document.getElementById(button.dataset.registrationPicker);
+    if (input.type === "time" && window.PortalAppointmentTimePicker) {
+      window.PortalAppointmentTimePicker.attach(input, button);
+      return;
+    }
     if (typeof input.showPicker === "function") input.parentElement.classList.add("has-native-picker");
+    if (input.type === "date" && window.PortalWeekdayDatePicker) {
+      window.PortalWeekdayDatePicker.attach(input, button);
+      return;
+    }
     button.addEventListener("click", () => {
       updateSchedule();
       input.focus();
@@ -233,9 +242,15 @@ window.initializeRegistrationForm = () => {
         const match = /^(\d{4})-(\d{4})$/.exec(value);
         if (!match || Number(match[2]) !== Number(match[1]) + 1) input.setCustomValidity("Choose an academic year with consecutive years.");
       }
-      if (input.name === "appointmentDate" && value && (!parseDate(value) || value < dateField.min)) input.setCustomValidity("Choose an appointment date today or later.");
-      if (input.name === "appointmentStart" && value && !timeRange()) input.setCustomValidity("Choose a start time from 8:00 AM to 4:00 PM so the one-hour appointment ends by 5:00 PM.");
-      const valid = input.checkValidity();
+      if (input.name === "appointmentDate" && value) {
+        if (!parseDate(value) || value < dateField.min) input.setCustomValidity("Choose an appointment date today or later.");
+        else if (window.PortalWeekdayDatePicker?.isWeekend(value)) input.setCustomValidity("Appointments are available Monday to Friday only.");
+      }
+      if (input.name === "appointmentStart" && value) {
+        if (window.PortalAppointmentService?.startOverlapsLunch(value)) input.setCustomValidity("12:00 PM–1:00 PM is unavailable. Choose another start time.");
+        else if (!timeRange()) input.setCustomValidity("Choose a start time from 8:00 AM to 4:00 PM so the one-hour appointment ends by 5:00 PM.");
+      }
+      const valid = input.checkValidity() && (input !== startTimeField || Boolean(timeRange()));
       if (mark) input.setAttribute("aria-invalid", String(!valid));
       else input.removeAttribute("aria-invalid");
       if (!valid && !firstInvalid) firstInvalid = input;
@@ -250,7 +265,7 @@ window.initializeRegistrationForm = () => {
       if (confirmation.open) confirmation.close("invalid");
       showStep(number, false, false);
       const label = form.querySelector(`label[for="${invalid.id}"]`).textContent;
-      errorMessage.textContent = `${label}: ${invalid.validationMessage}`;
+      errorMessage.textContent = `${label}: ${invalid.validationMessage || "Choose an available appointment start time outside the 12:00 PM–1:00 PM lunch break."}`;
       errorMessage.hidden = false;
       const foldedSection = invalid.closest("details");
       if (foldedSection) foldedSection.open = true;
