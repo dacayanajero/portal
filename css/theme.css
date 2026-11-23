@@ -70,9 +70,9 @@ html[data-theme="dark"] .profile-section legend { color: var(--theme-text); }
 html[data-theme="dark"] .profile-avatar { border-color: #6c8db8; background: #263e62; color: #9dc0f0; }
 html[data-theme="dark"] .profile-role { background: #2c4465; color: #bcd7ff; }
 html[data-theme="dark"] :is(.profile-field label, .settings-field label, .settings-form-field label) { color: var(--theme-muted); }
-html[data-theme="dark"] .profile-field input { background: #294362; color: var(--theme-text); }
-html[data-theme="dark"] .profile-field input[data-profile-editable]:not([readonly]) { border-color: #6c8db8; background: var(--theme-field); }
-html[data-theme="dark"] .profile-field input:focus { border-color: #a4c9ff; }
+html[data-theme="dark"] .profile-field :is(input, select) { background: #294362; color: var(--theme-text); }
+html[data-theme="dark"] .profile-field input[data-profile-editable]:not([readonly]), html[data-theme="dark"] .profile-field select[data-profile-editable]:enabled { border-color: #6c8db8; background: var(--theme-field); }
+html[data-theme="dark"] .profile-field :is(input, select):focus { border-color: #a4c9ff; }
 html[data-theme="dark"] .profile-field input::placeholder { color: var(--theme-muted); }
 html[data-theme="dark"] .profile-edit-button { border-color: #6c8db8; background: #263e62; color: #bdd6ff; }
 html[data-theme="dark"] .profile-edit-button:hover { background: #304e78; }

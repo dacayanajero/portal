@@ -20,8 +20,6 @@ window.initializePortalSettings = () => {
   const preferenceForms = [...document.querySelectorAll(".settings-preferences")];
   const preferenceInputs = preferenceForms.flatMap((form) => [...form.querySelectorAll("input")]);
   const notice = document.querySelector("#portal-notice");
-  const themeToggle = document.querySelector("#theme-toggle");
-  const themeIcon = document.querySelector("#theme-toggle-icon");
   const defaults = { requestUpdates: true, announcementAlerts: true, deadlineReminders: true, assistantTips: true, rememberSession: true, darkMode: false };
   const compactMenu = window.matchMedia("(max-width: 800px)");
   let account = null;
@@ -168,11 +166,6 @@ window.initializePortalSettings = () => {
 
   function applyTheme(dark = Boolean(account && preferences.darkMode)) {
     document.documentElement.dataset.theme = dark ? "dark" : "light";
-    themeToggle.setAttribute("aria-pressed", String(dark));
-    const label = dark ? "Switch to light mode" : "Switch to dark mode";
-    themeToggle.setAttribute("aria-label", label);
-    themeToggle.title = label;
-    themeIcon.setAttribute("href", dark ? "#icon-sun" : "#icon-moon");
   }
 
   function applyPreferences() {
@@ -217,12 +210,6 @@ window.initializePortalSettings = () => {
     }
     applyPreferences();
   }
-
-  themeToggle.addEventListener("click", () => {
-    if (!account) return;
-    preferences.darkMode = !preferences.darkMode;
-    savePreferences();
-  });
 
   preferenceForms.forEach((form) => {
     form.addEventListener("submit", (event) => event.preventDefault());

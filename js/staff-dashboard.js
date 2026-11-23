@@ -18,8 +18,6 @@ window.initializeStaffDashboard = () => {
   const accountOptions = document.querySelector("#staff-account-options");
   const mobileNavigation = window.matchMedia("(max-width: 700px)");
   const notice = document.querySelector("#staff-notice");
-  const themeToggle = document.querySelector("#staff-theme-toggle");
-  const themeIcon = document.querySelector("#staff-theme-toggle-icon");
   const notificationButton = document.querySelector("#staff-notification-button");
   const notificationCount = document.querySelector("#staff-notification-count");
   const navBadge = document.querySelector("#staff-nav-badge");
@@ -121,11 +119,6 @@ window.initializeStaffDashboard = () => {
   function applyTheme() {
     const dark = Boolean(preferences.darkMode);
     document.documentElement.dataset.theme = dark ? "dark" : "light";
-    themeToggle.setAttribute("aria-pressed", String(dark));
-    const label = dark ? "Switch to light mode" : "Switch to dark mode";
-    themeToggle.setAttribute("aria-label", label);
-    themeToggle.title = label;
-    themeIcon.setAttribute("href", dark ? "#icon-sun" : "#icon-moon");
     document.querySelector("#staff-theme-preference").value = dark ? "dark" : "light";
   }
 
@@ -617,11 +610,6 @@ window.initializeStaffDashboard = () => {
     document.dispatchEvent(new CustomEvent("portal:loginrequired", { detail: { role: "staff", message } }));
     window.PortalMotion.enter(loginScreen.querySelector(".login-content"));
   }
-
-  themeToggle.addEventListener("click", () => {
-    if (!activeAccount) return;
-    savePreferences({ darkMode: !preferences.darkMode });
-  });
 
   notificationButton.addEventListener("click", () => navigate("staff-requests"));
 
