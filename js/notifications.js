@@ -55,7 +55,7 @@ window.PortalNotifications = (() => {
   }
   function list() { return state().items; }
   function visible(items, preferences = {}) {
-    return items.filter((notice) => notice.mandatory || (notice.source === "database" && notice.kind === "request" ? preferences.requestAlerts !== false : notice.source === "requests" ? preferences.requestAlerts !== false : notice.source === "processing" ? preferences.processingAlerts !== false : notice.source === "support" ? preferences.supportAlerts !== false : notice.source === "announcements" ? preferences.announcementAlerts !== false : true));
+    return items.filter((notice) => notice.mandatory || (notice.source === "database" && notice.kind === "request" ? preferences.requestAlerts !== false : notice.source === "requests" ? preferences.requestAlerts !== false : notice.source === "processing" ? preferences.processingAlerts !== false : (notice.source === "support" || notice.source === "database" && notice.kind === "support") ? preferences.supportAlerts !== false : notice.source === "announcements" ? preferences.announcementAlerts !== false : true));
   }
   async function open(noticeId) {
     const notice = list().find((entry) => entry.id === noticeId); if (!notice) throw new Error("This update is unavailable to your account.");
@@ -63,7 +63,8 @@ window.PortalNotifications = (() => {
     if (notice.source === "database") {
       await window.PortalRealtime.markRead(notice.dbId);
       const student = window.PortalProfile?.snapshot()?.account;
-      if (student?.role === "student") location.hash = "#/my-request";
+      if (notice.refTable === "support_tickets") { await window.PortalSupportService.refresh(); document.dispatchEvent(new CustomEvent("portal:supportticketopen", {detail:notice.refId})); }
+      else if (student?.role === "student") location.hash = "#/my-request";
       else if (notice.refTable === "requests" && window.PortalRequestService.get(notice.refId)) window.PortalStaffContext.openRequest(window.PortalRequestService.get(notice.refId).id);
       else if (notice.refTable === "appointments") location.hash = "#/staff/appointments";
       return;
