@@ -20,7 +20,7 @@
     fail(userError);
     if (!userData?.user?.id) throw new Error("Sign in first.");
     const { data, error } = await sb.from("profiles")
-      .select("id,role,account_number,full_name,display_name,contact_email,phone_number,college,program,year_level,semester,is_active,position,department,office_location,office_hours")
+      .select("id,role,account_number,employee_number,full_name,display_name,contact_email,phone_number,college,program,year_level,semester,is_active,position,department,office_location,office_hours")
       .eq("id", userData.user.id).single();
     fail(error);
     if (!data.is_active) throw new Error("This portal account is inactive.");
