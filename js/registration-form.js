@@ -491,7 +491,12 @@ window.initializeRegistrationForm = () => {
     const query = question.value.trim();
     if (!account || !query) return;
     appendMessage(query, true);
-    appendMessage(window.PortalAssistant.answer(query));
+    const owner = account.accountNumber;
+    window.PortalAssistant.respond(query).then(result => {
+      if (account?.accountNumber === owner && window.PortalProfile.snapshot().account?.accountNumber === owner) appendMessage(result.answer);
+    }).catch(() => {
+      if (account?.accountNumber === owner) appendMessage("The assistant is unavailable. Please try again.");
+    });
     question.value = "";
     question.focus();
   });
