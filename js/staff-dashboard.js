@@ -379,9 +379,9 @@ window.initializeStaffDashboard = () => {
     staffSessionInput.checked = Boolean(preferences.rememberSession);
     const session = accounts.sessionInfo();
     setText("#staff-session-signed-in", session?.signedInAt ? formatDateTime(session.signedInAt) : "Not available");
-    setText("#staff-session-expires", session?.expiresAt ? formatDateTime(session.expiresAt) : "Not available");
+    setText("#staff-session-expires", session?.idleExpiresAt ? formatDateTime(session.idleExpiresAt) : "Not available");
     setText("#staff-session-persistence", session?.persistent ? "Managed by Supabase Auth" : "Not signed in");
-    setText("#staff-session-explanation", "Supabase Auth manages session persistence and token refresh. Sign out to clear this browser’s session; the old demo-session preference does not control Supabase.");
+    setText("#staff-session-explanation", "Your session expires after 10 minutes of inactivity. Refreshing or reopening within the valid session keeps you signed in. Automatic token refresh does not extend the inactivity deadline.");
     setText("#staff-password-changed-at", activeAccount?.passwordChangedAt ? formatDateTime(activeAccount.passwordChangedAt) : "Not recorded");
     const container = document.querySelector("#staff-account-capabilities"); container.replaceChildren();
     [["Announcements", () => window.PortalAnnouncementService.capabilities()], ["Reports", () => window.PortalReportService.capabilities()], ["Help & Support", () => window.PortalSupportService.capabilities()]].forEach(([label, read]) => {

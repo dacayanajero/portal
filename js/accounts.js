@@ -4,7 +4,10 @@
 // and appointment services are still browser-local until separately migrated.
 (() => {
   const PASSWORD_POLICY = Object.freeze({ minimumLength: 8, maximumLength: 128 });
-  const SESSION_POLICY = Object.freeze({ developmentOnly: false, lifetimeMs: null });
+  const SESSION_POLICY = Object.freeze({ developmentOnly: false, lifetimeMs: null, inactivityMs: 10 * 60 * 1000, warningMs: 60 * 1000 });
+  const ACTIVITY_PREFIX = "rtu.portal.auth.activity.v1:";
+  let activityKey = "", warningDialog = null, lastPointerWrite = 0;
+  const IDLE_MESSAGE = "You were signed out after 10 minutes of inactivity. Please sign in again.";
   let currentAccount = null;
   let expiresAt = null;
   let signedInAt = null;
@@ -45,12 +48,115 @@
     };
   }
 
-  async function trackSession(account) {
+  // JWT session_id is only a browser cache key; Supabase still authenticates every request.
+  function keyFor(session) {
+    try {
+      const part = session.access_token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+      const sid = JSON.parse(atob(part)).session_id;
+      if (typeof sid !== "string" || !/^[0-9a-f-]{36}$/i.test(sid)) throw Error();
+      return ACTIVITY_PREFIX + sid;
+    } catch { throw new Error("Session identity is unavailable. Please sign in again."); }
+  }
+  function readActivity(key = activityKey) {
+    if (!key) return null;
+    try {
+      const raw = localStorage.getItem(key);
+      const record = raw ? JSON.parse(raw) : null;
+      return record && Number.isFinite(record.last) && Number.isFinite(record.started) &&
+        record.last >= record.started && record.started > 0 && record.last <= Date.now() ? record : null;
+    } catch { return null; }
+  }
+  function remaining(key = activityKey) {
+    const record = readActivity(key);
+    return record ? Math.max(0, record.last + SESSION_POLICY.inactivityMs - Date.now()) : 0;
+  }
+  function writeActivity(key, record) {
+    localStorage.setItem(key, JSON.stringify(record));
+  }
+  function forgetActivity(key = activityKey) {
+    try { if (key) localStorage.removeItem(key); } catch {}
+  }
+  function hideWarning() { if (warningDialog?.open) warningDialog.close(); }
+  function invalidate(message = IDLE_MESSAGE) {
+    const previous = currentAccount;
+    if (!previous) return;
+    forgetActivity(); hideWarning();
+    currentAccount = null; expiresAt = null; directoryStudents = []; directoryStaff = [];
+    // Let the existing dashboard logout handlers clear the Supabase refresh session and UI.
+    Promise.resolve().then(() => document.dispatchEvent(new CustomEvent("portal:sessioninvalidated", {
+      detail: { role: previous.role, accountNumber: previous.accountNumber, message },
+    })));
+  }
+  function recordActivity() {
+    if (!currentAccount) return false;
+    const record = readActivity();
+    if (!record || remaining() <= 0) { invalidate(); return false; }
+    try { writeActivity(activityKey, { ...record, last: Date.now() }); }
+    catch { invalidate("Session storage is unavailable. Please sign in again."); return false; }
+    hideWarning();
+    return true;
+  }
+  function showWarning(ms) {
+    if (document.hidden || !document.body) return;
+    if (!warningDialog) {
+      const dialog = document.createElement("dialog");
+      dialog.className = "portal-dialog";
+      dialog.setAttribute("aria-labelledby", "portal-idle-title");
+      Object.assign(dialog.style,{maxWidth:"420px",width:"calc(100% - 32px)",padding:"24px"});
+      const title=document.createElement("h3"); title.id="portal-idle-title"; title.textContent="Your session is about to expire";
+      const description=document.createElement("p"); description.textContent="You have been inactive. Stay signed in to continue, or sign out now.";
+      const countdown=document.createElement("p"); countdown.id="portal-idle-countdown"; countdown.setAttribute("role","timer");
+      const actions=document.createElement("div"); actions.className="support-actions";
+      const logout=document.createElement("button"); logout.type="button"; logout.className="secondary-button"; logout.textContent="Log Out";
+      logout.addEventListener("click",()=>invalidate("You have been signed out."));
+      const stay=document.createElement("button"); stay.type="button"; stay.className="primary-button"; stay.textContent="Stay Logged In";
+      stay.addEventListener("click",recordActivity);
+      actions.append(logout,stay); dialog.append(title,description,countdown,actions);
+      dialog.addEventListener("cancel",event=>event.preventDefault());
+      document.body.append(dialog); warningDialog=dialog;
+    }
+    const seconds=Math.ceil(ms/1000);
+    warningDialog.querySelector("#portal-idle-countdown").textContent=
+      "Automatic sign-out in "+Math.floor(seconds/60)+":"+String(seconds%60).padStart(2,"0");
+    if (!warningDialog.open) warningDialog.showModal();
+  }
+  function checkIdle() {
+    if (!currentAccount) { hideWarning(); return false; }
+    const ms=remaining();
+    if (ms<=0) { invalidate(); return false; }
+    if (ms<=SESSION_POLICY.warningMs) showWarning(ms); else hideWarning();
+    return true;
+  }
+  function activityEvent(event) {
+    if (!currentAccount || !event.isTrusted || document.hidden) return;
+    // Reject input arriving after a suspended tab's deadline before its handlers run.
+    if (!checkIdle()) { if(event.cancelable)event.preventDefault(); event.stopImmediatePropagation(); return; }
+    if (warningDialog?.open) return; // explicit Stay Logged In is required during warning
+    if (event.type==="pointermove") {
+      if (Date.now()-lastPointerWrite<1000) return;
+      lastPointerWrite=Date.now();
+    }
+    recordActivity();
+  }
+
+  async function trackSession(account, fresh = false) {
     const { data, error } = await client().auth.getSession();
     if (error || !data?.session) throw new Error("Your authentication session could not be restored.");
+    const key = keyFor(data.session);
+    if (fresh) {
+      try { const now = Date.now(); writeActivity(key, { started: now, last: now }); }
+      catch { await client().auth.signOut({ scope: "local" }); throw new Error("Session storage is unavailable. Please enable browser storage."); }
+    }
+    if (remaining(key) <= 0) {
+      forgetActivity(key);
+      await client().auth.signOut({ scope: "local" });
+      throw new Error(IDLE_MESSAGE);
+    }
+    activityKey = key;
     currentAccount = account;
     expiresAt = data.session.expires_at ? data.session.expires_at * 1000 : null;
-    signedInAt = Date.now();
+    signedInAt = readActivity().started;
+    lastPointerWrite=0;
     if (account.role === "staff") void loadDirectory();
     return { ...account };
   }
@@ -92,7 +198,7 @@
     const profile = await window.PortalSupabaseApi.signIn({
       email: emailOrNumber, password, expectedPortalRole: expectedRole,
     });
-    return trackSession(identity(profile));
+    return trackSession(identity(profile), true);
   }
 
   async function requestPasswordReset(email) {
@@ -109,6 +215,15 @@
     const { data, error } = await client().auth.getSession();
     if (error) throw new Error(error.message);
     if (!data?.session) return null;
+    // Check before loading profile or rendering either protected dashboard. A pre-upgrade
+    // session without a recorded activity time must authenticate once.
+    let key;
+    try { key=keyFor(data.session); } catch {}
+    if (!key || remaining(key)<=0) {
+      forgetActivity(key);
+      await client().auth.signOut({scope:"local"}).catch(()=>{});
+      throw new Error(IDLE_MESSAGE);
+    }
     try {
       const profile = await window.PortalSupabaseApi.profile();
       return await trackSession(identity(profile));
@@ -127,10 +242,12 @@
   async function clearSession() {
     if (pendingSignOut) return pendingSignOut;
     explicitSignOut = true;
+    const key = activityKey;
     pendingSignOut = (async () => {
       try {
         const { error } = await client().auth.signOut({ scope: "local" });
         if (error) throw error;
+        forgetActivity(key); activityKey = ""; hideWarning();
         currentAccount = null;
         expiresAt = null;
         directoryStudents = [];
@@ -144,15 +261,12 @@
   }
 
   function isSessionValid(account, notify = false) {
+    if (currentAccount && remaining() <= 0) invalidate();
     const ok = Boolean(currentAccount && account && currentAccount.role === account.role
       && currentAccount.accountNumber === account.accountNumber
       && currentAccount.id === account.id && (!expiresAt || expiresAt > Date.now()));
     if (!ok && notify && currentAccount && expiresAt && expiresAt <= Date.now()) {
-      const previous = currentAccount;
-      currentAccount = null;
-      Promise.resolve().then(() => document.dispatchEvent(new CustomEvent("portal:sessioninvalidated", {
-        detail: { role: previous.role, accountNumber: previous.accountNumber, message: "Your session expired. Sign in again." },
-      })));
+      invalidate("Your authentication session expired. Sign in again.");
     }
     return ok;
   }
@@ -203,6 +317,7 @@
     return { role: currentAccount.role, accountNumber: currentAccount.accountNumber,
       signedInAt: signedInAt ? new Date(signedInAt).toISOString() : null,
       expiresAt: expiresAt ? new Date(expiresAt).toISOString() : null,
+      idleExpiresAt: new Date(Date.now()+remaining()).toISOString(),
       persistent: true, legacy: false };
   }
 
@@ -210,6 +325,7 @@
     if (session?.expires_at) expiresAt = session.expires_at * 1000;
     if (event !== "SIGNED_OUT" || explicitSignOut || !currentAccount) return;
     const previous = currentAccount;
+    forgetActivity(); activityKey=""; hideWarning();
     currentAccount = null;
     directoryStudents = [];
     directoryStaff = [];
@@ -217,6 +333,14 @@
       detail: { role: previous.role, accountNumber: previous.accountNumber, message: "You have been signed out." },
     })));
   });
+
+  ["pointermove","pointerdown","click","keydown","input","wheel","touchstart","scroll"].forEach(name =>
+    document.addEventListener(name,activityEvent,{capture:true,passive:false}));
+  window.addEventListener("focus",checkIdle);
+  window.addEventListener("pageshow",checkIdle);
+  document.addEventListener("visibilitychange",checkIdle);
+  window.addEventListener("storage",event=>{if(event.key===activityKey||event.key===null)checkIdle();});
+  window.setInterval(checkIdle,1000);
 
   window.PortalAccounts = Object.freeze({
     register, authenticate, restoreSession, saveSession, clearSession, changePassword, requestPasswordReset,
