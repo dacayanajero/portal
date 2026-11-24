@@ -86,7 +86,7 @@
     return {available:true,...summary(cohort),byCategory:window.PortalSupportPolicy.categories.map(category=>({label:category,value:cohort.filter(x=>x.category===category).length})),resolvedDuringPeriod:resolved.length,firstResponse:mean(cohort.map(x=>[x.createdAt,x.lastResponseAt?x.messages.find(m=>m.role==="staff")?.timestamp:""])),resolution:mean(resolved.map(x=>[x.createdAt,x.resolutions.filter(r=>inRange(r.timestamp)).at(-1)?.timestamp]))};
   }
   async function acknowledgeTicket(id){const notices=window.PortalRealtime?.list()||[];await Promise.all(notices.filter(n=>n.refTable==="support_tickets"&&n.refId===id&&n.unread).map(n=>window.PortalRealtime.markRead(n.dbId)));}
-  window.PortalSupportService=Object.freeze({...base,refresh,capabilities:()=>[...caps],eligibleStaff:()=>clone(staff),listStudent,listStaff,getStudent:get,getStaff:get,create,reply,update,transition,related,summary,analytics,notifications:()=>[],markRead:()=>{},acknowledgeTicket,database:true});
+  window.PortalSupportService=Object.freeze({...base,TRANSITIONS:Object.freeze({...base.TRANSITIONS,Open:[base.STATUS.PROGRESS,base.STATUS.RESOLVED],[base.STATUS.WAITING]:[base.STATUS.PROGRESS,base.STATUS.RESOLVED]}),refresh,capabilities:()=>[...caps],eligibleStaff:()=>clone(staff),listStudent,listStaff,getStudent:get,getStaff:get,create,reply,update,transition,related,summary,analytics,notifications:()=>[],markRead:()=>{},acknowledgeTicket,database:true});
   for(const event of ["portal:logout","portal:sessioninvalidated"]) document.addEventListener(event,clear);
   document.addEventListener("portal:login",()=>{clear();void refresh().catch(console.warn);});
 })();
