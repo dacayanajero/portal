@@ -29,7 +29,7 @@ window.initializeStudentHelp = () => {
     if (account()?.role !== "student") return;
     try {
       const all = support.listStudent(); const pages = Math.max(1, Math.ceil(all.length / 6)); page = Math.min(page, pages); $("student-support-tickets").replaceChildren();
-      all.slice((page - 1) * 6, page * 6).forEach((ticket) => { const card = ui.el("article", undefined, "support-ticket-card"); card.append(ui.el("h4", ticket.subject), ui.el("p", ticket.id), ui.el("span", ticket.status, "support-status"), ui.el("p", `${ticket.category} · Submitted ${ui.date(ticket.createdAt)} · Last staff response: ${ticket.lastResponseAt ? ui.date(ticket.lastResponseAt) : "No response recorded"}`), ui.button("View Conversation", () => ui.open(ticket.id))); $("student-support-tickets").append(card); });
+      all.slice((page - 1) * 6, page * 6).forEach((ticket) => { const card = ui.el("article", undefined, "support-ticket-card"); card.append(ui.el("h4", ticket.subject), ui.el("p", ticket.referenceNo || ticket.id), ui.el("span", ticket.status, "support-status"), ui.el("p", `${ticket.category} · Submitted ${ui.date(ticket.createdAt)} · Last staff response: ${ticket.lastResponseAt ? ui.date(ticket.lastResponseAt) : "No response recorded"}`), ui.button("View Conversation", () => ui.open(ticket.id))); $("student-support-tickets").append(card); });
       $("student-support-empty").hidden = all.length > 0; $("student-support-count").textContent = `${all.length} inquiries belonging to your account`; $("student-support-page").textContent = `Page ${page} of ${pages}`; $("student-support-prev").disabled = page <= 1; $("student-support-next").disabled = page >= pages;
     } catch (error) { $("student-support-feedback").textContent = error.message; $("student-support-tickets").replaceChildren(); }
   }
@@ -45,9 +45,9 @@ window.initializeStudentHelp = () => {
     form.elements.appointmentId.replaceChildren(new Option("No related appointment", "")); window.PortalAppointmentService.listForStudent(snapshot.account.accountNumber).forEach((appointment) => form.elements.appointmentId.append(new Option(`${appointment.id} · ${appointment.serviceType} · ${appointment.date}`, appointment.id))); form.elements.appointmentId.value = previousAppointment;
     $("student-support-create-feedback").textContent = ""; dialog.showModal(); form.elements.category.focus();
   });
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault(); const submit = $("student-support-create-submit"); submit.disabled = true;
-    try { const ticket = support.create(Object.fromEntries(new FormData(form)), token); token = crypto.randomUUID(); form.reset(); dialog.close(); page = 1; renderTickets(); $("student-support-feedback").textContent = `Inquiry ${ticket.id} saved in this browser. It was not sent to a university office.`; }
+    try { const ticket = await support.create(Object.fromEntries(new FormData(form)), token); token = crypto.randomUUID(); form.reset(); dialog.close(); page = 1; renderTickets(); $("student-support-feedback").textContent = support.database ? `Ticket ${ticket.referenceNo} submitted successfully to portal support.` : `Inquiry ${ticket.id} saved in this browser only.`; }
     catch (error) { $("student-support-create-feedback").textContent = error.message; } finally { submit.disabled = false; }
   });
   $("student-support-create-close").addEventListener("click", () => dialog.close()); dialog.addEventListener("close", () => $("student-contact-support").focus());
