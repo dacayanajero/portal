@@ -28,6 +28,7 @@
       role: profile.role === "admin" ? "staff" : profile.role,
       backendRole: profile.role,
       accountNumber: profile.account_number,
+      employeeNumber: profile.employee_number || "",
       fullName: profile.full_name,
       displayName: profile.display_name || "",
       email: profile.contact_email || "",
@@ -58,7 +59,7 @@
     // Staff may read profiles under the database's staff RLS policy.
     try {
       const { data, error } = await client().from("profiles")
-        .select("id,role,account_number,full_name,display_name,contact_email,phone_number,college,program,year_level,semester,position,department,office_location,office_hours,is_active")
+        .select("id,role,account_number,employee_number,full_name,display_name,contact_email,phone_number,college,program,year_level,semester,position,department,office_location,office_hours,is_active")
         .eq("is_active", true).order("full_name").limit(1000);
       if (error) throw error;
       if (currentAccount?.role !== "staff") return;
