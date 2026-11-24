@@ -51,7 +51,9 @@ begin
   insert into public.support_tickets(id,student_id,subject,category,request_id,appointment_id)
   values(p_id,auth.uid(),btrim(p_subject),p_category,p_request,p_appointment) on conflict(id) do nothing;
   if not exists(select 1 from public.support_tickets where id=p_id and student_id=auth.uid()) then raise exception 'Ticket unavailable'; end if;
-  insert into public.support_messages(id,ticket_id,body) values(p_id,p_id,btrim(p_description)) on conflict(id) do nothing;
+  if not exists(select 1 from public.support_messages where id=p_id and ticket_id=p_id and sender_id=auth.uid()) then
+    insert into public.support_messages(id,ticket_id,body) values(p_id,p_id,btrim(p_description)) on conflict(id) do nothing;
+  end if;
   if not exists(select 1 from public.support_messages where id=p_id and ticket_id=p_id and sender_id=auth.uid()) then raise exception 'Message unavailable'; end if;
   return p_id;
 end $$;
@@ -67,7 +69,7 @@ begin
   if not found then raise exception 'Ticket unavailable'; end if;
   if exists(select 1 from public.support_messages where id=p_message and ticket_id=p_ticket and sender_id=auth.uid()) then return p_message; end if;
   if t.revision<>p_revision then raise exception 'Ticket changed; refresh and retry'; end if;
-  if length(btrim(coalesce(p_body,''))) not between 1 and case when p_internal then 2000 else 5000 end then raise exception 'Invalid message length'; end if;
+  if length(btrim(coalesce(p_body,''))) not between 1 and (case when p_internal then 2000 else 5000 end) then raise exception 'Invalid message length'; end if;
   insert into public.support_messages(id,ticket_id,body,is_internal) values(p_message,p_ticket,btrim(p_body),p_internal);
   return p_message;
 end $$;
