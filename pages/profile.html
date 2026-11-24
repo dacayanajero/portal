@@ -12,10 +12,10 @@
         <legend><span>Personal Information</span><button class="profile-edit-button" id="profile-edit-button" type="button" aria-label="Edit profile information" aria-controls="profile-form" aria-pressed="false" title="Edit profile information"><svg class="portal-icon" aria-hidden="true"><use id="profile-edit-icon" href="#icon-pencil"/></svg><span id="profile-edit-label">Edit</span></button></legend>
         <div class="profile-fields">
           <div class="profile-field"><label for="profile-full-name">Full Name</label><input id="profile-full-name" name="fullName" type="text" value="Juan Dela Cruz" autocomplete="name" maxlength="100" required readonly data-profile-editable aria-describedby="profile-save-status"></div>
-          <div class="profile-field"><label for="profile-year">Year Level</label><input id="profile-year" name="yearLevel" type="text" value="3rd Year" placeholder="Not provided" maxlength="30" readonly data-profile-editable></div>
+          <div class="profile-field"><label for="profile-year">Year Level</label><select id="profile-year" name="yearLevel" disabled data-profile-editable><option value="">Select year level</option><option>1st Year</option><option>2nd Year</option><option selected>3rd Year</option><option>4th Year</option><option>5th Year</option></select></div>
           <div class="profile-field"><label for="profile-program">Program</label><input id="profile-program" name="program" type="text" value="BSIT" placeholder="Not provided" maxlength="100" readonly data-profile-editable></div>
           <div class="profile-field"><label for="profile-student-number">Student Number</label><input id="profile-student-number" name="studentNumber" type="text" value="2023-103319" readonly></div>
-          <div class="profile-field"><label for="profile-semester">Semester</label><input id="profile-semester" name="semester" type="text" value="1st Semester" placeholder="Not provided" maxlength="40" readonly data-profile-editable></div>
+          <div class="profile-field"><label for="profile-semester">Semester</label><select id="profile-semester" name="semester" disabled data-profile-editable><option value="">Select semester</option><option selected>1st Semester</option><option>2nd Semester</option></select></div>
         </div>
       </fieldset>
 

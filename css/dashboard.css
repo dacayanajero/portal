@@ -176,11 +176,12 @@
 .profile-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 24px; }
 .profile-field { min-width: 0; }
 .profile-field label { display: block; margin-bottom: 6px; color: var(--ink-muted); font-size: 13px; font-weight: 600; line-height: 1.3; }
-.profile-field input { display: block; width: 100%; height: 46px; min-width: 0; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); color: var(--ink); font: inherit; font-size: 15px; line-height: 1.3; }
-.profile-field input:focus-visible { outline: 2px solid var(--navy); outline-offset: 1px; border-color: var(--navy); }
-.profile-field input[readonly] { cursor: default; background: var(--surface-muted); border-color: #e0e9f2; color: #294b6b; }
-.profile-field input[data-profile-editable]:not([readonly]) { border-color: #97b8df; background: #fff; }
-.profile-field input[aria-invalid="true"] { border-color: var(--error); }
+.profile-field :is(input, select) { display: block; width: 100%; height: 46px; min-width: 0; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); color: var(--ink); font: inherit; font-size: 15px; line-height: 1.3; }
+.profile-field :is(input, select):focus-visible { outline: 2px solid var(--navy); outline-offset: 1px; border-color: var(--navy); }
+.profile-field input[readonly], .profile-field select:disabled { cursor: default; background: var(--surface-muted); border-color: #e0e9f2; color: #294b6b; opacity: 1; }
+.profile-field input[data-profile-editable]:not([readonly]), .profile-field select[data-profile-editable]:enabled { border-color: #97b8df; background: #fff; }
+.profile-field select:enabled { cursor: pointer; }
+.profile-field :is(input, select)[aria-invalid="true"] { border-color: var(--error); }
 .profile-account-section .profile-field:last-child { grid-column: 1 / -1; }
 .profile-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--dashboard-border); }
 .profile-save-status { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--dashboard-muted); font-size: 13px; line-height: 1.5; }
@@ -416,7 +417,7 @@
   .profile-section { padding-top: 18px; }
   .profile-section legend { margin-bottom: 14px; font-size: 16px; }
   .profile-fields { grid-template-columns: 1fr; gap: 14px; }
-  .profile-field input { height: 44px; font-size: 16px; }
+  .profile-field :is(input, select) { height: 44px; font-size: 16px; }
   .profile-footer { align-items: flex-start; margin-top: 20px; padding-top: 12px; }
   .profile-save-status { align-items: flex-start; gap: 6px; font-size: 12px; }
 }
@@ -457,7 +458,6 @@
 @media (prefers-reduced-motion: reduce) {
   .dashboard-sidebar { transition: none; }
 }
-
 
 
 

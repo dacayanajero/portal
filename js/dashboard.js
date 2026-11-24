@@ -72,7 +72,7 @@ window.initializePortalDashboard = () => {
       input.readOnly = false;
       input.setCustomValidity("");
       if (input.required && !input.value.trim()) input.setCustomValidity("This field is required.");
-      if (input.value.length > input.maxLength) input.setCustomValidity(`Use at most ${input.maxLength} characters.`);
+      if (input.maxLength >= 0 && input.value.length > input.maxLength) input.setCustomValidity(`Use at most ${input.maxLength} characters.`);
       if (input.name === "phoneNumber" && input.value.trim() && (!/^[+\d() .-]+$/.test(input.value) || input.value.replace(/\D/g, "").length < 7)) {
         input.setCustomValidity("Please enter a valid phone number.");
       }
@@ -135,7 +135,7 @@ window.initializePortalDashboard = () => {
       if (!saved || !Number.isFinite(saved.updatedAt) || saved.updatedAt <= 0) return;
       if (!profileInputs.every((input) => {
         const value = saved.profile?.[input.name];
-        return value === undefined ? !input.required : typeof value === "string" && value.length <= input.maxLength;
+        return value === undefined ? !input.required : typeof value === "string" && (input.maxLength === undefined || input.maxLength < 0 || value.length <= input.maxLength);
       })) return;
       const defaults = profileInputs.map((input) => input.value);
       profileInputs.forEach((input) => {
@@ -158,7 +158,10 @@ window.initializePortalDashboard = () => {
 
   function setProfileEditing(editing) {
     profileEditing = editing;
-    profileInputs.forEach((input) => { input.readOnly = !editing; });
+    profileInputs.forEach((input) => {
+      if (input.tagName === "SELECT") input.disabled = !editing;
+      else input.readOnly = !editing;
+    });
     profileEditButton.setAttribute("aria-pressed", String(editing));
     const label = editing ? "Finish editing profile information" : "Edit profile information";
     profileEditButton.setAttribute("aria-label", label);
