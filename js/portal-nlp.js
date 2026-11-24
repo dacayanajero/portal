@@ -34,7 +34,7 @@ const createPortalNlp = function makeNlp(){
     const status=any(q,["status","track","progress","ready","released","approved","pending","nasaan","kumusta","handa na","nakuha","update on"]);
     const own=any(q,["my","ko","akin","aking","request","application","submitted","booked"]);
     if(timing&&!status)return requests("processing_time","Processing time depends on staff review. The portal does not promise a release date; check My Request for the recorded status.",service);
-    if(status&&(own||service||appointment))return requests(appointment?"appointment_status":"request_status","Open My Request to see the latest recorded status of your own "+(appointment?"appointments.":"document requests."),service);
+    if((status||(appointment&&own&&any(q,["when","kailan","what time","anong oras"])))&&(own||service||appointment))return requests(appointment?"appointment_status":"request_status","Open My Request to see the latest recorded status of your own "+(appointment?"appointments.":"document requests."),service);
     if(hits.length>1)return result("clarify","services","Explore services","I found more than one document in your question: "+hits.map(s=>s.name).join(", ")+". Which one do you need? Please ask about one service at a time.");
     const official=any(q,["requirement","requirements","documents needed","need to bring","what documents do i need","fee","fees","how much","magkano","kailangan","dalhin","clearance"]);
     if(service){
