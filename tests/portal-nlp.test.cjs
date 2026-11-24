@@ -33,8 +33,8 @@ const examples = [
   ],
   [
     "Kailan ang appointment ko?",
-    "appointment",
-    "services"
+    "appointment_status",
+    "requests"
   ],
   [
     "Can I reschedule my appointment?",
