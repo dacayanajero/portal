@@ -148,19 +148,21 @@ window.initializeStaffDashboard = () => {
   function syncIdentity() {
     if (!activeAccount) return;
     const name = staffProfile?.fullName || activeAccount.fullName;
-    const position = activeAccount.position || "Not provided";
-    const department = activeAccount.department || "Not provided";
+    const role = activeAccount.backendRole === "admin" ? "Administrator" : "Staff";
+    const position = activeAccount.position?.trim() || "Position not assigned";
+    const employeeNumber = activeAccount.employeeNumber || "Not assigned";
+    const department = activeAccount.department?.trim() || "Office not assigned";
     const firstName = name.trim().split(/\s+/)[0] || "Staff";
     document.querySelectorAll("[data-staff-name]").forEach((element) => { element.textContent = name; });
     document.querySelectorAll("[data-staff-first-name]").forEach((element) => { element.textContent = firstName; });
     document.querySelectorAll("[data-staff-position]").forEach((element) => { element.textContent = position; });
     document.querySelectorAll("[data-staff-department]").forEach((element) => { element.textContent = department; });
-    document.querySelectorAll("[data-staff-role]").forEach((element) => { element.textContent = "Staff"; });
-    document.querySelectorAll("[data-staff-employee-number]").forEach((element) => { element.textContent = activeAccount.accountNumber; });
+    document.querySelectorAll("[data-staff-role]").forEach((element) => { element.textContent = role; });
+    document.querySelectorAll("[data-staff-employee-number]").forEach((element) => { element.textContent = employeeNumber; });
     document.querySelectorAll("[data-staff-initials]").forEach((element) => { element.textContent = initials(name); });
     document.querySelectorAll("[data-staff-value]").forEach((element) => {
       const key = element.dataset.staffValue;
-      const value = key === "employeeNumber" ? activeAccount.accountNumber : staffProfile?.[key] ?? activeAccount[key];
+      const value = key === "employeeNumber" ? employeeNumber : key === "position" ? position : key === "department" ? department : staffProfile?.[key] ?? activeAccount[key];
       element.textContent = value && String(value).trim() ? value : "Not provided";
     });
   }
@@ -184,7 +186,7 @@ window.initializeStaffDashboard = () => {
       input.setCustomValidity("");
       input.removeAttribute("aria-invalid");
     });
-    staffProfileForm.elements.employeeNumber.value = activeAccount.accountNumber;
+    staffProfileForm.elements.employeeNumber.value = activeAccount.employeeNumber || "";
     staffProfileForm.elements.legalName.value = activeAccount.fullName || "";
     staffProfileForm.elements.email.value = activeAccount.email || "";
   }
