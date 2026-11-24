@@ -7,7 +7,7 @@
   let channel = null, uid = null, generation = 0, connected = false;
   let debounce = null, periodic = null, running = false, pending = new Set();
   let inbox = [], initialized = false, announcementsSeen = null, inboxError = "";
-  const groups = ["requests", "announcements", "inbox"];
+  const groups = ["requests", "announcements", "inbox", "support"];
   const notify = () => document.dispatchEvent(new Event("portal:notificationschanged"));
 
   function toast(title) {
@@ -96,7 +96,7 @@
     try {
       const results=await Promise.allSettled(work.map(name=>name==="requests"
         ?window.PortalRequestService.refresh():name==="announcements"
-        ?loadAnnouncements(epoch):loadInbox(epoch)));
+        ?loadAnnouncements(epoch):name==="support"?window.PortalSupportService.refresh?.():loadInbox(epoch)));
       if(epoch===generation) results.forEach(r=>{if(r.status==="rejected") console.warn("Live sync:",r.reason?.message||r.reason);});
     } finally {
       running=false;
@@ -122,6 +122,7 @@
     // semantics. The reconciliation query handles deletes/archiving/expiry.
     const bindings=[
       ["requests","requests"],["appointments","requests"],
+      ["support_tickets","support"],["support_messages","support"],
       ["notifications","inbox","user_id=eq."+uid],
       ["announcements","announcements"],
       ["announcement_reads","announcements","user_id=eq."+uid]
