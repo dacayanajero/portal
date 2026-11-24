@@ -21,7 +21,7 @@ window.initializeSupportUI = () => {
   function render() {
     captureDraft(); const ticket = getTicket(); if (!ticket) throw new Error("This ticket is unavailable to your account.");
     const isStaff = staffRole(); const caps = isStaff ? service.capabilities() : [];
-    $("support-conversation-title").textContent = `${ticket.subject} · ${ticket.id}`;
+    $("support-conversation-title").textContent = `${ticket.subject} · ${ticket.referenceNo || ticket.id}`;
     const body = $("support-conversation-body"); body.replaceChildren();
     const info = el("dl", undefined, "support-info-grid");
     [["Student", ticket.studentName], ["Student number", ticket.studentNumber], ["Email", ticket.email], ["Category", ticket.category], ["Submitted", date(ticket.createdAt)], ["Status", ticket.status], ["Priority", ticket.priority], ["Assigned staff", ticket.assignedStaff || "Unassigned"]].forEach(([label, value]) => { if (value === undefined) return; const group = el("div"); group.append(el("dt", label), el("dd", value)); info.append(group); }); body.append(info);
@@ -46,25 +46,25 @@ window.initializeSupportUI = () => {
       if (isStaff) { const modeLabel = el("label", "Response visibility"); const mode = el("select"); mode.id = "support-reply-mode"; if (caps.includes("reply")) mode.append(new Option("Reply to Student — visible to the student", "reply")); if (caps.includes("note")) mode.append(new Option("Internal Staff Note — staff only", "note")); modeLabel.append(mode); form.append(modeLabel); mode.value = drafts.get(selected)?.mode || mode.options[0].value; }
       const label = el("label", "Message"); const input = el("textarea"); input.id = "support-reply-text"; input.required = true; input.maxLength = 5000; input.rows = 4; input.value = drafts.get(selected)?.text || ""; label.append(input);
       const submit = el("button", isStaff ? "Save Response / Note" : "Send Reply", "primary-button"); submit.type = "submit"; form.append(label, submit);
-      form.addEventListener("submit", (event) => {
+      form.addEventListener("submit", async (event) => {
         event.preventDefault(); submit.disabled = true;
-        try { service.reply(selected, input.value, { revision: ticket.revision, token, internal: $("support-reply-mode")?.value === "note" }); drafts.delete(selected); token = crypto.randomUUID(); if ($("support-reply-text")) $("support-reply-text").value = ""; render(); $("support-conversation-feedback").textContent = "Saved in this browser. No external delivery is claimed."; }
+        try { await service.reply(selected, input.value, { revision: ticket.revision, token, internal: $("support-reply-mode")?.value === "note" }); drafts.delete(selected); token = crypto.randomUUID(); if ($("support-reply-text")) $("support-reply-text").value = ""; render(); $("support-conversation-feedback").textContent = service.database ? "Response saved to the support ticket." : "Saved in this browser only."; }
         catch (error) { $("support-conversation-feedback").textContent = error.message; }
         finally { submit.disabled = false; }
       }); body.append(form);
     }
     if (isStaff && ticket.status !== service.STATUS.CLOSED && (caps.includes("assign") || caps.includes("manage"))) {
       const controls = el("form"); const changes = {};
-      if (caps.includes("assign")) { const label = el("label", "Assigned staff (eligible provisioned demo accounts)"); const select = el("select"); select.append(new Option("Unassigned", "")); service.eligibleStaff().forEach((account) => select.append(new Option(account.fullName, account.accountNumber))); select.value = ticket.assignedStaffId; label.append(select); controls.append(label); changes.assignedStaffId = select; }
+      if (caps.includes("assign")) { const label = el("label", "Assigned staff"); const select = el("select"); select.append(new Option("Unassigned", "")); service.eligibleStaff().forEach((account) => select.append(new Option(account.fullName, account.accountNumber))); select.value = ticket.assignedStaffId; label.append(select); controls.append(label); changes.assignedStaffId = select; }
       if (caps.includes("manage")) { const label = el("label", "Ticket priority (explicit staff choice)"); const select = el("select"); window.PortalSupportPolicy.priorities.forEach((priority) => select.append(new Option(priority, priority))); select.value = ticket.priority; label.append(select); controls.append(label); changes.priority = select; }
-      const submit = el("button", "Save Assignment / Priority", "secondary-button"); submit.type = "submit"; controls.append(submit); controls.addEventListener("submit", (event) => { event.preventDefault(); try { service.update(selected, Object.fromEntries(Object.entries(changes).map(([key, control]) => [key, control.value])), { revision: ticket.revision }); $("support-conversation-feedback").textContent = "Assignment/priority saved in this browser."; } catch (error) { $("support-conversation-feedback").textContent = error.message; } }); body.append(controls);
+      const submit = el("button", "Save Assignment / Priority", "secondary-button"); submit.type = "submit"; controls.append(submit); controls.addEventListener("submit", async (event) => { event.preventDefault(); submit.disabled = true; try { await service.update(selected, Object.fromEntries(Object.entries(changes).map(([key, control]) => [key, control.value])), { revision: ticket.revision }); $("support-conversation-feedback").textContent = service.database ? "Assignment/priority saved." : "Assignment/priority saved in this browser."; } catch (error) { $("support-conversation-feedback").textContent = error.message; } finally { submit.disabled = false; } }); body.append(controls);
     }
     const actions = el("div", undefined, "support-actions");
     (service.TRANSITIONS[ticket.status] || []).forEach((target) => {
       const cap = target === service.STATUS.RESOLVED ? "resolve" : target === service.STATUS.CLOSED ? "close" : target === service.STATUS.OPEN ? "reopen" : "manage";
       if (isStaff ? !caps.includes(cap) : ticket.status !== service.STATUS.RESOLVED || !window.PortalSupportPolicy.allowStudentReopenResolved) return;
       const label = target === service.STATUS.RESOLVED ? "Mark as Resolved" : target === service.STATUS.CLOSED ? "Close Ticket" : target === service.STATUS.OPEN ? "Reopen Ticket" : `Move to ${target}`;
-      actions.append(button(label, () => ask(label, `${ticket.id} · ${ticket.subject}. Academic requests and appointments will not be changed.`, (reason) => { service.transition(selected, target, { revision: ticket.revision, confirmed: true, reason }); $("support-conversation-feedback").textContent = "Ticket status saved in this browser."; }, "Resolution summary / remarks (visible to the student, optional)")));
+      actions.append(button(label, () => ask(label, `${ticket.id} · ${ticket.subject}. Academic requests and appointments will not be changed.`, async (reason) => { await service.transition(selected, target, { revision: ticket.revision, confirmed: true, reason }); $("support-conversation-feedback").textContent = service.database ? "Ticket status updated." : "Ticket status saved in this browser."; }, "Resolution summary / remarks (visible to the student, optional)")));
     }); body.append(actions);
     if (ticket.resolutions.length) { body.append(el("h4", "Preserved resolution summaries")); ticket.resolutions.forEach((resolution) => body.append(el("p", `${date(resolution.timestamp)} · ${resolution.actor} · ${resolution.summary || "No summary provided"}`))); }
     const history = el("ol", undefined, "support-history"); ticket.history.slice().reverse().forEach((entry) => { const row = el("li"); row.append(el("strong", entry.action), el("time", date(entry.timestamp)), el("small", `${entry.actor} · ${entry.previousStatus || "New"} → ${entry.newStatus}`)); if (entry.remarks) row.append(el("p", entry.remarks)); history.append(row); }); body.append(el("h4", "Support activity history"), history);
@@ -73,6 +73,7 @@ window.initializeSupportUI = () => {
     captureDraft(); if (selected !== ticketId) $("support-conversation-body").replaceChildren(); selected = ticketId; token = crypto.randomUUID(); opener = document.activeElement; $("support-conversation-feedback").textContent = "";
     try { render(); if (!dialog.open) dialog.showModal(); $("support-conversation-title").focus(); }
     catch (error) { if (dialog.open) dialog.close(); $("support-conversation-body").replaceChildren(); selected = ""; const feedback = document.querySelector(staffRole() ? "#staff-support-feedback" : "#student-support-feedback"); if (feedback) feedback.textContent = error.message; }
+    if (dialog.open && service.database) { void service.acknowledgeTicket(ticketId).catch(error => { $("support-conversation-feedback").textContent = error.message; }); }
     if (dialog.open) { try { service.notifications().filter((notice) => notice.ticketId === ticketId && notice.unread).forEach((notice) => service.markRead(notice.id)); } catch { $("support-conversation-feedback").textContent = "Conversation loaded, but its notification read state could not be saved."; } }
   }
   function focusPageHeading() {
@@ -81,7 +82,7 @@ window.initializeSupportUI = () => {
   }
   $("support-conversation-close").addEventListener("click", () => dialog.close()); dialog.addEventListener("close", () => { captureDraft(); if (opener?.getClientRects().length) opener.focus(); else if (!document.querySelector(".portal-dialog[open]")) focusPageHeading(); });
   $("support-confirm-cancel").addEventListener("click", () => confirmation.close());
-  $("support-confirm-form").addEventListener("submit", (event) => { event.preventDefault(); const submit = $("support-confirm-submit"); submit.disabled = true; try { confirmAction?.($("support-confirm-reason").value); confirmation.close(); } catch (error) { $("support-confirm-feedback").textContent = error.message; } finally { submit.disabled = false; } });
+  $("support-confirm-form").addEventListener("submit", async (event) => { event.preventDefault(); const submit = $("support-confirm-submit"); submit.disabled = true; try { await confirmAction?.($("support-confirm-reason").value); confirmation.close(); } catch (error) { $("support-confirm-feedback").textContent = error.message; } finally { submit.disabled = false; } });
   confirmation.addEventListener("close", () => { confirmAction = null; if (dialog.open) $("support-conversation-title").focus(); else if ($("staff-faq-editor")?.open) $("staff-faq-editor-title").focus(); else if ($("staff-faq-details")?.open) $("staff-faq-details-title").focus(); else if (!document.querySelector(".portal-dialog[open]")) focusPageHeading(); });
   document.addEventListener("portal:supportchanged", () => { if (dialog.open) { try { render(); } catch (error) { $("support-conversation-feedback").textContent = error.message; $("support-conversation-body").replaceChildren(); $("support-conversation-title").textContent = "Support conversation unavailable"; dialog.close(); } } });
   document.addEventListener("portal:supportticketopen", (event) => {
