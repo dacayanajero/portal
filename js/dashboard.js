@@ -1093,26 +1093,37 @@ window.initializePortalDashboard = () => {
     requestCancelReason.setCustomValidity("");
   });
 
+  let assistantTurn = 0;
+  let assistantRoute = "services";
   function assistantAnswer(question) {
-    return window.PortalFAQService.answer(question);
+    return window.PortalAIService.interpret(question).answer;
   }
-  document.addEventListener("portal:faqschanged", () => { if (assistantDialog.open && activeAccount?.role === "student") document.querySelector("#assistant-answer").textContent = assistantAnswer(document.querySelector("#assistant-question-text").textContent); });
-
   function askAssistant(question) {
-    const query = (question || "").trim();
-    if (!query) return;
+    const query = String(question || "").trim();
+    if (!query || activeAccount?.role !== "student" || !accounts.isSessionValid(activeAccount)) return;
+    const turn = ++assistantTurn;
+    const owner = activeAccount.accountNumber;
     const questionText = document.querySelector("#assistant-question-text");
     const answerText = document.querySelector("#assistant-answer");
-    questionText.textContent = query;
-    answerText.textContent = assistantAnswer(query);
-    assistantDialog.showModal();
-    // Student-only AI layer: upgrade the instant FAQ answer when a provider is configured.
-    if (activeAccount?.role === "student" && window.PortalAIService) {
-      window.PortalAIService.answer(query)
-        .then((answer) => { if (typeof answer === "string" && answer.length > 0 && assistantDialog.open) answerText.textContent = answer; })
-        .catch((error) => console.debug("AI service unavailable, keeping FAQ answer:", error.message));
+    const action = document.querySelector("#assistant-services");
+    function render(result) {
+      assistantRoute = Object.hasOwn(routes, result.route) ? result.route : "help";
+      answerText.textContent = result.answer;
+      answerText.style.whiteSpace = "pre-line";
+      action.textContent = result.label;
     }
+    questionText.textContent = query;
+    const initial = window.PortalAIService.interpret(query);
+    render(initial);
+    if (["request_status", "appointment_status"].includes(initial.intent)) answerText.textContent = "Checking your records…";
+    if (!assistantDialog.open) assistantDialog.showModal();
+    window.PortalAIService.respond(query).then(result => {
+      if (turn === assistantTurn && assistantDialog.open && activeAccount?.role === "student" && activeAccount.accountNumber === owner && accounts.isSessionValid(activeAccount)) render(result);
+    }).catch(() => {
+      if (turn === assistantTurn && assistantDialog.open && activeAccount?.accountNumber === owner && accounts.isSessionValid(activeAccount)) answerText.textContent = "The assistant is unavailable. Please open the relevant service or Help.";
+    });
   }
+  assistantDialog.addEventListener("close", () => { if (!assistantDialog.open) assistantTurn++; });
 
   document.querySelector("#assistant-search").addEventListener("submit", (event) => {
     event.preventDefault();
@@ -1123,7 +1134,7 @@ window.initializePortalDashboard = () => {
   });
   document.querySelector("#assistant-services").addEventListener("click", () => {
     assistantDialog.close();
-    navigate("services");
+    navigate(assistantRoute);
   });
 
   document.addEventListener("portal:requestschanged", () => {
@@ -1158,7 +1169,7 @@ window.initializePortalDashboard = () => {
   });
 
   window.PortalRequests = Object.freeze({ create: createRequest });
-  window.PortalAssistant = Object.freeze({ answer: assistantAnswer });
+  window.PortalAssistant = Object.freeze({ answer: assistantAnswer, respond: window.PortalAIService.respond });
 
   // Initialize chatbot for student role
   window.initializeChatbot = () => {
