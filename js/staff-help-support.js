@@ -32,7 +32,12 @@ window.initializeStaffHelpSupport = () => {
     const records = faqs.list(); const values = Object.fromEntries(new FormData(faqFilters)); const query = faqs.normalize(values.query);
     const list = records.filter((record) => (!values.category || record.category === values.category) && (!values.status || record.status === values.status) && (!query || faqs.normalize([record.question, record.answer, ...record.keywords].join(" ")).includes(query)));
     const pages = Math.max(1, Math.ceil(list.length / 8)); faqPage = Math.min(faqPage, pages); $("staff-faq-rows").replaceChildren();
-    list.slice((faqPage - 1) * 8, faqPage * 8).forEach((record) => { const row = ui.el("tr"); [record.id, record.question, record.category, `${record.answer.slice(0, 120)}${record.answer.length > 120 ? "…" : ""}`, `${record.status}${unpublished(record) ? " · Unpublished working changes" : ""}`, record.updatedBy, ui.date(record.updatedAt)].forEach((value) => row.append(ui.el("td", value))); const action = ui.el("td"); action.append(ui.button("View / Manage FAQ", () => { try { openFAQ(record.id); } catch (error) { $("staff-support-feedback").textContent = error.message; } })); row.append(action); $("staff-faq-rows").append(row); });
+    list.slice((faqPage - 1) * 8, faqPage * 8).forEach((record) => {
+      const row = ui.el("tr"); [record.id, record.question, record.category, `${record.answer.slice(0, 120)}${record.answer.length > 120 ? "…" : ""}`, `${record.status}${unpublished(record) ? " · Unpublished working changes" : ""}`, record.updatedBy, ui.date(record.updatedAt)].forEach((value) => row.append(ui.el("td", value)));
+      const action = ui.el("td"); const actions = ui.el("div", undefined, "support-actions");
+      actions.append(ui.button("View / Manage FAQ", () => { try { openFAQ(record.id); } catch (error) { $("staff-support-feedback").textContent = error.message; } }));
+      action.append(actions); row.append(action); $("staff-faq-rows").append(row);
+    });
     $("staff-faq-empty").hidden = list.length > 0; $("staff-faq-count").textContent = `${list.length} FAQ records`; $("staff-faq-page").textContent = `Page ${faqPage} of ${pages}`; $("staff-faq-prev").disabled = faqPage <= 1; $("staff-faq-next").disabled = faqPage >= pages;
     $("staff-faq-create").hidden = !tickets.capabilities().includes("faqCreate"); $("staff-knowledge-list").replaceChildren();
     faqs.publicList().forEach((entry) => { const detail = ui.el("details"); detail.append(ui.el("summary", `${entry.question} · v${entry.version}`), ui.faqCard(entry), ui.el("p", `Keywords: ${entry.keywords.join(", ") || "None"}. Related service: ${entry.relatedService || "None"}.`, "support-faq-meta")); $("staff-knowledge-list").append(detail); });
@@ -59,10 +64,18 @@ window.initializeStaffHelpSupport = () => {
       if (action === "publish") ui.ask("Confirm FAQ Publication", `${data.question}. Publish this general portal guidance to students and the keyword-based assistant?`, commit, null); else commit();
     } catch (error) { $("staff-faq-editor-feedback").textContent = error.message; }
   }
+  function deleteFAQ(record) {
+    ui.ask("Delete FAQ", `${record.question}. Permanently delete this FAQ, its answer and saved versions from FAQ Management, student Help and the assistant?`, () => {
+      faqs.remove(record.id, record.revision, true);
+      if (details.open) details.close();
+      renderFAQs(); $("staff-support-feedback").textContent = "FAQ deleted.";
+    }, null);
+  }
   function openFAQ(faqId) {
     const record = faqs.get(faqId); if (!record) return;
     $("staff-faq-details-title").textContent = "FAQ Details & Versions"; const body = $("staff-faq-details-body"); body.replaceChildren(ui.faqCard(record, true), ui.el("p", `${record.id} · ${record.status}${unpublished(record) ? " · Has unpublished working changes" : ""}`));
-    const actions = ui.el("div", undefined, "support-actions"); if (faqs.editable(record)) actions.append(ui.button("Edit FAQ", () => editFAQ(record)));
+    const actions = ui.el("div", undefined, "support-actions"); if (faqs.editable(record)) actions.append(ui.button("Edit Answer", () => { editFAQ(record); form.elements.answer.focus(); }));
+    if (faqs.deletable(record)) actions.append(ui.button("Delete FAQ", () => deleteFAQ(record)));
     if (record.status !== faqs.STATUS.ARCHIVED && tickets.capabilities().includes("faqArchive")) actions.append(ui.button("Archive FAQ", () => ui.ask("Archive FAQ", `${record.question}. Preserve versions and remove this entry from student Help and assistant matching?`, () => { faqs.archive(record.id, record.revision, true); details.close(); renderFAQs(); }, null)));
     body.append(actions, ui.el("h4", "Preserved published versions")); record.versions.slice().reverse().forEach((version) => { const item = ui.el("details"); item.append(ui.el("summary", `Version ${version.version} · ${ui.date(version.publishedAt)} · ${version.publisher}`), ui.faqCard(version)); body.append(item); });
     body.append(ui.el("h4", "FAQ activity history")); const history = ui.el("ol", undefined, "support-history"); record.history.slice().reverse().forEach((entry) => { const item = ui.el("li"); item.append(ui.el("strong", entry.action), ui.el("time", ui.date(entry.timestamp)), ui.el("small", entry.actor)); history.append(item); }); body.append(history); details.showModal(); $("staff-faq-details-title").focus();
@@ -74,7 +87,7 @@ window.initializeStaffHelpSupport = () => {
   $("staff-faq-preview").addEventListener("click", () => { if (!form.reportValidity()) return; try { const data = faqs.validate(input()); $("staff-faq-details-title").textContent = "Unpublished FAQ Preview"; $("staff-faq-details-body").replaceChildren(ui.faqCard(data, true)); details.showModal(); $("staff-faq-details-title").focus(); } catch (error) { $("staff-faq-editor-feedback").textContent = error.message; } });
   $("staff-faq-editor-close").addEventListener("click", closeEditor); editor.addEventListener("cancel", (event) => { if (dirty && !window.confirm("Discard unsaved FAQ changes?")) event.preventDefault(); else dirty = false; });
   editor.addEventListener("close", () => { if (!$("support-confirm-dialog").open && !details.open && current() && document.querySelector("#staff-screen").dataset.currentPage === "staff-help-support") $("staff-help-support-title").focus(); });
-  $("staff-faq-details-close").addEventListener("click", () => details.close()); details.addEventListener("close", () => { if (editor.open) $("staff-faq-preview").focus(); });
+  $("staff-faq-details-close").addEventListener("click", () => details.close()); details.addEventListener("close", () => { if (editor.open && $("staff-faq-details-title").textContent === "Unpublished FAQ Preview") $("staff-faq-preview").focus(); });
   $("staff-knowledge-test").addEventListener("submit", (event) => { event.preventDefault(); $("staff-knowledge-answer").textContent = faqs.answer(event.target.elements.question.value); });
   ["portal:staffbeforenavigate", "portal:staffbeforelogout"].forEach((name) => document.addEventListener(name, (event) => { if (editor.open && dirty) { if (!window.confirm("Discard unsaved FAQ changes before leaving?")) event.preventDefault(); else dirty = false; } }));
   window.addEventListener("beforeunload", (event) => { if (dirty) { event.preventDefault(); event.returnValue = ""; } });

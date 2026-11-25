@@ -6,6 +6,8 @@
 .support-workspace :is(input, select, textarea), .student-help-workspace :is(input, select, textarea), .support-dialog :is(input, select, textarea), .support-confirm-dialog textarea { width: 100%; min-width: 0; padding: .7rem; border: 1px solid #cbdcf1; border-radius: .5rem; color: #193453; background: #f5f9ff; font: inherit; }
 .support-table { min-width: 1100px; }
 .support-dialog { width: min(960px, calc(100vw - 2rem)); max-height: 90dvh; padding: 1.5rem; overflow-y: auto; }
+#staff-faq-details-close { background: #122957; color: #fff; }
+#staff-faq-details-close:hover { background: #0c1d40; }
 .support-confirm-dialog { width: min(540px, calc(100vw - 2rem)); padding: 1.5rem; }
 .support-dialog form, .support-confirm-dialog form, .support-editor { display: grid; gap: 1rem; }
 .support-info-grid, .support-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
@@ -116,4 +118,3 @@ html[data-theme="dark"] .help-contact-icon { background: #2f5ea8; }
   .help-faq-item summary { padding: 11px 14px; font-size: 13px; }
   .help-faq-item > article { padding: 0 14px 14px; }
 }
-

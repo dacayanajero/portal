@@ -61,7 +61,7 @@
   function core(record) { return JSON.stringify([record.question, record.answer, record.category, record.relatedService, record.keywords]); }
   function editable(record) {
     const current = requireCapability("faqView"); const caps = window.PortalSupportService.capabilities();
-    return record.status !== STATUS.ARCHIVED && (caps.includes("faqManage") || caps.includes("faqEditOwn") && record.authorId === current.account.accountNumber);
+    return record.status !== STATUS.ARCHIVED && (["staff", "admin"].includes(current?.account.role) || caps.includes("faqManage") || caps.includes("faqEditOwn") && record.authorId === current.account.accountNumber);
   }
   function save(input, options = {}) {
     const current = requireCapability("faqView"); const data = validate(input); const records = read();
@@ -95,6 +95,18 @@
     const previousStatus = record.status; record.status = STATUS.ARCHIVED; record.updatedAt = now(); record.updatedBy = current.profile?.fullName || current.account.fullName; record.revision++;
     record.history.push({ action: "FAQ Archived", actor: record.updatedBy, actorId: current.account.accountNumber, timestamp: now(), previousStatus, newStatus: STATUS.ARCHIVED }); write(records); return clone(record);
   }
+  function deletable(record) {
+    const current = requireCapability("faqView");
+    return ["staff", "admin"].includes(current?.account.role) || editable(record) || window.PortalSupportService.capabilities().includes("faqArchive");
+  }
+  function remove(faqId, revision, confirmed) {
+    requireCapability("faqView");
+    if (confirmed !== true) throw new Error("Confirm FAQ deletion first.");
+    const records = read(); const record = records.find((entry) => entry.id === faqId);
+    if (!record || record.revision !== revision) throw new Error("This FAQ changed or is unavailable. Reopen its latest version.");
+    if (!deletable(record)) throw new Error("This FAQ cannot be deleted by your account.");
+    write(records.filter((entry) => entry.id !== faqId));
+  }
   function search(query = "", category = "") { const normalized = normalize(query); return publicList().filter((entry) => (!category || entry.category === category) && (!normalized || normalize([entry.question, entry.answer, entry.category, ...entry.keywords].join(" ")).includes(normalized))); }
   function match(question) {
     const query = normalize(question); if (!query || query.length > 1000) return null;
@@ -110,5 +122,5 @@
   }
   function answer(question) { try { return match(question)?.answer || fallback; } catch { return fallback; } }
   window.addEventListener("storage", (entry) => { if (entry.key === null || entry.key === STORAGE_KEY) document.dispatchEvent(new Event("portal:faqschanged")); });
-  window.PortalFAQService = Object.freeze({ STATUS, normalize, list, get, publicList, validate, editable, save, archive, search, match, answer, fallback });
+  window.PortalFAQService = Object.freeze({ STATUS, normalize, list, get, publicList, validate, editable, deletable, save, archive, remove, search, match, answer, fallback });
 })();
